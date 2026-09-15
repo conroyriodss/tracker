@@ -1,0 +1,13 @@
+{
+  "schema": "nih-tracker-github-pages-payload/v1",
+  "published_at": "2026-09-15T20:22:48+00:00",
+  "run_id": "publish_production_to_github-20260915T202247425648-9dd90cce",
+  "source_sha256": "a650c8611b03c69b65b1556c984645d106f27f54e843c3b9deee790100243797",
+  "source_bytes": 749974,
+  "managed_files": [
+    "index.html",
+    ".nojekyll",
+    "publication_manifest.json",
+    ".nih_tracker_publish_manifest.json"
+  ]
+}

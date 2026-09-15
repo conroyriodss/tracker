@@ -1,0 +1,9 @@
+{
+  "schema": "nih-tracker-managed-files/v1",
+  "files": [
+    "index.html",
+    ".nojekyll",
+    "publication_manifest.json",
+    ".nih_tracker_publish_manifest.json"
+  ]
+}
