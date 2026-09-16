@@ -1,9 +1,9 @@
 {
   "schema": "nih-tracker-github-pages-payload/v1",
-  "published_at": "2026-09-16T17:11:53+00:00",
-  "run_id": "publish_production_to_github-20260916T171152952347-19623c17",
-  "source_sha256": "9d5b101f3a4a2c7a39138759897596d65db3accedd291aff497d813d4bf7750d",
-  "source_bytes": 1643602,
+  "published_at": "2026-09-16T20:29:47+00:00",
+  "run_id": "publish_production_to_github-20260916T202946999255-dbc84280",
+  "source_sha256": "33e2942e4c805de5201d8cb3a6378bf14e1aea78cd9fbc3cd7f988c23156f43b",
+  "source_bytes": 2712424,
   "managed_files": [
     "index.html",
     ".nojekyll",
