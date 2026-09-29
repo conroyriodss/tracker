@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conroyriodss.github.io/tracker/schemas/public_resource.schema.json",
+  "title": "NIH Tracker public resource projection",
+  "type": "object",
+  "required": [
+    "schema", "id", "repo_uid", "name", "resource_types", "best_fit",
+    "nih_relationship", "operational", "deposit", "access", "interoperability",
+    "policy", "evidence", "facets", "catalog_as_of"
+  ],
+  "properties": {
+    "schema": {"const": "nih-tracker-public-resource/v1"},
+    "id": {"type": "string", "minLength": 1},
+    "repo_uid": {"type": "string", "minLength": 1},
+    "name": {"type": "string", "minLength": 1},
+    "abbreviation": {"type": "string"},
+    "aliases": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "resource_types": {"type": "array", "items": {"$ref": "#/$defs/term"}, "minItems": 1},
+    "purpose": {"type": "string"},
+    "best_fit": {
+      "type": "object",
+      "required": ["data_asset_types", "subject_areas", "modalities", "organism_scopes", "human_data_sensitivity", "data_formats"],
+      "properties": {
+        "data_asset_types": {"type": "array", "items": {"type": "string"}},
+        "subject_areas": {"type": "array", "items": {"type": "string"}},
+        "modalities": {"type": "array", "items": {"$ref": "#/$defs/term"}},
+        "organism_scopes": {"type": "array", "items": {"$ref": "#/$defs/term"}},
+        "human_data_sensitivity": {"$ref": "#/$defs/controlledValue"},
+        "taxonomies": {"type": "array", "items": {"type": "string"}},
+        "model_systems": {"type": "array", "items": {"type": "string"}},
+        "data_formats": {"type": "array", "items": {"type": "string"}},
+        "not_intended_for": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "nih_relationship": {"type": "object"},
+    "operational": {"$ref": "#/$defs/controlledValue"},
+    "deposit": {"$ref": "#/$defs/controlledValue"},
+    "access": {"$ref": "#/$defs/controlledValue"},
+    "interoperability": {"type": "object"},
+    "policy": {"type": "object"},
+    "stewardship": {"type": "array", "items": {"type": "object"}},
+    "publisher_policies": {"type": "array", "items": {"type": "object"}},
+    "identifiers": {"type": "array", "items": {"type": "object"}},
+    "links": {"type": "object"},
+    "evidence": {"type": "object", "required": ["claim_count", "claim_ids"]},
+    "facets": {"type": "object"},
+    "search_text": {"type": "string"},
+    "catalog_as_of": {"type": "string", "minLength": 4}
+  },
+  "$defs": {
+    "term": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {"id": {"type": "string"}, "label": {"type": "string"}},
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["state", "claim_id"],
+      "properties": {
+        "state": {"enum": ["verified", "officially_reported", "registry_reported", "not_established"]},
+        "source_url": {"type": "string"},
+        "source_date": {"type": "string"},
+        "reviewed_at": {"type": "string"},
+        "review_due": {"type": "string"},
+        "claim_id": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "controlledValue": {
+      "type": "object",
+      "required": ["id", "label", "evidence"],
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string"},
+        "evidence": {"$ref": "#/$defs/evidence"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

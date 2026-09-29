@@ -1,0 +1,487 @@
+{
+  "schema": "nih-tracker-vocabularies/v1",
+  "version": "1.1.0",
+  "vocabularies": {
+    "access_pathway": [
+      {
+        "definition": "Data or content can be accessed without registration or authorization.",
+        "id": "open",
+        "label": "Open access"
+      },
+      {
+        "definition": "Access requires registration or agreement but not case-by-case controlled authorization.",
+        "id": "registered",
+        "label": "Registered access"
+      },
+      {
+        "definition": "Access requires review and authorization through a named access mechanism.",
+        "id": "controlled",
+        "label": "Controlled access"
+      },
+      {
+        "definition": "The resource contains assets with different access pathways.",
+        "id": "mixed",
+        "label": "Mixed access"
+      },
+      {
+        "definition": "Access is restricted under terms not otherwise classified.",
+        "id": "restricted",
+        "label": "Restricted access"
+      },
+      {
+        "definition": "The resource exists but is not currently processing new access requests.",
+        "id": "temporarily_paused",
+        "label": "Access requests temporarily paused"
+      },
+      {
+        "definition": "Access has moved to another resource or platform.",
+        "id": "migrated",
+        "label": "Access migrated"
+      },
+      {
+        "definition": "The resource is not currently available for access.",
+        "id": "unavailable",
+        "label": "Access unavailable"
+      },
+      {
+        "definition": "Available evidence is insufficient to determine the access pathway.",
+        "id": "not_established",
+        "label": "Access pathway not established"
+      }
+    ],
+    "data_modality": [
+      {
+        "id": "clinical_real_world",
+        "label": "Clinical and real-world data"
+      },
+      {
+        "id": "genomics",
+        "label": "Genomics"
+      },
+      {
+        "id": "epigenomics",
+        "label": "Epigenomics"
+      },
+      {
+        "id": "transcriptomics",
+        "label": "Transcriptomics"
+      },
+      {
+        "id": "proteomics",
+        "label": "Proteomics"
+      },
+      {
+        "id": "metabolomics",
+        "label": "Metabolomics"
+      },
+      {
+        "id": "other_omics",
+        "label": "Other omics"
+      },
+      {
+        "id": "single_cell_spatial",
+        "label": "Single-cell and spatial omics"
+      },
+      {
+        "id": "medical_imaging",
+        "label": "Medical imaging"
+      },
+      {
+        "id": "digital_pathology",
+        "label": "Digital pathology"
+      },
+      {
+        "id": "microscopy",
+        "label": "Microscopy"
+      },
+      {
+        "id": "biospecimen_biobank",
+        "label": "Biospecimen and biobank metadata"
+      },
+      {
+        "id": "behavioral_social_population",
+        "label": "Behavioral, social, and population health data"
+      },
+      {
+        "id": "environmental_geospatial",
+        "label": "Environmental exposures and geospatial data"
+      },
+      {
+        "id": "physiologic_wearable_mobile",
+        "label": "Physiologic signals, wearables, and mobile health"
+      },
+      {
+        "id": "neuroimaging",
+        "label": "Neuroimaging"
+      },
+      {
+        "id": "electrophysiology_neural",
+        "label": "Electrophysiology and neural recordings"
+      },
+      {
+        "id": "chemical_pharmacologic_screening",
+        "label": "Chemical, pharmacologic, and screening data"
+      },
+      {
+        "id": "clinical_trials_protocols",
+        "label": "Clinical trials and study protocols"
+      },
+      {
+        "id": "software_workflows_models",
+        "label": "Models, software, workflows, notebooks, and containers"
+      },
+      {
+        "id": "semantic_artifacts",
+        "label": "Ontologies, vocabularies, common data elements, and terminology artifacts"
+      },
+      {
+        "id": "synthetic_benchmark_challenge",
+        "label": "Synthetic data, benchmark datasets, and challenge data"
+      },
+      {
+        "id": "not_established",
+        "label": "Data modality not established"
+      }
+    ],
+    "evidence_state": [
+      {
+        "definition": "Directly checked against authoritative documentation or a bounded live technical test.",
+        "id": "verified",
+        "label": "Verified"
+      },
+      {
+        "definition": "Reported by NIH, the resource operator, or another authoritative owner but not independently tested.",
+        "id": "officially_reported",
+        "label": "Officially reported"
+      },
+      {
+        "definition": "Reported by re3data, FAIRsharing, RRID, or another third-party registry.",
+        "id": "registry_reported",
+        "label": "Registry reported"
+      },
+      {
+        "definition": "Available evidence is insufficient to support the claim.",
+        "id": "not_established",
+        "label": "Not established"
+      }
+    ],
+    "fit_class": [
+      {
+        "definition": "Every selected criterion is supported by current evidence.",
+        "id": "meets_selected_criteria",
+        "label": "Meets selected criteria"
+      },
+      {
+        "definition": "Core criteria match, but one or more caveats require attention.",
+        "id": "meets_with_caveats",
+        "label": "Meets with caveats"
+      },
+      {
+        "definition": "The resource matches some but not all selected criteria.",
+        "id": "near_match",
+        "label": "Near match"
+      },
+      {
+        "definition": "The tracker lacks enough evidence to determine fit.",
+        "id": "insufficient_evidence",
+        "label": "Insufficient evidence"
+      },
+      {
+        "definition": "Current evidence conflicts with one or more required criteria.",
+        "id": "excluded_by_criteria",
+        "label": "Excluded by selected criteria"
+      }
+    ],
+    "human_data_sensitivity": [
+      {
+        "definition": "Human-related data are documented with controlled or restricted access. This does not independently classify consent, legal, or privacy status.",
+        "id": "controlled_or_sensitive",
+        "label": "Controlled or potentially sensitive human data"
+      },
+      {
+        "definition": "Human-related data are documented with open or registered access. This does not by itself establish de-identification.",
+        "id": "open_or_registered",
+        "label": "Open or registered human-data access"
+      },
+      {
+        "definition": "The resource documents human-related assets with more than one access pathway.",
+        "id": "mixed",
+        "label": "Mixed human-data access"
+      },
+      {
+        "definition": "Available organism evidence is explicitly non-human or model-system focused.",
+        "id": "not_applicable",
+        "label": "No human-data context established"
+      },
+      {
+        "definition": "Available evidence is insufficient to characterize human-data sensitivity or access context.",
+        "id": "not_established",
+        "label": "Human-data sensitivity not established"
+      }
+    ],
+    "nih_relationship": [
+      {
+        "definition": "NIH directly operates the resource.",
+        "id": "nih_operated",
+        "label": "NIH-operated"
+      },
+      {
+        "definition": "NIH directly maintains or stewards the resource.",
+        "id": "nih_maintained",
+        "label": "NIH-maintained"
+      },
+      {
+        "definition": "Current NIH funding support is documented.",
+        "id": "currently_nih_funded",
+        "label": "Currently NIH-funded"
+      },
+      {
+        "definition": "Sustained or historical NIH support is documented without establishing current operational funding.",
+        "id": "sustained_historical_nih_support",
+        "label": "Sustained or historical NIH support"
+      },
+      {
+        "definition": "A documented relationship with one or more NIH Institutes, Centers, or Offices exists.",
+        "id": "ico_associated",
+        "label": "NIH ICO-associated"
+      },
+      {
+        "definition": "The resource is relevant but confirmed NIH support is not established.",
+        "id": "external_relevant",
+        "label": "External resource relevant to NIH-funded research"
+      },
+      {
+        "definition": "Available evidence is insufficient to classify the NIH relationship.",
+        "id": "not_established",
+        "label": "NIH relationship not established"
+      }
+    ],
+    "operational_status": [
+      {
+        "definition": "The resource is operating.",
+        "id": "active",
+        "label": "Active"
+      },
+      {
+        "definition": "The resource is migrating or undergoing a material operational transition.",
+        "id": "transition",
+        "label": "In transition"
+      },
+      {
+        "definition": "Some or all operations are temporarily paused.",
+        "id": "temporarily_paused",
+        "label": "Temporarily paused"
+      },
+      {
+        "definition": "Operations or procedures are under review.",
+        "id": "under_review",
+        "label": "Under review"
+      },
+      {
+        "definition": "The resource is winding down or directing users to a successor.",
+        "id": "sunset",
+        "label": "Sunsetting"
+      },
+      {
+        "definition": "The resource is retained primarily as an archive.",
+        "id": "archived",
+        "label": "Archived"
+      },
+      {
+        "definition": "The resource is no longer operational as a current service.",
+        "id": "retired",
+        "label": "Retired"
+      },
+      {
+        "definition": "Available evidence is insufficient to determine current status.",
+        "id": "not_established",
+        "label": "Operational status not established"
+      }
+    ],
+    "organism_scope": [
+      {
+        "definition": "The resource documents human participants, patients, cohorts, or human-derived data.",
+        "id": "human",
+        "label": "Human data or participants"
+      },
+      {
+        "definition": "The resource documents non-human organisms, pathogens, or non-human biological systems.",
+        "id": "non_human",
+        "label": "Non-human organisms or data"
+      },
+      {
+        "definition": "The resource documents both human and non-human data or explicitly supports multiple species.",
+        "id": "multi_species",
+        "label": "Human and non-human or multi-species"
+      },
+      {
+        "definition": "The resource documents experimental models, cell lines, organoids, animal models, or other preclinical systems.",
+        "id": "model_system",
+        "label": "Model systems or preclinical resources"
+      },
+      {
+        "definition": "Available evidence is insufficient to characterize organism or model-system scope.",
+        "id": "not_established",
+        "label": "Organism or model-system scope not established"
+      }
+    ],
+    "pid_level": [
+      {
+        "definition": "Persistent identifiers are assigned at the dataset or equivalent asset level.",
+        "id": "dataset",
+        "label": "Dataset-level persistent identifier"
+      },
+      {
+        "definition": "Persistent identifiers are assigned to collections or releases.",
+        "id": "collection",
+        "label": "Collection-level persistent identifier"
+      },
+      {
+        "definition": "A persistent identifier identifies the resource but not necessarily its individual assets.",
+        "id": "repository",
+        "label": "Repository-level identifier only"
+      },
+      {
+        "definition": "No relevant persistent identifier practice is documented.",
+        "id": "none_documented",
+        "label": "No persistent identifier documented"
+      },
+      {
+        "definition": "Available evidence is insufficient to characterize PID practice.",
+        "id": "not_established",
+        "label": "Persistent identifier practice not established"
+      }
+    ],
+    "programmatic_access": [
+      {
+        "definition": "A public programmatic interface is documented.",
+        "id": "public_api",
+        "label": "Public API"
+      },
+      {
+        "definition": "A programmatic interface requiring authentication is documented.",
+        "id": "authenticated_api",
+        "label": "Authenticated API"
+      },
+      {
+        "definition": "A documented bulk-download mechanism is available.",
+        "id": "bulk_download",
+        "label": "Bulk download"
+      },
+      {
+        "definition": "Data can be analyzed through a managed cloud workspace.",
+        "id": "cloud_workspace",
+        "label": "Cloud workspace"
+      },
+      {
+        "definition": "Evidence indicates that no public API is offered.",
+        "id": "no_public_api_reported",
+        "label": "No public API reported"
+      },
+      {
+        "definition": "Available evidence is insufficient to characterize programmatic access.",
+        "id": "not_established",
+        "label": "Programmatic access not established"
+      }
+    ],
+    "resource_type": [
+      {
+        "definition": "A service that preserves and provides access to deposited research data.",
+        "id": "repository",
+        "label": "Data repository"
+      },
+      {
+        "definition": "A structured registry or results-reporting system rather than a general data-deposition repository.",
+        "id": "registry_results_database",
+        "label": "Registry or results database"
+      },
+      {
+        "definition": "A curated information resource that integrates data, evidence, or annotations.",
+        "id": "knowledge_base",
+        "label": "Knowledge base"
+      },
+      {
+        "definition": "A discovery or access interface that may aggregate data held by one or more underlying services.",
+        "id": "data_portal",
+        "label": "Data portal"
+      },
+      {
+        "definition": "A preservation-oriented service for deposited data and associated records.",
+        "id": "data_archive",
+        "label": "Data archive"
+      },
+      {
+        "definition": "A managed environment for discovering and analyzing data near compute resources.",
+        "id": "cloud_analysis_environment",
+        "label": "Cloud analysis environment"
+      },
+      {
+        "definition": "A service that describes and points to data assets, which may be held elsewhere.",
+        "id": "data_catalog",
+        "label": "Data catalog"
+      },
+      {
+        "definition": "A resource that manages biospecimens and associated data.",
+        "id": "biobank_biospecimen_resource",
+        "label": "Biobank or biospecimen resource"
+      },
+      {
+        "definition": "A resource focused on organisms, models, software models, or reference constructs.",
+        "id": "model_resource",
+        "label": "Model resource"
+      },
+      {
+        "definition": "A system that manages requests, authorization, or access to controlled data.",
+        "id": "access_system",
+        "label": "Access system"
+      },
+      {
+        "definition": "A structured information system not otherwise classified.",
+        "id": "database",
+        "label": "Database"
+      },
+      {
+        "definition": "A resource that does not fit another controlled category.",
+        "id": "other",
+        "label": "Other resource"
+      },
+      {
+        "definition": "Available evidence is insufficient to classify the resource.",
+        "id": "not_established",
+        "label": "Not established"
+      }
+    ],
+    "submission_model": [
+      {
+        "definition": "The resource accepts deposits from the broader research community.",
+        "id": "broad",
+        "label": "Accepts broad investigator deposits"
+      },
+      {
+        "definition": "Deposits are limited to specific programs, consortia, cohorts, or approved contributors.",
+        "id": "limited_programmatic",
+        "label": "Limited or programmatic intake"
+      },
+      {
+        "definition": "No current new-deposit pathway is documented or the resource states that intake is closed.",
+        "id": "not_accepting",
+        "label": "Not accepting new deposits"
+      },
+      {
+        "definition": "Deposit intake is temporarily paused.",
+        "id": "temporarily_paused",
+        "label": "Deposit intake temporarily paused"
+      },
+      {
+        "definition": "The resource is not a data-deposition service.",
+        "id": "not_applicable",
+        "label": "Deposit intake not applicable"
+      },
+      {
+        "definition": "Available evidence is insufficient to determine deposit eligibility.",
+        "id": "not_established",
+        "label": "Deposit eligibility not established"
+      }
+    ]
+  }
+}

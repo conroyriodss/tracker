@@ -1,0 +1,223 @@
+repo_uid,name,resource_type_documented,purpose_documented,data_asset_type_documented,subject_area_documented,data_modality_documented,organism_scope_documented,human_data_context_documented,taxonomy_documented,model_system_documented,data_format_documented,stewardship_documented,operational_status_documented,submission_model_documented,access_pathway_documented,programmatic_access_documented,api_service_count,standard_count,pid_system_count,guid_system_count,nih_relationship_documented,nih_cadr_status,last_reviewed,next_review_due,evidence_currency
+B10,"HEAL Data Ecosystem (federatation of Repositories, and a knowledgebase)",1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+B105,Children's Allergy and Asthma Data Repository (CADRE),1,1,0,1,1,1,0,0,1,0,0,1,1,0,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B106,"Database of Immune Cell Expression, Expression quantitative trait loci (eQTLs) and Epigenomics (DICE)",1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B113,Papillomavirus Episteme (PaVE),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B122,Arthritis and Autoimmune and Related Diseases Knowledge Portal (ARK Portal),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+B126,Rodent Open Science Skeletal Archive,1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+B14,All RNA-seq and ChIP-seq sample and signature search (ARCHS4),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B140,Somatic Mosaicism across Human Tissues (SMaHT),1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B146,gEAR,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,1,0,1,not_listed,2026-09-10,2027-03-01,current
+B154,Accelerating Medicines Partnership in Common Metabolic Diseases Knowledge Portal (AMP-CMDKP),1,1,1,1,1,1,0,1,1,0,0,1,1,0,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B155,Accelerating Medicines Partnership in Type 2 Diabetes Knowledge Portal (AMP-T2D),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+B159,Human Health Exposure Analysis Resource (HHEAR) Data Repository,1,1,1,1,1,1,0,1,1,0,0,1,1,0,1,0,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+B162,Reasoning Over Biomedical Objects Linked in Knowledge-Oriented Pathways (ROBOKOP),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B175,Allen Brain Cell (ABC) Atlas (aka Adult whole brain cell atlas in human and NHP),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B180,Distributed Archives for Neurophysiology Data Integration (The DANDI Archive),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,1,3,2,0,1,not_listed,2026-09-10,2027-03-01,current
+B181,Ecosystem for Multimodal Brain-Behavior Experimentation and Research (EMBER),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B190,"Accelerating Medicine Partnership in Amyotrophic Lateral Sclerosis (AMP-ALS), ALS Knowledge Portal",1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,listed,2026-09-10,2027-03-01,current
+B193,Imaging Repository for the Cerebrovascular Disease Knowledge Portal (iCDKP),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-10,2027-03-01,current
+B205,"NCBI Datasets: Gene, Genome, Assembly, Orthologs, and Taxonomy Database",1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,1,0,1,not_listed,2026-09-10,2027-03-01,current
+B40,The BRCA Exchange Knowledgebase,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+B46,UCSC Genome Browser,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,1,0,1,not_listed,2026-09-10,2027-03-01,current
+B62,gnomAD Genome Aggregation Database,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,0,1,0,1,not_listed,2026-09-16,2027-03-01,current
+B65,"NHGRI Genomic Data Science Analysis, Visualization, and Informatics Lab-space (AnVIL)",1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,listed,2026-09-16,2027-03-01,current
+B78,Biologic Specimen and Data Repository Information Coordinating Center (BioLINCC),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,0,1,listed,2026-09-10,2027-03-01,current
+B97,National NeuroHIV Tissue Consortium,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,0,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R1,Federal Interagency Traumatic Brain Injury Research (FITBIR) Informatics System,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,2,1,1,listed,2026-09-16,2027-03-01,current
+R10,NCATS OpenData Portal,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R100,NIAAA Controlled Datasets,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R101,NIAAA Data Archive,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-22,2027-03-01,current
+R102,Southern HIV and Alcohol Research Consortium Biomedical Data Repository,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R103,NIMH Data Archive,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,3,2,1,1,listed,2026-09-10,2027-03-01,current
+R104,AccessClinicalData@NIAID,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,5,0,0,1,listed,2026-09-10,2027-03-01,current
+R105,AIRR Data Commons (ADC),1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R106,Bacterial and Viral Bioinformatics Resource Center (BV-BRC),1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,2,5,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R108,HIV Drug Resistance Database,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R109,Immune Epitope Database and Analysis Resource (IEDB),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R11,National Clinical Cohort Collaborative (N3C),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R110,ImmuneSpace,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R111,Immunological Genome Project (ImmGen),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R112,International Committee on Taxonomy of Viruses (ICTV),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R113,NIAID-DOE LANL HIV Database and Analysis Unit,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,5,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R114,SCREEN: Search Candidate cis-Regulatory Elements by ENCODE,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R115,Structure Database,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R116,TB Portals Program,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R117,Vaccine Investigation and Online Information Network (VIOLIN),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-02,2027-03-01,current
+R118,VDJServer Community Data Portal,1,0,0,1,0,1,0,0,1,0,0,1,1,0,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R119,TrialShare,1,0,0,1,1,1,0,0,1,0,0,1,1,0,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R12,mapMECFS,1,1,1,1,1,1,0,1,1,0,0,1,1,0,1,1,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R120,Immunology Database and Analysis Portal (ImmPort),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,1,6,1,0,1,listed,2026-09-16,2027-03-01,current
+R123,Hair-GEL,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R124,Musculoskeletal Knowledge Portal,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R125,SkinRegeneration,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R126,Medical Imaging and Data Resource Center (MIDRC),1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,4,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R127,PhysioNet,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R128,Child Language Data Exchange System (CHILDES),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R13,Natural Products Magnetic Resonance Database (NP-MRD),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R130,Data Sharing for Demographic Research (DSDR),1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,3,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R131,Echinobase,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R132,Environmental influences on Child Health Outcomes (ECHO),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R133,IPUMS,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R134,Learning &amp; Development Data Repository (LDbase),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R135,NICHD Data and Specimen Hub (DASH),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,1,0,1,listed,2026-09-16,2027-03-01,current
+R136,PhonBank,1,0,0,1,1,1,1,0,1,0,0,1,1,1,0,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R137,Xenbase,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R138,Mouse Phenome Database,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,6,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R139,National Addiction and Health Data Archive Program (NAHDAP),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,4,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R14,Topological Atlas and Repository for Acupoint research (TARA),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R142,NIDA Center for Genetics Studies,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R143,NIH Brain Development Cohorts (NBDC) Data Hub,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R144,NeMO Single Cell Opioid Responses in the Context of HIV (NeMO SCORCH),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-22,2027-03-01,current
+R145,Neuroscience Information Framework,1,0,0,1,1,1,0,0,1,0,0,1,1,0,1,3,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R146,AphasiaBank,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R147,FluencyBank,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R148,Candida Genome Database,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,5,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R149,Human Oral Microbiome Database (HOMD),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R150,Human Salivary Proteome,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R151,FaceBase,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,2,1,0,1,listed,2026-09-10,2027-03-01,current
+R154,NIDA Data Share,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R157,United States Renal Data System (USRDS),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R16,Cancer Complexity Knowledge Portal,1,1,0,1,0,1,1,0,1,0,1,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R160,Chemical Effects in Biological Systems (CEBS),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R161,Exposome Correlation and Interpretation Database (ECID),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R162,GeoSpace,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R164,Integrated Chemical Environment (ICE),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R165,Pathogen Detection,1,1,1,1,1,1,0,1,1,0,0,1,1,0,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R166,Comparative Toxicogenomics Database (CTD),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R168,Binding Database (BindingDB),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R169,Biological Magnetic Resonance Data Bank (BMRB),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,2,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R17,Cancer Data Access System (CDAS),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R170,BioPortal,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,3,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R173,DOCKGROUND,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R174,EcoCyc,1,1,0,1,1,1,0,0,1,0,1,1,1,0,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R175,GlyGen,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,3,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R176,Nucleic Acid Knowledge Base (NAKB),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R178,PeptideAtlas,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R179,Redfly,1,0,0,1,0,1,1,0,1,0,0,1,1,1,0,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R18,Cancer Epidemiology Descriptive Cohort Database,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R180,Research Resource Identification (RRID),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R181,Virtual Nanostructure Simulation (VINAS) Web Portal,1,0,0,1,0,1,0,0,1,0,0,1,1,0,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R183,AMP Schizophrenia (SCZ),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R184,Brain Analysis Library of Spatial maps and Atlases (BALSA),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R185,Brain Image Library,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R186,BRAIN Initiative - Cell Atlas Network (BICAN),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R189,Neuroelectromagnetic Data Archive and Tools Resource (NEMAR),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,2,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R19,Cancer Epitope Database and Analysis Resource (CEDAR),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R190,Neuroscience Multi-omic Archive (NeMO),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R191,NeuroVault and NeuroSynth,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R192,National Neighborhood Data Archive (NaNDA),1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,5,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R193,Brain Observatory Storage Service &amp; Database (BossDB),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R194,Data Archive for the BRAIN Initiative (DABI),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R195,OpenNeuro,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,5,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R196,SCHARE (NIMHD),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R198,NINDS Human Cell and Data Repository (NHCDR),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R199,Parkinson's Disease Biomarker Program,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R20,Cancer Models.org,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R201,Open Data Commons - Traumatic Brain Injury (ODC-TBI),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R202,Open Data Commons for Spinal Cord Injury,1,1,0,1,0,1,1,0,1,0,0,1,1,1,0,0,7,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R204,ClinicalTrials.gov,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,4,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R205,ClinVar,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,2,3,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R206,Conserved Domains Database (CDD),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R207,Database for Genotypes and Phenotypes (dbGaP),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,1,0,1,listed,2026-09-10,2027-03-01,current
+R208,Database of human genomic Structural Variation (dbVar),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R209,GenBank,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R21,Cancer Proteome Atlas,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R210,Gene Expression Omnibus (GEO),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R211,Mass Spectrometry Interactive Virtual Environment (MassIVE),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R212,National Database of Antimicrobial Resistant Organisms (NDARO),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R214,Genetic Testing Registry (GTR),1,1,1,1,1,1,0,1,1,0,0,1,0,0,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R216,PubChem,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,2,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R217,Sequence Read Archive (SRA),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-22,2027-03-01,current
+R218,Single Nucleotide Polymorphism Database (dbSNP),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R22,cBioPortal,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,2,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R220,All of Us,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R221,Biological General Repository for Interaction Datasets (BioGRID),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R222,Dark Kinase Knowledge Base,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R223,Genotype-Tissue Expression (GTEx),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R224,HuBMAP Data Portal,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,2,6,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R226,INCLUDE Data Hub,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,6,0,0,1,listed,2026-09-10,2027-03-01,current
+R227,JAX Cre Repository,1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R228,Kids First Data Resource Center,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,0,0,1,listed,2026-09-22,2027-03-01,current
+R229,LONI Database,1,1,1,1,1,1,0,1,1,0,1,1,1,0,1,0,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R23,CCDI Molecular Targets Platform (MTP),1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R230,Monarch Initiative,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R231,MoTrPAC Data Hub,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R232,Nutrition Science Data and Biospecimen Resources Portal,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R24,Childhood Cancer Clinical Data Commons (C3DC),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R25,Clinical and Translational Data Commons (CTDC),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-10,2027-03-01,current
+R26,Clinical Interpretation of Variants in Cancer (CIViC),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,3,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R27,General Commons (GC),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,2,4,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R28,Genomic Data Commons (GDC),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,2,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R29,HCMI Searchable Catalog,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R30,HemOnc Wiki,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R31,Imaging Data Commons (IDC),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R32,Integrated Canine Data Commons (ICDC),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,4,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R33,International Skin Imaging Collaboration,1,1,0,1,0,1,1,0,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R34,Molecular Signatures Database (MSigDB),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R35,Mouse Models of Human Cancer Database,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R36,National Childhood Cancer Registry (NCCR) Data Platform,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R37,Protein Family Models,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R38,Proteomic Data Commons (PDC),1,1,0,1,1,1,1,0,1,0,1,1,1,1,0,0,6,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R39,SEER Specialized Databases,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,3,1,0,1,listed,2026-09-10,2027-03-01,current
+R4,Metabolomics Workbench - National Metabolomics Data Repository,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,0,0,1,not_listed,2026-09-22,2027-03-01,current
+R40,SEER-CAHPS Linked Data Resource,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,3,1,0,1,listed,2026-09-16,2027-03-01,current
+R41,SEER-MHOS Linked Data Resource,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,1,3,1,0,1,listed,2026-09-16,2027-03-01,current
+R42,The Cancer Imaging Archive (TCIA),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,2,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R43,The Network Data Exchange (NDEx),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R44,Universal Protein Resource (UniProt),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,4,4,2,0,1,not_listed,2026-09-10,2027-03-01,current
+R45,GWAS Catalog (NHGRI-EBI Catalog),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,4,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R46,PGS Catalog,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R47,ClinPGx,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R48,Clinical Genome (ClinGen) Resource,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,4,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R49,NIDDK-Central Repository Resources for Research (NIDDK-CR R4R),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,1,0,1,listed,2026-09-22,2027-03-01,current
+R5,SPARC Portal,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R50,Protein Data Bank,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,5,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R51,NEI BRICS,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R52,NEI Data Commons,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R53,African Genomics Data Hub (AfriGen-D),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R54,Association to Function Knowledge Portal (A2FKP),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R55,Atlas of Regulatory Variants in Diseases (ARVID),1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R57,Dfam,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R58,Disease Ontology Knowledgebase (DO-KB),1,1,0,1,0,1,1,0,1,0,0,1,1,1,0,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R59,FlyBase: A Drosophila Genomic and Genetic Database,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R6,SenNet Consortium,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R60,GENCODE,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,2,3,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R61,Genomic tRNA Database (GtRNAdb),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R62,HUGO Gene Nomenclature Committee (HGNC),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R63,Human Phenotype Ontology (HPO),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R65,OAI Core Knowledgebase,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R66,OMIM An Online Catalog of Human Genes and Genetic Disorders,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,2,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R67,Reference Sequences (RefSeq),1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R68,RegulomeDB,1,0,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R69,RxNorm,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R7,OpenPain,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R70,Saccharomyces Genome Database (SGD),1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R71,WormBase,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R72,Alliance of Genome Resources (AGR),1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,3,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R73,PhenX Toolkit,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R74,International Mouse Phenotyping Consortium (IMPC),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R75,Zebrafish Information Network (ZFIN),1,0,0,1,0,1,1,0,1,0,0,1,1,1,0,0,2,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R76,Gene Ontology Consortium and Knowledgebase,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,2,4,2,0,1,not_listed,2026-09-16,2027-03-01,current
+R77,Reactome,1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,1,3,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R79,BioData Catalyst,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,7,1,0,1,listed,2026-09-16,2027-03-01,current
+R8,EveAnalytics,1,1,0,1,1,1,1,0,1,0,0,1,1,1,0,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R81,LungMAP,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R82,National Sleep Research Resource,1,1,1,1,1,1,0,1,1,0,0,1,1,0,0,0,5,1,0,1,not_listed,2026-09-16,2027-03-01,current
+R83,Rare Disease Cures Accelerator - Data and Analytics Platform (RDCA-DAP),1,0,0,1,1,1,1,0,1,0,0,1,1,1,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R84,Rat Genome Database (RGD),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R85,Brain Data Science Platform (BDSP),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R86,AgingResearchBiobank,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R87,Alzheimer's Disease Knowledge Portal (AD Knowledge Portal),1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-10,2027-03-01,current
+R88,AMP Alzheimer's Disease (AD),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R89,Cell Image Library,1,0,0,1,0,1,1,0,1,0,0,1,1,1,0,0,2,2,0,1,not_listed,2026-09-10,2027-03-01,current
+R9,Inxight Informatics System,1,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R90,Exceptional Longevity Translational Resources (ELITE) Portal,1,1,0,1,0,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R91,National Archive of Computerized Data on Aging (NACDA),1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,2,7,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R92,Network for Investigation of Delirium: Unifying Scientists,1,0,0,1,1,1,0,0,1,0,0,1,1,0,1,0,2,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R93,NIA Data Linkage Program,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
+R94,NIA Genetics of Alzheimer's Disease Data Storage Site (NIAGADS),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,3,0,0,1,listed,2026-09-10,2027-03-01,current
+R95,Primate Aging Database,1,1,1,1,1,1,0,1,1,0,0,1,1,0,0,0,5,0,0,1,not_listed,2026-09-16,2027-03-01,current
+R97,NeuroImaging Tools and Resources Collaboratory (NITRC),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,2,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R98,Inter-university Consortium for Political and Social Research (ICPSR),1,0,0,1,1,1,1,0,1,0,0,1,1,1,0,0,4,1,0,1,not_listed,2026-09-10,2027-03-01,current
+R99,Accelerating Medicines Partnership in Parkinson's Disease (AMP-PD),1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,2,0,0,1,listed,2026-09-16,2027-03-01,current
