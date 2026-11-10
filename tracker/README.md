@@ -1,4 +1,10 @@
-# NIH Tracker v19.2.2
+# NIH Tracker v19.2.3
+
+**New in v19.2.3:** phase/path/counter progress and ten-second heartbeats for
+long inventory scans; pin inspection reads only selected files; the pipeline
+shows step position and stops on interruption. Runtime logs are written locally
+then copied to Drive, with local diagnostics retained if copying fails. Pipeline,
+review and maintenance notebooks require the matching installed release.
 
 **New in v19.2.2:** the installer hashes the sealed plan for its audit instead of
 the entire project, compares each target once, stages only changed/new files,

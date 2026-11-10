@@ -13,13 +13,18 @@ import importlib
 import json
 import os
 import platform
+import queue
 import shlex
+import shutil
+import signal
 import subprocess
 import sys
+import tempfile
+import threading
 import time
 import traceback
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
@@ -73,6 +78,7 @@ SCRIPT_SECRETS = {
 ALL_MANAGED_SECRETS = tuple(
     dict.fromkeys([*BASE_API_SECRETS, *GITHUB_SECRETS, "NIH_TRACKER_REVIEWER"])
 )
+HEARTBEAT_SECONDS = 10.0
 
 
 def _truthy(value: Any) -> bool:
@@ -199,6 +205,10 @@ class RunResult:
     log_path: str
     result_path: str
     ledger_rows: int
+    interrupted: bool = False
+    local_log_path: str = ""
+    artifact_sync_error: str = ""
+    termination_confirmed: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -246,6 +256,7 @@ class NotebookRuntime:
             self.project / "runs" / "notebook_debug" / self.notebook_name / self.session_id
         )
         self.debug_dir.mkdir(parents=True, exist_ok=False)
+        self.local_debug_dir = Path(tempfile.mkdtemp(prefix="nih_tracker_" + self.session_id + "_"))
         self._operation_counter = 0
         self._run_results: list[RunResult] = []
         self.common = importlib.import_module("common")
@@ -259,6 +270,7 @@ class NotebookRuntime:
                 "environment": self.env,
                 "project": str(self.project),
                 "scripts": str(self.scripts),
+                "local_debug_dir": str(self.local_debug_dir),
                 "production_writes_enabled": self.enable_prod_writes,
             },
         )
@@ -481,11 +493,14 @@ class NotebookRuntime:
         return diagnostics
 
     def show_diagnostics(self) -> dict[str, Any]:
-        diagnostics = self.diagnostics()
+        from operation_progress import ProgressReporter
+        with ProgressReporter("runtime diagnostics") as progress:
+            progress.update("parse cards and inspect runtime state", current=self.project)
+            diagnostics = self.diagnostics()
         print(json.dumps(diagnostics, indent=2, default=str))
         return diagnostics
 
-    def _ledger_rows_for_run(self, run_id: str) -> list[dict[str, Any]]:
+    def _ledger_rows_for_run(self, run_id: str, *, strict: bool = False) -> list[dict[str, Any]]:
         path = Path(self.common.LEDGER)
         if not path.is_file() or path.stat().st_size == 0:
             return []
@@ -497,7 +512,43 @@ class NotebookRuntime:
                 return []
             return frame.loc[frame["run_id"] == run_id].to_dict("records")
         except Exception:
+            if strict:
+                raise
             return []
+
+    @staticmethod
+    def _stop_process(process, *, grace_seconds=5):
+        """Stop only this invocation's process group, then reap its leader."""
+        if process is None:
+            return True
+        try:
+            if os.name == "posix":
+                os.killpg(process.pid, signal.SIGTERM)
+            elif process.poll() is None:
+                process.terminate()
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=grace_seconds)
+        except subprocess.TimeoutExpired:
+            if os.name == "posix":
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            else:
+                process.kill()
+            try:
+                process.wait(timeout=grace_seconds)
+            except subprocess.TimeoutExpired:
+                return False
+        # The leader may have exited before a descendant ignored SIGTERM.
+        if os.name == "posix":
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        return True
 
     @contextlib.contextmanager
     def logged_operation(self, label: str):
@@ -587,17 +638,26 @@ class NotebookRuntime:
         prefix = f"{self._operation_counter:02d}_{_safe_slug(operation)}"
         log_path = self.debug_dir / f"{prefix}.log"
         result_path = self.debug_dir / f"{prefix}.result.json"
+        local_log_path = self.local_debug_dir / log_path.name
+        local_result_path = self.local_debug_dir / result_path.name
         started_at = _utc_now()
         started_monotonic = time.monotonic()
         print("\n" + "=" * 100)
         print(f"{operation} | env={self.env} | run_id={run_id}")
         print("$ " + shlex.join(command))
         print(f"debug_log={log_path}")
+        print(f"local_log={local_log_path}")
         print("=" * 100)
 
         returncode = 1
+        process = None
+        interrupted = False
+        termination_confirmed = True
+        reader = None
         try:
-            with log_path.open("w", encoding="utf-8") as handle:
+            # Stream to the VM; one final copy avoids a Drive flush per line and
+            # retains diagnostics if the mount disconnects during execution.
+            with local_log_path.open("w", encoding="utf-8") as handle:
                 handle.write(
                     f"operation={operation}\nenvironment={self.env}\nrun_id={run_id}\n"
                     f"started_at={started_at}\ncommand={shlex.join(command)}\n\n"
@@ -609,29 +669,80 @@ class NotebookRuntime:
                     stderr=subprocess.STDOUT,
                     text=True,
                     bufsize=1,
+                    start_new_session=os.name == "posix",
                 )
                 assert process.stdout is not None
-                with process.stdout:
-                    for line in process.stdout:
-                        print(line, end="")
-                        handle.write(line)
-                        handle.flush()
+                messages = queue.Queue()
+                def read_output():
+                    try:
+                        for line in process.stdout:
+                            messages.put(("line", line))
+                    except Exception as exc:
+                        messages.put(("error", exc))
+                    finally:
+                        messages.put(("end", None))
+                reader = threading.Thread(target=read_output, daemon=True)
+                reader.start()
+                last_output = time.monotonic()
+                while True:
+                    try:
+                        kind, value = messages.get(timeout=min(1.0, HEARTBEAT_SECONDS))
+                    except queue.Empty:
+                        if time.monotonic() - last_output >= HEARTBEAT_SECONDS:
+                            line = (f"[{operation}] still running | elapsed={time.monotonic()-started_monotonic:.0f}s"
+                                    " | waiting for subprocess output; completion time unknown\n")
+                            print(line, end="", flush=True)
+                            handle.write(line)
+                            handle.flush()
+                            last_output = time.monotonic()
+                        continue
+                    if kind == "end":
+                        break
+                    if kind == "error":
+                        raise value
+                    print(value, end="", flush=True)
+                    handle.write(value)
+                    handle.flush()
+                    last_output = time.monotonic()
                 returncode = process.wait()
+        except KeyboardInterrupt:
+            interrupted = True
+            termination_confirmed = self._stop_process(process)
+            returncode = process.returncode if process and process.returncode is not None else 130
+            message = ("subprocess stopped" if termination_confirmed else "termination requested but not confirmed; do not start another writer")
+            print(f"INTERRUPTED: {message}. Inspect run artifacts before retrying any writes.", flush=True)
+            with local_log_path.open("a", encoding="utf-8") as handle:
+                handle.write(f"\nINTERRUPTED: {message}; no completion is claimed.\n")
         except Exception:
+            termination_confirmed = self._stop_process(process)
             error_text = traceback.format_exc()
             print(error_text)
-            with log_path.open("a", encoding="utf-8") as handle:
+            with local_log_path.open("a", encoding="utf-8") as handle:
                 handle.write("\n" + error_text)
             returncode = 1
+        finally:
+            if reader:
+                reader.join(timeout=1)
+            if process and process.stdout and not (reader and reader.is_alive()):
+                process.stdout.close()
 
-        ledger_rows = self._ledger_rows_for_run(run_id)
+        from operation_progress import ProgressReporter
+        artifact_error = ""
+        ledger_rows = []
+        with ProgressReporter(operation + " finalization") as progress:
+            progress.update("read run ledger", current=self.common.LEDGER)
+            if not interrupted:
+                try:
+                    ledger_rows = self._ledger_rows_for_run(run_id, strict=True)
+                except Exception as exc:
+                    artifact_error = f"Ledger could not be verified: {exc}"
         gate_values: list[bool] = []
         for row in ledger_rows:
             raw = row.get("gate_passed", "")
             if str(raw).strip():
                 gate_values.append(_truthy(raw))
         gate_passed = all(gate_values) if gate_values else None
-        ok = returncode == 0 and (gate_passed is not False or not strict_gate)
+        ok = not interrupted and not artifact_error and returncode == 0 and (gate_passed is not False or not strict_gate)
         finished_at = _utc_now()
         result = RunResult(
             label=operation,
@@ -647,15 +758,32 @@ class NotebookRuntime:
             log_path=str(log_path),
             result_path=str(result_path),
             ledger_rows=len(ledger_rows),
+            interrupted=interrupted,
+            local_log_path=str(local_log_path),
+            artifact_sync_error=artifact_error,
+            termination_confirmed=termination_confirmed,
         )
-        self._write_json(result_path, result.to_dict())
+        self._write_json(local_result_path, result.to_dict())
+        with ProgressReporter(operation + " log persistence") as progress:
+            progress.update("copy completed log and result to project", current=log_path)
+            try:
+                shutil.copyfile(local_log_path, log_path)
+                self._write_json(result_path, result.to_dict())
+            except OSError as exc:
+                artifact_error = "; ".join(filter(None, [artifact_error, f"Project log/result copy failed: {exc}"]))
+                result = replace(result, ok=False, log_path=str(local_log_path), result_path=str(local_result_path),
+                                 artifact_sync_error=artifact_error)
+                self._write_json(local_result_path, result.to_dict())
+                print(f"LOCAL DIAGNOSTICS RETAINED: {self.local_debug_dir}. {artifact_error}")
         self._run_results.append(result)
         print(
             f"DEBUG RESULT | status={'PASS' if result.ok else 'FAIL'} | "
             f"returncode={result.returncode} | gate={result.gate_passed} | "
             f"ledger_rows={result.ledger_rows} | duration={result.duration_seconds}s"
         )
-        print(f"DEBUG ARTIFACTS | log={log_path} | result={result_path}")
+        print(f"DEBUG ARTIFACTS | log={result.log_path} | result={result.result_path}")
+        if interrupted:
+            raise KeyboardInterrupt("Interrupted result recorded; termination_confirmed=" + str(termination_confirmed))
         return result
 
     def compile_scripts(self) -> RunResult:

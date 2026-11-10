@@ -1,3 +1,25 @@
+# v19.2.3 — progress, cancellation and pipeline alignment
+
+Long inventory scans report phases, current paths, completed file counts,
+bytes hashed and elapsed time. Ten-second heartbeats remain active during slow
+reads and never claim an ETA or percentage. Pin inspection now validates only
+manifest-selected source files, retaining family, path, symlink and hash checks.
+Historical queue discovery and pending-count analysis are outside that action.
+
+The shared runner provides a heartbeat for silent subprocesses, logs locally
+before one completed-log copy to Drive, and preserves local diagnostics when
+copying or ledger verification fails. Such a result cannot pass. Interruptions
+stop the invocation's process group, persist an interrupted result and propagate
+the interrupt. This does not assert rollback of all effects of an interrupted
+mutating step. The pipeline records stopped status without a success marker.
+
+The supplied v19.1.1 pipeline matched its distribution source exactly. Its
+updated notebook retains the step order, offline/proposal defaults, human
+approval boundary and sealed publication flow, and adds v19.2.3 runtime checks,
+step-position output and interruption handling. All three current notebooks
+use the same version check and shared runtime. Full inventory is an explicit
+slow-audit option instead of the default section 3a action.
+
 # v19.2.2 — bounded installer work and installed-version checks
 
 Installation previews previously staged all release files, hashed targets twice,

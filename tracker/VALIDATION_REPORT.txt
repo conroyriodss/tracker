@@ -1,4 +1,24 @@
-NIH Tracker v19.2.2 validation report
+NIH Tracker v19.2.3 validation report
+
+Local regression: 277 tests; 273 passed, 3 existing Beautiful Soup dependency
+errors, 1 skipped ipywidgets test, no assertion failures. All 12 new progress,
+pin-inspection, logging and interruption tests pass. Final dependency-complete
+Python 3.12/3.13 CI is tied to the source commit recorded in BUNDLE_SOURCE.json.
+
+New tests exercise a live heartbeat during a blocked foreground wait; phase and
+file/byte counter reporting; failed-read completion status; direct pin inspection
+without historical globbing; family validation; Drive-copy and ledger failures;
+stopping a real child process and descendant; bounded termination with an
+explicit unconfirmed outcome; and interrupted pipeline status without success.
+
+100 Python files and 24 notebook code cells parse. Outputs are empty and the
+extension is idempotent. The attached pipeline source matched v19.1.1 exactly;
+its step-builder AST and final publication cell remain unchanged. Actual Colab
+rendering, Drive elapsed time, full live inventory and end-to-end production
+pipeline execution have not been validated here. No new data or human decisions
+were created, and no production cleanup or site publication was performed.
+
+Historical v19.2.2 validation follows (not a new v19.2.3 execution):
 
 Local regression: 265 tests; 261 passed, 3 existing Beautiful Soup dependency
 errors, 1 skipped ipywidgets test, no assertion failures. All 9 new installation

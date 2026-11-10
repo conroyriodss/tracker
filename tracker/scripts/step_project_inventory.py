@@ -7,27 +7,36 @@ import datetime as dt
 import html
 import json
 import os
+import sys
 from pathlib import Path
 
 from run_provenance import PIN_NAME, PIN_SCHEMA, digest, retention_report, protection_reason
 
 
-def collect_inventory(project: Path, destination: Path) -> dict:
+def collect_inventory(project: Path, destination: Path, *, progress=None) -> dict:
     from common import atomic_write_json, atomic_write_text
     from review_workflow import compute_review_status
     project = project.resolve()
     destination = destination.resolve()
-    retention = retention_report(project)
+    retention = retention_report(project, progress=progress)
     records = []
     duplicates = {}
     errors = list(retention["errors"])
-    for root, dirs, files in os.walk(project, followlinks=False):
+    if progress:
+        progress.update("inventory: enumerate and hash files", current=project, files_hashed=0, bytes_hashed=0, errors=len(errors))
+    def traversal_error(exc):
+        errors.append({"path": str(exc.filename or project), "error": str(exc)})
+        if progress:
+            progress.advance(errors=1)
+    for root, dirs, files in os.walk(project, followlinks=False, onerror=traversal_error):
         dirs[:] = sorted(d for d in dirs if d not in {".git", "__pycache__", ".ipynb_checkpoints"}
                          and not (Path(root) / d).is_symlink()
                          and (Path(root) / d).resolve() != destination)
         for name in sorted(files):
             path = Path(root) / name
             rel = path.relative_to(project).as_posix()
+            if progress:
+                progress.update(current=rel)
             if path.is_symlink():
                 records.append({"path": rel, "status": "symlink_not_followed"})
                 continue
@@ -40,7 +49,7 @@ def collect_inventory(project: Path, destination: Path) -> dict:
                 continue
             try:
                 before = path.stat()
-                sha = digest(path)
+                sha = digest(path, progress=progress)
                 after = path.stat()
                 if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
                     raise RuntimeError("changed during inventory; rerun with writers stopped")
@@ -48,9 +57,15 @@ def collect_inventory(project: Path, destination: Path) -> dict:
                                 "mtime_ns": after.st_mtime_ns, "sha256": sha})
                 if rel.startswith("runs/"):
                     duplicates.setdefault(sha, []).append(rel)
+                if progress:
+                    progress.advance(files_hashed=1)
             except (OSError, RuntimeError) as exc:
                 errors.append({"path": rel, "error": str(exc)})
+                if progress:
+                    progress.advance(errors=1)
     try:
+        if progress:
+            progress.update("review: compute current queue status", current="selected queues and saved decisions")
         review = compute_review_status()
     except Exception as exc:
         review = {"state": "UNRESOLVED", "error": str(exc), "queues": []}
@@ -62,6 +77,8 @@ def collect_inventory(project: Path, destination: Path) -> dict:
               "limitations": ["Inventory describes observed bytes, not a consistent filesystem snapshot unless all writers are stopped.",
                               "Identical file bytes do not establish that run directories or provenance are interchangeable.",
                               "Missing evidence does not establish absent capability."]}
+    if progress:
+        progress.update("report: write inventory artifacts", current=destination)
     destination.mkdir(parents=True, exist_ok=False)
     atomic_write_json(destination / "inventory.json", report)
     with (destination / "files.csv").open("w", newline="", encoding="utf-8") as handle:
@@ -70,6 +87,37 @@ def collect_inventory(project: Path, destination: Path) -> dict:
     atomic_write_text(destination / "index.html", render_report(report))
     atomic_write_text(destination / "SHA256SUMS", "".join(f"{digest(destination / n)}  {n}\n" for n in ("inventory.json", "files.csv", "index.html")))
     return report
+
+
+def inspect_pins(project: Path, *, progress=None) -> dict:
+    """Verify only explicitly pinned files; do not discover historical queues."""
+    from run_provenance import load_pins, pinned_source
+    pins = load_pins(project)
+    sources = []
+    for family, record in sorted(pins.items()):
+        relative = Path(record.get("path", ""))
+        parts = relative.parts
+        scoped = len(parts) == 4 and parts[0] == "runs"
+        if scoped:
+            step, name = parts[1], parts[3]
+            scoped = {
+                "identifier": step == "verify_ids" and name == "verify_report.csv",
+                "rrid": step == "build_rrids" and name == "rrid_review.csv",
+                "fairsharing": step == "build_fairsharing" and name == "fs_review.csv",
+                "crosswalk": step in {"build_links", "build_links_preflight"} and name == "crosswalk_integrity.csv",
+                "card": name.endswith("_review.csv") and name not in {"rrid_review.csv", "fs_review.csv"},
+            }.get(family, False)
+        if not scoped:
+            raise ValueError(f"Pinned source is outside its queue family: {family}: {relative}")
+        if progress:
+            progress.update("pins: verify selected source bytes", current=relative)
+        target = pinned_source(project, family, [project / relative])
+        sources.append({"family": family, "source_file": str(target), "source_sha256": record["sha256"], "selection": "pinned"})
+        if progress:
+            progress.advance(pins_verified=1)
+    return {"status": "pinned" if pins else "not_pinned", "manifest": str(project / "inputs" / PIN_NAME),
+            "sources": sources, "changed": False,
+            "scope": "Pinned file identities only; pending counts and historical queues were not scanned."}
 
 
 def render_report(report: dict) -> str:
@@ -144,21 +192,17 @@ def main() -> int:
     from common import PROJECT
     project = Path(PROJECT).resolve()
     if args.action == "inspect-review":
-        from run_provenance import load_pins
-        from review_workflow import current_queue_summary
-        pins = load_pins(project)
-        queues = current_queue_summary() if pins else []
-        verified = {row["family"]: row for row in queues if row.get("selection") == "pinned"}
-        if set(pins) - set(verified):
-            raise RuntimeError("Some existing pin families could not be verified; inspect the manifest before changing it")
-        print(json.dumps({"status": "pinned" if pins else "not_pinned",
-                          "manifest": str(project / "inputs" / PIN_NAME),
-                          "sources": list(verified.values()), "changed": False}, indent=2))
+        from operation_progress import ProgressReporter
+        with ProgressReporter("inspect pins", emit=lambda text: print(text, file=sys.stderr, flush=True)) as progress:
+            report = inspect_pins(project, progress=progress)
+        print(json.dumps(report, indent=2))
         return 0
     if args.action == "inventory":
         import uuid
         out = args.out or project / "runs" / "project_inventory" / (dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8])
-        report = collect_inventory(project, out)
+        from operation_progress import ProgressReporter
+        with ProgressReporter("full inventory") as progress:
+            report = collect_inventory(project, out, progress=progress)
         print(f"Report: {out / 'index.html'}\nFiles: {len(report['files'])}\nComplete: {report['complete']}")
         return 0 if report["complete"] else 1
     token = "PIN_REVIEW_SOURCES" if args.action == "pin-review" else "UNPIN_REVIEW_SOURCES"

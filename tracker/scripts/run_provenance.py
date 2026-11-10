@@ -19,11 +19,13 @@ TEXT_SUFFIXES = {".csv", ".json", ".jsonl", ".yaml", ".yml", ".txt", ".md", ".ht
 REFERENCE = re.compile(r"(?<![\w-])((?:runs/[^/\s\"'<>|,;)}\]]+/[^/\s\"'<>|,;)}\]]+)(?:/[^/\s\"'<>|,;)}\]]+)?)")
 
 
-def digest(path: Path) -> str:
+def digest(path: Path, *, progress=None) -> str:
     h = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(block)
+            if progress:
+                progress.advance(bytes_hashed=len(block))
     return h.hexdigest()
 
 
@@ -65,7 +67,7 @@ def pinned_source(project: Path, family: str, candidates: list[Path]) -> Path | 
     return target
 
 
-def retention_report(project: Path) -> dict:
+def retention_report(project: Path, *, progress=None) -> dict:
     """Protect review/evidence/audit runs, plus text-referenced run directories.
 
 Unknown formats are not claimed to be fully dependency-parsed. Every removed
@@ -79,6 +81,8 @@ retain historical runs; age is not evidence of dispensability.
         protected.setdefault(str(path.resolve()), set()).add(reason)
 
     root = project / "runs"
+    if progress:
+        progress.update("retention: discover run artifacts", current=root)
     if root.is_dir():
         for step in sorted(root.iterdir()):
             if not step.is_dir() or step.is_symlink():
@@ -86,12 +90,16 @@ retain historical runs; age is not evidence of dispensability.
             if step.name == "notebook_debug":
                 continue
             for run in sorted(step.iterdir()):
+                if progress:
+                    progress.update(current=run)
                 if not run.is_dir() or run.is_symlink():
                     continue
                 # Structured output or captured evidence is an audit record.
                 if any(p.suffix.lower() in {".csv", ".json", ".jsonl", ".yaml", ".yml", ".zip", ".xml", ".html", ".pdf"}
                        for p in run.rglob("*") if p.is_file()):
                     protect(run, "structured evidence, review, plan, or audit artifact")
+                if progress:
+                    progress.advance(runs_inspected=1)
     snapshots = project / "snapshots" / "cards"
     if snapshots.is_dir():
         for path in snapshots.iterdir():
@@ -99,11 +107,17 @@ retain historical runs; age is not evidence of dispensability.
                 protect(path, "card transaction history retained")
 
     scan_roots = [project / n for n in ("cards", "inputs", "blocks", "latest", "build", "reference")]
+    if progress:
+        progress.update("retention: discover dependency files", current=project)
     scan_files = [project / "run_ledger.csv"]
     for base in scan_roots:
+        if progress:
+            progress.update(current=base)
         if base.is_dir():
             scan_files.extend(p for p in base.rglob("*") if p.is_file() and p.suffix.lower() in TEXT_SUFFIXES)
     for path in scan_files:
+        if progress:
+            progress.update("retention: inspect references", current=path)
         if not path.exists():
             continue
         if path.name.startswith(".env") or re.search(r"(?:^|[._-])(secret|credential|token|password|private[_-]?key)s?(?:[._-]|$)", path.name, re.I):
@@ -126,6 +140,8 @@ retain historical runs; age is not evidence of dispensability.
                     tail = text[-8192:]
         except (OSError, UnicodeError) as exc:
             errors.append({"path": str(path), "error": str(exc)})
+        if progress:
+            progress.advance(reference_files_read=1)
     return {"protected": [{"path": p, "reasons": sorted(reasons)} for p, reasons in sorted(protected.items())],
             "errors": errors, "policy": "retain structured runs, transaction snapshots and known dependencies; archive other candidates before removal"}
 

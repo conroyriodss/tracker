@@ -1,7 +1,7 @@
 {
-  "base_release": "19.2.1",
-  "base_source_commit": "014fabaf8695d82647ba119e4d08fcd97af93e2d",
-  "created_at": "2026-11-10T21:37:10.514900+00:00",
+  "base_release": "19.2.2",
+  "base_source_commit": "27b8d4567b7f86a723d9bda21c0fa928a35361ec",
+  "created_at": "2026-11-10T22:12:20.617970+00:00",
   "files": {
     ".gitattributes": {
       "bytes": 57,
@@ -44,8 +44,8 @@
       "sha256": "67bd3369f367500e6be9a3ecc7f7eced890d6163e6465920f87ebcdafe51c765"
     },
     "OPERATIONS_AND_VERSIONING.md": {
-      "bytes": 9148,
-      "sha256": "aa243f4dadd928e52a8a4d2768f6de994ea9609ca6163adac96a30c3e00df884"
+      "bytes": 11114,
+      "sha256": "9ec3140f3dc29688288edbaddf11729db30d3015d57102773d375fe9d07958f6"
     },
     "POLICY_CONTEXT_EVIDENCE_MODEL.md": {
       "bytes": 5356,
@@ -64,12 +64,12 @@
       "sha256": "b549c1a3731aa48259df1e29f273d0f4e02537e4f0a728552e5ac1ba8350d4c3"
     },
     "README.md": {
-      "bytes": 5906,
-      "sha256": "29a2d50a755febd8e9d027201c99b63ff7eec92212d035c39615520ecea1f0fc"
+      "bytes": 6297,
+      "sha256": "1109394a45e6a4ac5563d632f08b10a2c57c7fec2f407bf64104ce9898a96425"
     },
     "RELEASE_NOTES.md": {
-      "bytes": 9450,
-      "sha256": "82ee55e9381cca3e49b86b818e442e729378999fea6c911686aa4948f1876cb0"
+      "bytes": 10816,
+      "sha256": "f91c4ce79604d87afc2f9c77fc2ae314fe9a68c48153fb55087a54a0bac6232f"
     },
     "REPOSITORY_STATUS_EVIDENCE_MODEL.md": {
       "bytes": 3579,
@@ -88,8 +88,8 @@
       "sha256": "e256f060617c622cfcf1de913f9487b87f0b19998ddf44390b8ce34d8ed2625e"
     },
     "VALIDATION_REPORT.txt": {
-      "bytes": 4551,
-      "sha256": "d9d7096464d688c846d5b6cac77812d4ce48b4a68534092aeaad78a3e65cd086"
+      "bytes": 5803,
+      "sha256": "1070bb81078253464b3ab0f87e92d7008642e3849bca6858a43bf36308e36892"
     },
     "build_notebooks.py": {
       "bytes": 88526,
@@ -116,8 +116,8 @@
       "sha256": "5ee9bd177755601aab857e23d5387a8ce9c4f06118373bb10761a223adf58a09"
     },
     "extend_operations_notebooks.py": {
-      "bytes": 9485,
-      "sha256": "c4009bc80a219a8fe048d15a3278e3912958aac0e01dd67a3a2efba4141de0b1"
+      "bytes": 15246,
+      "sha256": "528f1d091be995cc2b9e2af7611ba6443b9408b777df412595c32a65b9e42c83"
     },
     "frontend.html": {
       "bytes": 39490,
@@ -136,16 +136,16 @@
       "sha256": "00ec1448d7bdb42d43345663d2ed80e4ecb7ee97fe0f37a3c000b4ab3a6e7911"
     },
     "nih_tracker_colab_v19_maintenance.ipynb": {
-      "bytes": 40876,
-      "sha256": "8d31e216679f0363a193b8e93861dffddb225dc1214166e184da812cdd743494"
+      "bytes": 43279,
+      "sha256": "0da6b053e6b95f8d7c751cd19f9a1925d8c4fbf3e1b9b7f6cbdc9f140b48d751"
     },
     "nih_tracker_colab_v19_pipeline.ipynb": {
-      "bytes": 51020,
-      "sha256": "9c57e933536bae31f30914bc6a76a487731c9c68ff103b868246a637d8ae8f00"
+      "bytes": 52252,
+      "sha256": "add7924cda587e11d49bf561a02ce22d691bdac61827c31ecc63ab09be100edc"
     },
     "nih_tracker_colab_v19_review_workbench.ipynb": {
-      "bytes": 52091,
-      "sha256": "febc74510217b5f803e9dac1a0854e1d50cb222c5d4ba19a6c1157e4ec228250"
+      "bytes": 52250,
+      "sha256": "c4efe3e665c1c3ad0e736341120381e30e9ddf1e00637d091e947caff38a1a3a"
     },
     "nih_tracker_v19_0_1_to_v19_0_2.diff": {
       "bytes": 83068,
@@ -364,8 +364,12 @@
       "sha256": "dd1dc9404e618e89e3be50ab1d4f59f2472396b4eed897f5789aef5c0aeba170"
     },
     "scripts/notebook_runtime.py": {
-      "bytes": 30990,
-      "sha256": "c7f0e60fd2c2a4f4748bf3c59d8387fc883272cf723e4e81d5fcf23c01f11568"
+      "bytes": 37297,
+      "sha256": "e6372dc8d2c71caaf32a209e506f6ca54a3742ee47ff18322264572604deb5d3"
+    },
+    "scripts/operation_progress.py": {
+      "bytes": 2293,
+      "sha256": "ba4eca3ca371d60779ba222e875c876cab590de74ef43f578eeeb37b316e76a8"
     },
     "scripts/policy_context_schema.py": {
       "bytes": 7753,
@@ -396,8 +400,8 @@
       "sha256": "2c9a3f3d64acf96109dbd532ea1734f22b1ca94738861110b4dc940cb31af8de"
     },
     "scripts/run_provenance.py": {
-      "bytes": 8603,
-      "sha256": "f48d79e252dae4c72d7543e61ee8d9a0635f97c128a480c7918fe32a04f32a10"
+      "bytes": 9307,
+      "sha256": "bd61bbb05b7e332f1b2ee00695ded28d7128a68a8a1428693ab9d76aea114de2"
     },
     "scripts/step_apply_crosswalk_adjudications.py": {
       "bytes": 25418,
@@ -492,8 +496,8 @@
       "sha256": "41843c7b1748efde00ba7827d7d3afea17d4cf76f23ac459398026c81ebe6881"
     },
     "scripts/step_project_inventory.py": {
-      "bytes": 11790,
-      "sha256": "d545698cc5140c70206f49a8ff8ac898129d3c6b2ffafef3dc90b5eba7e6e647"
+      "bytes": 14174,
+      "sha256": "9b0dec8552284e605be7e1782680562c6ca842bbf532fdd062de5f4e534a34d1"
     },
     "scripts/step_promote_ai_review.py": {
       "bytes": 37115,
@@ -700,19 +704,23 @@
       "sha256": "f2cd5f85a9e580a6fb83e99de8ec8b6a2c6cc544c046ddb3f16eba442ee21b4e"
     },
     "tests/test_v19_2_2_installation.py": {
-      "bytes": 9588,
-      "sha256": "7fceba64a77806f7f49b1623e328093b1aa3e27bf23c0ac3d4228b68f5c8ac88"
+      "bytes": 9612,
+      "sha256": "08d334b3b7674ee441fed1c695cc00aac388bb19ac394cb8b505941298095815"
+    },
+    "tests/test_v19_2_3_progress.py": {
+      "bytes": 11038,
+      "sha256": "9f60ec62fd11181e1d89ac6f957b70c03418876c0cf3c3a936e32b4c71896bdb"
     },
     "tests/test_v19_2_provenance.py": {
       "bytes": 13210,
-      "sha256": "49f1439350e73ae302c4605b7e967dddb05323309500b8dadff38fa3190c037f"
+      "sha256": "0ad1df1de130df01b2a6f3694a543118aadbfcaa2ed408b82d7b17196c58f3b7"
     },
     "tests/test_v19_knowledge_graph.py": {
       "bytes": 23193,
       "sha256": "99a200605d60c2de4ccdd527775c80faa5023be9975c244b6db33c2b0beff4d3"
     }
   },
-  "release": "19.2.2",
+  "release": "19.2.3",
   "schema": "nih-tracker-source-release/v1",
   "source_import_commit": "808aebeeffb8e542d0934adb1f88baf913e89e0a",
   "upstream": {
@@ -724,25 +732,26 @@
     "sha256": "14995b1ea44191aa6a75f937a8c54419616e67565cea7a8de20794fc1ee9d06e"
   },
   "validation": {
-    "colab_drive_performance": "NOT_BENCHMARKED: tests verify reduced I/O counts and bounded audit inputs only",
+    "colab_drive_performance": "NOT_BENCHMARKED: tests verify heartbeat, bounded pin reads, subprocess interruption and local-log fallback; live Drive timing not measured.",
     "dependency_limit": "Three existing Beautiful Soup tests cannot execute locally; one widget test requires ipywidgets. CI installs pinned dependencies.",
     "github_ci": "Consult checks at the exact source commit recorded in BUNDLE_SOURCE.json. CI covers Python 3.12 and 3.13.",
     "local_assertion_failures": 0,
     "local_errors": 3,
-    "local_full_suite_tests": 265,
-    "local_passed": 261,
+    "local_full_suite_tests": 277,
+    "local_passed": 273,
     "local_skipped": 1,
     "notebook_outputs_empty": true,
     "operations_extension_idempotent": true,
-    "patch_tests_passed": 9,
+    "patch_tests_passed": 12,
     "patch_tests_skipped": 0,
+    "pipeline_attachment_source": "Supplied pipeline sources exactly matched v19.1.1; step-builder AST and publication cell preserved.",
     "production_cards_changed": false,
     "production_cleanup_applied": false,
     "production_notebook_code_cells_parsed": 24,
     "public_catalog_republished": false,
-    "python_files_parsed": 98,
+    "python_files_parsed": 100,
     "real_colab_ui": "NOT_VALIDATED: no access to the live Colab runtime",
-    "release": "19.2.2",
+    "release": "19.2.3",
     "schema": "nih-tracker-validation/v1"
   }
 }

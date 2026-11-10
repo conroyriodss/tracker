@@ -1,4 +1,4 @@
-# NIH Tracker v19.2.2: installation and maintenance corrections
+# NIH Tracker v19.2.3: visible progress and consistent notebook execution
 
 This release adds explicit review-source pins, conservative cleanup with verified
 recovery archives, source and input SHA-256 provenance, and two offline reports.
@@ -12,22 +12,24 @@ historical; rerunning the corrected command records the corrected outcome.
 
 ## First use in Colab
 
-1. Upload `nih_tracker_v19_2_2_bundle.zip` to `/content` and open the accompanying
+1. Upload `nih_tracker_v19_2_3_bundle.zip` to `/content` and open the accompanying
    `nih_tracker_colab_v19_maintenance.ipynb` in Colab.
 2. In section 1, leave `APPLY_PREFILL=False` to inspect the installation plan.
    Preview does not install code. Review the plan, set `APPLY_PREFILL=True`, and
    rerun section 1 to install it. Wait for **INSTALLATION COMPLETE**. The ZIP
    inventory is verified before installation. Restart the Colab runtime after
    installing, then run setup; do not repeat installation after restarting.
-   Setup requires version 19.2.2 and verifies eight critical installed file hashes.
+   Setup requires version 19.2.3 and verifies nine critical installed file hashes.
    A newer notebook cannot be used with older or incompletely installed scripts.
 3. Start the production maintenance runtime. Stop other notebooks and background
    writers before inventory or cleanup; the maintenance/card locks do not lock
    every possible evidence collector or external Drive writer.
-4. Run section 3a with **Inventory only**. Open the reported `index.html`, and
-   inspect the selected queue paths and their hashes. Its JSON and CSV retain
-   the detailed observations. The inventory reads and hashes operational files;
-   it creates a new report but does not modify the existing records.
+4. Section 3a defaults to **Inspect existing pins**. This validates only the
+   files named in the pin manifest. It does not scan historical queues or report
+   current pending counts. **Full inventory (slow audit)** is optional; it reads
+   project history, snapshots and prior reports, and can take many minutes on
+   mounted Drive. Open its `index.html` and review the selected source hashes.
+   JSON and CSV retain the observations. Existing project records are not modified.
 5. If those queues are the intended review sources, choose **Pin current review
    sources** and acknowledge that configuration change. This writes
    `inputs/active_review_sources.json` and a selection audit record. It neither
@@ -36,8 +38,9 @@ historical; rerunning the corrected command records the corrected outcome.
    display the current selection without rewriting it. Missing or changed pinned bytes stop review instead of substituting
    a different run.
 6. Use the review workbench for the remaining human decisions. Before deliberately
-   selecting new run outputs, **Unpin review sources**, refresh the inventory,
-   inspect it and pin again. Unpinning retains the old selection in the audit.
+   selecting new run outputs, inspect the intended queues and hashes, then use
+   **Unpin review sources** and pin the reviewed selection. Unpinning retains the
+   old selection in the audit. A pipeline refresh never replaces pins silently.
 7. For cleanup, run section 6 and select a saved plan, or click **Create plan**.
    Click **Inspect selected plan** and review its protected and eligible paths.
    Check both acknowledgments to enable **Apply reviewed plan**. The selection
@@ -50,6 +53,34 @@ adds a deterministic full-path tie breaker. This fixes unstable tie ordering;
 it does not assert that the newest timestamp is the scientifically authoritative
 source. Pins express that operational choice explicitly. Source row counts,
 stable review keys, adjudications and model approval rules are unchanged.
+
+## Progress, interruption and Drive diagnostics
+
+Full inventory reports its phase, current path, observed file/byte counts and
+elapsed time every ten seconds. The counter increases only for work observed;
+there is no inferred completion percentage or finish time. A heartbeat with
+unchanged counts can indicate a blocked Drive read, not productive progress.
+
+The shared runner provides a heartbeat when a subprocess is silent, writes the
+live log on the Colab VM, and copies the completed log and result to Drive once.
+If that copy or ledger verification fails, the result does not pass; the displayed
+local paths retain diagnostics until the runtime is deleted. Installer logs also
+use local storage before a final Drive copy. No automatic Drive remount or retry
+of a potentially mutating command occurs.
+
+Stopping a runtime-managed cell requests termination of its subprocess group and
+records an interrupted result. The result's `termination_confirmed` field records
+whether its leader exited; an unconfirmed termination blocks safe restart of a
+writer. This does not claim that every interrupted write rolled back.
+Inspect transaction snapshots, locks and step receipts before retrying a mutating
+operation. The pipeline records stopped status and creates no success marker.
+
+Use the updated pipeline notebook after the matching release installation.
+Start with **Validate/propose (no card writes)** and external refresh disabled.
+The pipeline prints each step's position, retains its existing gate checks, and
+requires a successful complete run plus a separately reviewed publication plan
+before publication. Review decisions, source selection and cleanup remain in
+their respective notebooks.
 
 ## What cleanup retains
 

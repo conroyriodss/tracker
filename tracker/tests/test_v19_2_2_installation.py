@@ -142,13 +142,13 @@ class InstallationPatchTests(unittest.TestCase):
             exec(check, context)
         files = {}
         names = ('common.py','notebook_runtime.py','run_provenance.py','code_provenance.py',
-                 'step_initialize_environments.py','step_maintenance.py','maintenance_widgets.py','step_project_inventory.py')
+                 'step_initialize_environments.py','step_maintenance.py','maintenance_widgets.py','step_project_inventory.py','operation_progress.py')
         for name in names:
             path = self.root/'scripts'/name
             path.parent.mkdir(exist_ok=True)
             path.write_text('# installed fixture\n')
             files['scripts/'+name] = {'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
-        manifest_path.write_text(json.dumps({'release':'19.2.2','files':files}))
+        manifest_path.write_text(json.dumps({'release':'19.2.3','files':files}))
         exec(check, context)
         (self.root/'scripts/maintenance_widgets.py').unlink()
         with self.assertRaisesRegex(RuntimeError, 'maintenance_widgets.py'):
