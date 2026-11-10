@@ -1553,7 +1553,28 @@ def append_id_remap(old_uid, new_uid, match_type, reconciled_at=None):
             one_shot_lock.release()
 
 
+def sha256_path(path):
+    """Full SHA-256 for a file or a sorted manifest of directory file hashes."""
+    if not path or not Path(path).exists():
+        return None
+    source = Path(path)
+    if source.is_file():
+        return sha256_file(source)
+    records = {}
+    for child in sorted(source.rglob("*")):
+        rel = child.relative_to(source)
+        if child.is_file() and rel.name != ".lock" and ".tmp" not in rel.parts:
+            records[rel.as_posix()] = sha256_file(child)
+    return hashlib.sha256(json.dumps(records, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
 def ledger_append(step, params, inputs, outputs, gate_passed, run_dir):
+    from code_provenance import describe_code
+    code_identity = describe_code(Path(__file__).resolve().parents[1])
+    provenance_hash = hashlib.sha256(json.dumps(code_identity, sort_keys=True).encode()).hexdigest()
+    provenance_path = Path(run_dir) / f"code_provenance_{provenance_hash[:16]}.json"
+    if not provenance_path.exists():
+        atomic_write_json(provenance_path, code_identity)
     row = {
         "ts": run_ts(),
         "env": ENV,
@@ -1563,6 +1584,11 @@ def ledger_append(step, params, inputs, outputs, gate_passed, run_dir):
         "gate_passed": bool(gate_passed),
         "params": json.dumps(params, default=str),
         "inputs": json.dumps({key: sha1(value) for key, value in inputs.items()}, default=str),
+        "input_sha256": json.dumps({key: sha256_path(value) for key, value in inputs.items()}, default=str),
+        "source_tree_sha256": code_identity["source_tree_sha256"],
+        "git_commit": code_identity["git_commit"] or "",
+        "git_dirty": code_identity["git_dirty"],
+        "code_provenance": str(provenance_path),
         "outputs": json.dumps(outputs, default=str),
         "run_dir": run_dir,
     }

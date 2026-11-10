@@ -1,0 +1,8 @@
+{
+  "schema": "nih-tracker-upstream-source/v1",
+  "filename": "nih_tracker_v19_1_1_code_and_tests.zip",
+  "sha256": "14995b1ea44191aa6a75f937a8c54419616e67565cea7a8de20794fc1ee9d06e",
+  "file_hashes_verified": 158,
+  "attached_notebooks_byte_identical_to_package": true,
+  "production_data_included": false
+}

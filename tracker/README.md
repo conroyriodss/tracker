@@ -1,4 +1,10 @@
-# NIH Tracker v19.1.1
+# NIH Tracker v19.2
+
+**New in v19.2:** stable review-source ordering and explicit hash pins; inventory
+and coverage reports; dependency-aware retention with verified recovery archives;
+input/code SHA-256 provenance; preservation of live reference snapshots during
+code refresh; and a source tree with regression CI alongside the existing public
+site. Start with [OPERATIONS_AND_VERSIONING.md](OPERATIONS_AND_VERSIONING.md).
 
 **New in v19.1.1:** resumable GCP review of card/name, identifier and crosswalk
 queues; optional independent Claude review of the same frozen evidence;

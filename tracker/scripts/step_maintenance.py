@@ -16,8 +16,10 @@ import json
 import os
 import re
 import shutil
+import uuid
 from pathlib import Path
 from typing import Any
+from run_provenance import archive_candidates, protection_reason, retention_report
 
 from common import (
     BUILD,
@@ -181,7 +183,7 @@ def _run_directory_candidates(keep_runs: int) -> list[dict[str, Any]]:
                 for path in container.iterdir()
                 if path.is_dir() and not path.is_symlink()
             ),
-            key=lambda path: path.stat().st_mtime_ns,
+            key=lambda path: (path.stat().st_mtime_ns, path.as_posix()),
             reverse=True,
         )
         retained = 0
@@ -348,6 +350,19 @@ def build_cleanup_plan(
     if remove_temporary:
         candidates.extend(_temporary_candidates(temp_older_hours))
 
+    retention = retention_report(Path(PROJECT))
+    if retention["errors"]:
+        raise RuntimeError(f"Dependency scan incomplete; cleanup not planned: {retention['errors']}")
+    protected_candidates = []
+    eligible = []
+    for row in candidates:
+        reasons = protection_reason(Path(row["path"]), retention)
+        if reasons:
+            protected_candidates.append({**row, "retention_reasons": reasons})
+        else:
+            eligible.append(row)
+    candidates = eligible
+
     seen: set[str] = set()
     for row in candidates:
         path = str(Path(row["path"]).resolve())
@@ -370,7 +385,12 @@ def build_cleanup_plan(
             "temporary_older_than_hours": temp_older_hours,
             "latest_never_deleted": True,
             "apply_requires_existing_sealed_plan": True,
+            "verified_archive_before_removal": True,
+            "dependency_check_at_plan_and_apply": True,
+            "card_transaction_history_retained": True,
         },
+        "protected_candidates": protected_candidates,
+        "protected_candidate_count": len(protected_candidates),
         "candidate_count": len(candidates),
         "candidate_bytes": sum(int(row["size_bytes"]) for row in candidates),
         "candidates": candidates,
@@ -384,6 +404,7 @@ def build_cleanup_plan(
     )
     print(f"Cleanup plan: {plan_path}")
     print(f"Plan SHA-256: {plan_sha256}")
+    print(f"Retained for provenance: {len(protected_candidates)} candidate(s)")
     print(
         f"Candidates: {plan['candidate_count']} | "
         f"bytes: {plan['candidate_bytes']:,} | latest/ preserved"
@@ -478,6 +499,9 @@ def apply_cleanup(plan_path: Path, *, confirm: str) -> dict[str, Any]:
         purpose="maintenance cleanup exclusion",
         timeout=0,
     ):
+        retention = retention_report(Path(PROJECT))
+        if retention["errors"]:
+            raise RuntimeError("Dependency scan incomplete; no files were deleted")
         deletable: list[tuple[dict[str, Any], Path]] = []
         for row in plan["candidates"]:
             path = Path(row["path"]).expanduser().resolve()
@@ -487,6 +511,9 @@ def apply_cleanup(plan_path: Path, *, confirm: str) -> dict[str, Any]:
                 _validate_candidate_scope(path, str(row["kind"]))
                 if path == plan_path or path in plan_path.parents:
                     raise RuntimeError("active cleanup plan is protected")
+                reasons = protection_reason(path, retention)
+                if reasons:
+                    raise RuntimeError("retained dependency: " + "; ".join(reasons))
                 current_fingerprint = _path_fingerprint(path)
                 if current_fingerprint != row["fingerprint"]:
                     raise RuntimeError("candidate changed after cleanup planning")
@@ -508,8 +535,22 @@ def apply_cleanup(plan_path: Path, *, confirm: str) -> dict[str, Any]:
                 f"Cleanup preflight failed for {len(failures)} candidate(s); no files were deleted"
             )
 
+        archive = None
+        if deletable:
+            archive = archive_candidates(
+                Path(PROJECT).resolve(), [row for row, _ in deletable],
+                Path(SNAPSHOTS) / "maintenance" / f"{run_ts()}-{uuid.uuid4().hex[:12]}.zip",
+            )
+            # Check every source after archiving, before the first removal.
+            for row, path in deletable:
+                if _path_fingerprint(path) != row["fingerprint"]:
+                    raise RuntimeError("Candidate changed during archiving; no files were deleted")
+            atomic_write_json(plan_path.parent / "cleanup_archive.json", archive)
+
         for row, path in deletable:
             try:
+                if _path_fingerprint(path) != row["fingerprint"]:
+                    raise RuntimeError("Candidate changed immediately before removal")
                 if path.is_dir() and not path.is_symlink():
                     shutil.rmtree(path)
                 else:
@@ -526,6 +567,7 @@ def apply_cleanup(plan_path: Path, *, confirm: str) -> dict[str, Any]:
         "deleted_bytes_planned": sum(int(row["size_bytes"]) for row in deleted),
         "failure_count": len(failures),
         "failures": failures,
+        "archive": archive,
     }
     atomic_write_json(plan_path.parent / "cleanup_receipt.json", result)
     print(json.dumps(result, indent=2))

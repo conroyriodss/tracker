@@ -2230,6 +2230,8 @@ def main() -> list[Path]:
     ]
     from extend_gcp_notebooks import extend
     extend()
+    from extend_operations_notebooks import extend as extend_operations
+    extend_operations()
     for output in outputs:
         print(output)
     return outputs

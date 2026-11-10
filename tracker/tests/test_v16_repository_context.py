@@ -493,7 +493,7 @@ class PolicyContextV16Tests(unittest.TestCase):
             definition_meta["sha256"],
         )
 
-    def test_reference_snapshots_are_release_code(self):
+    def test_reference_snapshots_ship_but_do_not_overwrite_live_evidence(self):
         with tempfile.TemporaryDirectory() as temporary:
             configure(Path(temporary))
             initializer = importlib.import_module("step_initialize_environments")
@@ -508,7 +508,9 @@ class PolicyContextV16Tests(unittest.TestCase):
                 "reference/re3data_confirmed_mappings.csv",
             ):
                 self.assertIn(relative, release)
-                self.assertTrue(release[relative].overwrite_allowed)
+                # v19.2 installs missing snapshots, preserving newer evidence
+                # and curated mappings during a code-only refresh.
+                self.assertFalse(release[relative].overwrite_allowed)
 
     def test_frontend_exposes_policy_context_without_completeness_score(self):
         text = (ROOT / "frontend.html").read_text(encoding="utf-8")

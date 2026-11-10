@@ -1,3 +1,11 @@
+# v19.2 — provenance, maintenance and source versioning
+
+See OPERATIONS_AND_VERSIONING.md for installation and the behavior changes.
+Code refresh preserves existing reference snapshots; recreate older install
+plans. Cleanup preserves structured run evidence and card history, and archives
+eligible paths before removal. Optional review-source pins require explicit
+unpinning to select refreshed sources. Human approval rules are unchanged.
+
 # v19.1.1 GCP-assisted candidate review
 
 Card/name candidates now support sealed model recommendations and existing

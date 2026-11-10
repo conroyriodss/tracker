@@ -1,0 +1,24 @@
+# Operational state belongs outside the source checkout.
+/cards/
+/inputs/
+/blocks/
+/runs/
+/latest/
+/build/
+/snapshots/
+/cache/
+/run_ledger.csv
+/run_ledger.csv.lock
+/issues.csv
+*.lock
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.env
+.env.*
+*credentials*.json
+*service_account*.json
+secrets/
+*.pem
+*.key
+*.zip

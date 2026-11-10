@@ -22,6 +22,7 @@ import pandas as pd
 
 from automated_review import load_approvals, load_recommendations
 from common import INP, PROJECT, RUNS, atomic_write_json
+from run_provenance import digest, pinned_source, source_order
 from review_widgets import (
     adjudication_path,
     load_adjudications,
@@ -129,13 +130,16 @@ def current_queue_summary() -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     saved_cache: dict[str, pd.DataFrame] = {}
     for family, label, candidates in specifications:
-        viable = sorted(
+        pin = pinned_source(Path(PROJECT), family, candidates)
+        viable = [pin] if pin else sorted(
             {path.resolve() for path in candidates if path.is_file()},
-            key=lambda path: path.stat().st_mtime_ns,
+            key=source_order,
             reverse=True,
         )
+        errors = []
         for source in viable:
             try:
+                before_hash = digest(source)
                 kind, base = normalize_review_file(source)
                 if kind not in saved_cache:
                     saved_cache[kind] = load_adjudications(
@@ -143,11 +147,18 @@ def current_queue_summary() -> list[dict[str, Any]]:
                     )
                 queue = overlay_saved_decisions(base, saved_cache[kind])
                 counts = queue_decision_counts(kind, queue)
+                if digest(source) != before_hash:
+                    raise RuntimeError("Source changed while reading queue")
+                if pin:
+                    pinned_source(Path(PROJECT), family, candidates)
                 rows.append(
                     {
                         "family": family,
                         "label": label,
                         "source_file": str(source),
+                        "source_sha256": before_hash,
+                        "selection": "pinned" if pin else "mtime_ns_then_path",
+                        "skipped_sources": errors.copy(),
                         "run": source.parent.relative_to(root).as_posix(),
                         **{key: int(value) for key, value in counts.items()},
                         "modified_at": dt.datetime.fromtimestamp(
@@ -156,8 +167,13 @@ def current_queue_summary() -> list[dict[str, Any]]:
                     }
                 )
                 break
-            except Exception:
-                continue
+            except Exception as exc:
+                errors.append({"source_file": str(source), "error": str(exc)})
+                if pin:
+                    raise RuntimeError(f"Pinned {family} source cannot be read: {source}") from exc
+        else:
+            if viable:
+                raise RuntimeError(f"No readable {family} queue; review state is unresolved: {errors}")
     return sorted(rows, key=lambda item: (item["pending_rows"] == 0, item["label"]))
 
 
@@ -351,7 +367,7 @@ def evidence_backlog_summary() -> list[dict[str, Any]]:
     for domain, step, filename in specifications:
         candidates = sorted(
             (Path(RUNS) / step).glob(f"*/{filename}"),
-            key=lambda path: path.stat().st_mtime_ns,
+            key=source_order,
             reverse=True,
         )
         if not candidates:

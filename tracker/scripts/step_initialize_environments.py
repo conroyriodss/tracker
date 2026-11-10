@@ -79,6 +79,11 @@ RELEASE_FILE_PATTERNS = (
     "ASSESSMENT_CRITERIA.md",
     "requirements-gcp.txt",
     "extend_gcp_notebooks.py",
+    "extend_operations_notebooks.py",
+    "OPERATIONS_AND_VERSIONING.md",
+    "UPSTREAM_SOURCE.json",
+    ".gitignore",
+    ".gitattributes",
     "SHA256SUMS",
     "requirements.txt",
     "pyproject.toml",
@@ -96,6 +101,18 @@ DENIED_FILE_RE = re.compile(
     r"(?:^|[._-])(secret|secrets|credential|credentials|token|password|passwd|api[_-]?key|apikey|private[_-]?key)(?:[._-]|$)",
     re.I,
 )
+
+
+def release_overwrite_allowed(category: str, relative: Path) -> bool:
+    if category == "release_reference":
+        # Operational source snapshots and curated mappings can be newer than
+        # the distribution. Only versioned code-owned instruments are refreshed.
+        return relative.as_posix() in {
+            "reference/catalog_vocabularies_v1.json",
+            "reference/capability_assessment_rubric_v1.json",
+            "reference/README.md",
+        }
+    return category.startswith("release_")
 
 
 @dataclass(frozen=True)
@@ -156,7 +173,7 @@ def collect_release_files(release_root: Path) -> list[SourceFile]:
                     source_path=str(path),
                     sha256=_sha256(data),
                     size=len(data),
-                    overwrite_allowed=True,
+                    overwrite_allowed=release_overwrite_allowed(category, Path(directory_name) / relative_inside),
                     data=data,
                 )
             )
@@ -484,7 +501,7 @@ def _validate_plan(plan_path: Path) -> dict[str, Any]:
         if not isinstance(entry.get("overwrite_allowed"), bool):
             raise ValueError(f"Entry {index} overwrite policy must be boolean")
         overwrite_allowed = entry["overwrite_allowed"]
-        if category.startswith("release_") != overwrite_allowed:
+        if release_overwrite_allowed(category, relative) != overwrite_allowed:
             raise ValueError(f"Entry {index} has inconsistent overwrite policy")
         if category == "release_code" and (not relative.parts or relative.parts[0] != "scripts"):
             raise ValueError(f"Release-code entry is outside scripts/: {relative_text}")

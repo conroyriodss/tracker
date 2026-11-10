@@ -717,7 +717,7 @@ def discover_review_files(
 
     rows = []
     saved_cache: dict[str, pd.DataFrame] = {}
-    for path in sorted(candidates, key=lambda value: value.stat().st_mtime, reverse=True):
+    for path in sorted(candidates, key=lambda value: (value.stat().st_mtime_ns, value.as_posix()), reverse=True):
         try:
             kind, base = normalize_review_file(path)
             if kind not in saved_cache:
