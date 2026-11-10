@@ -1,4 +1,10 @@
-# NIH Tracker v19.2.1
+# NIH Tracker v19.2.2
+
+**New in v19.2.2:** the installer hashes the sealed plan for its audit instead of
+the entire project, compares each target once, stages only changed/new files,
+and streams progress. Setup checks the installed release and eight critical
+file hashes before loading the runtime. Preview explicitly says code has not
+been installed. Existing review pins can be inspected without changing them.
 
 **New in v19.2.1:** an absent card lock is a successful audited no-op. The
 maintenance notebook lists saved cleanup plans, requires inspection and both

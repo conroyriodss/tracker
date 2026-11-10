@@ -137,12 +137,24 @@ def unpin_sources(project: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["inventory", "pin-review", "unpin-review"])
+    parser.add_argument("action", choices=["inventory", "inspect-review", "pin-review", "unpin-review"])
     parser.add_argument("--out", type=Path)
     parser.add_argument("--confirm", default="")
     args = parser.parse_args()
     from common import PROJECT
     project = Path(PROJECT).resolve()
+    if args.action == "inspect-review":
+        from run_provenance import load_pins
+        from review_workflow import current_queue_summary
+        pins = load_pins(project)
+        queues = current_queue_summary() if pins else []
+        verified = {row["family"]: row for row in queues if row.get("selection") == "pinned"}
+        if set(pins) - set(verified):
+            raise RuntimeError("Some existing pin families could not be verified; inspect the manifest before changing it")
+        print(json.dumps({"status": "pinned" if pins else "not_pinned",
+                          "manifest": str(project / "inputs" / PIN_NAME),
+                          "sources": list(verified.values()), "changed": False}, indent=2))
+        return 0
     if args.action == "inventory":
         import uuid
         out = args.out or project / "runs" / "project_inventory" / (dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8])

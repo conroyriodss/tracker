@@ -1,3 +1,20 @@
+# v19.2.2 — bounded installer work and installed-version checks
+
+Installation previews previously staged all release files, hashed targets twice,
+and recursively hashed the project twice for the ledger. This caused unnecessary
+Drive I/O, including reads of historical runs and snapshots. The installer now
+hashes each target once, stages only write candidates, and hashes the sealed plan
+for the ledger. Unstaged entries have no payload hash. Source and target drift
+checks, payload verification, confirmations and rollback remain enforced.
+
+The notebook streams installer output without Python buffering and marks preview
+completion explicitly as not installed. Setup checks release 19.2.2 and hashes
+eight critical scripts before constructing the runtime. Inspect existing pins is
+a read-only action that validates the saved sources and never replaces them.
+
+Actual Colab/Drive elapsed time has not been benchmarked. Progress identifies
+the current compare, stage, preflight, install, or audit operation.
+
 # v19.2.1 — maintenance reporting and plan selection
 
 An already-absent card lock now returns PASS with removed=false and an explicit

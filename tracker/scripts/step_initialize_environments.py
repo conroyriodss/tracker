@@ -246,10 +246,11 @@ def collect_project_files(source_root: Path) -> list[SourceFile]:
     return files
 
 
-def _action_for(target: Path, source: SourceFile, mode: str) -> str:
+def _action_for(target: Path, source: SourceFile, mode: str, *, current_hash: str | None = None) -> str:
     if not target.exists():
         return "add"
-    current_hash = sha256_file(target) if target.is_file() else None
+    if current_hash is None:
+        current_hash = sha256_file(target) if target.is_file() else ""
     if current_hash == source.sha256:
         return "unchanged"
     if mode == "refresh-code" and source.overwrite_allowed:
@@ -287,6 +288,7 @@ def build_plan(
         ) from exc
     run_dir.mkdir(parents=True, exist_ok=True)
 
+    print(f"[plan] Read release files from {release_root}", flush=True)
     release_files = collect_release_files(release_root)
     if PRODUCTION_ONLY:
         # A routine production release refresh must not walk, hash, or stage
@@ -313,27 +315,16 @@ def build_plan(
     if duplicates:
         raise RuntimeError(f"Duplicate initialization source paths: {duplicates[:20]}")
 
-    payload_root = run_dir / "payload"
-    payload_records: dict[str, dict[str, str]] = {}
-    for source in source_files:
-        payload_path = payload_root / source.relative_path
-        atomic_write_bytes(payload_path, source.data)
-        payload_hash = sha256_file(payload_path) or ""
-        if payload_hash != source.sha256:
-            raise RuntimeError(f"Initialization payload hash mismatch: {payload_path}")
-        payload_records[source.relative_path] = {
-            "payload_relative_path": payload_path.relative_to(run_dir).as_posix(),
-            "payload_sha256": payload_hash,
-        }
-
     entries: list[dict[str, Any]] = []
     for target_env, target_root in roots.items():
-        for source in source_files:
+        for index, source in enumerate(source_files, 1):
             target = target_root / source.relative_path
+            print(f"[compare {target_env} {index}/{len(source_files)}] {source.relative_path}", flush=True)
+            target_before_hash = sha256_file(target) or ""
             action = (
                 "source_environment"
                 if target_env == source_env and source.category.startswith("project_")
-                else _action_for(target, source, mode)
+                else _action_for(target, source, mode, current_hash=target_before_hash)
             )
             entries.append(
                 {
@@ -345,11 +336,27 @@ def build_plan(
                     "source_sha256": source.sha256,
                     "source_size": source.size,
                     "overwrite_allowed": source.overwrite_allowed,
-                    **payload_records[source.relative_path],
-                    "target_before_sha256": sha256_file(target) or "",
+                    "payload_relative_path": (Path("payload") / source.relative_path).as_posix(),
+                    "payload_sha256": source.sha256,
+                    "target_before_sha256": target_before_hash,
                     "action": action,
                 }
             )
+    # Only files that may be written need immutable Drive payloads. Hashes for
+    # unchanged/preserved files remain in the plan without rewriting their bytes.
+    needed = {entry["relative_path"] for entry in entries if entry["action"] in {"add", "update"}}
+    staged = [source for source in source_files if source.relative_path in needed]
+    print(f"[plan] Stage {len(staged)} changed/new file(s); {len(source_files) - len(staged)} need no payload write", flush=True)
+    for index, source in enumerate(staged, 1):
+        print(f"[stage {index}/{len(staged)}] {source.relative_path}", flush=True)
+        payload_path = run_dir / "payload" / source.relative_path
+        atomic_write_bytes(payload_path, source.data)
+        if sha256_file(payload_path) != source.sha256:
+            raise RuntimeError(f"Initialization payload hash mismatch: {payload_path}")
+    for entry in entries:
+        entry["payload_staged"] = entry["relative_path"] in needed
+        if not entry["payload_staged"]:
+            entry["payload_sha256"] = ""
     plan = {
         "schema": PLAN_SCHEMA,
         "production_only": PRODUCTION_ONLY,
@@ -362,6 +369,7 @@ def build_plan(
         "mode": mode,
         "configured_roots": {name: str(path) for name, path in roots.items()},
         "entry_count": len(entries),
+        "payload_scope": "write_actions_only",
         "entries": entries,
         "excluded": [
             "runs/", "latest/", "build/", "snapshots/", "run_ledger.csv",
@@ -456,6 +464,9 @@ def _validate_plan(plan_path: Path) -> dict[str, Any]:
         raise ValueError("Initialization plan entries must be a list")
     if int(plan.get("entry_count", -1)) != len(entries):
         raise ValueError("Initialization plan entry_count mismatch")
+    payload_scope = plan.get("payload_scope", "all_sources")
+    if payload_scope not in {"all_sources", "write_actions_only"}:
+        raise ValueError(f"Unsupported initialization payload scope: {payload_scope!r}")
 
     allowed_categories = {
         "release_code",
@@ -498,6 +509,11 @@ def _validate_plan(plan_path: Path) -> dict[str, Any]:
             raise ValueError(f"Entry {index} has invalid category: {category!r}")
         if action not in allowed_actions:
             raise ValueError(f"Entry {index} has invalid action: {action!r}")
+        if payload_scope == "write_actions_only":
+            if not isinstance(entry.get("payload_staged"), bool):
+                raise ValueError(f"Entry {index} must specify whether its payload was staged")
+            if action in {"add", "update"} and entry["payload_staged"] is not True:
+                raise ValueError(f"Writable entry has no staged payload: {relative_text}")
         if not isinstance(entry.get("overwrite_allowed"), bool):
             raise ValueError(f"Entry {index} overwrite policy must be boolean")
         overwrite_allowed = entry["overwrite_allowed"]
@@ -548,7 +564,10 @@ def _validate_plan(plan_path: Path) -> dict[str, Any]:
         target_before_hash = str(entry.get("target_before_sha256", ""))
         if not re.fullmatch(r"[0-9a-f]{64}", source_hash):
             raise ValueError(f"Invalid source hash for {target_env}:{relative_text}")
-        if payload_hash != source_hash:
+        if payload_scope == "write_actions_only" and not entry["payload_staged"]:
+            if payload_hash:
+                raise ValueError(f"Unstaged entry claims a payload hash: {target_env}:{relative_text}")
+        elif payload_hash != source_hash:
             raise ValueError(f"Payload/source hash mismatch for {target_env}:{relative_text}")
         if target_before_hash and not re.fullmatch(r"[0-9a-f]{64}", target_before_hash):
             raise ValueError(f"Invalid target-before hash for {target_env}:{relative_text}")
@@ -627,7 +646,8 @@ def apply_plan(plan_path: Path, *, confirm: str) -> dict[str, Any]:
                 ]
                 # Validate every source, immutable payload, and target before the
                 # first write. This turns a plan into an optimistic transaction.
-                for entry in env_entries:
+                for index, entry in enumerate(env_entries, 1):
+                    print(f"[preflight {target_env} {index}/{len(env_entries)}] {entry['relative_path']}", flush=True)
                     source = Path(entry["source_path"])
                     target = target_root / entry["relative_path"]
                     payload = plan_path.parent / entry["payload_relative_path"]
@@ -658,7 +678,8 @@ def apply_plan(plan_path: Path, *, confirm: str) -> dict[str, Any]:
                     "results": target_results,
                 }
                 try:
-                    for entry in non_card_entries:
+                    for index, entry in enumerate(non_card_entries, 1):
+                        print(f"[install {target_env} {index}/{len(non_card_entries)}] {entry['relative_path']}", flush=True)
                         target = target_root / entry["relative_path"]
                         before_images.append(
                             (target, target.read_bytes() if target.is_file() else None)
@@ -746,6 +767,7 @@ def main() -> int:
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--confirm", default="")
     args = parser.parse_args()
+    print(f"[start] mode={args.mode}; apply={args.apply}; environment={ENV}", flush=True)
 
     if ENV != args.source_env:
         raise RuntimeError(
@@ -771,6 +793,7 @@ def main() -> int:
         token = PRODUCTION_CONFIRMATION if PRODUCTION_ONLY else CONFIRMATION_PREFIX + args.source_env.upper()
         print("DRY RUN: no release files were changed.")
         print(f"Apply with exact confirmation: {token}")
+    print("[audit] Record the sealed installation plan; historical project trees are not hashed", flush=True)
     ledger_append(
         "install_release" if PRODUCTION_ONLY else "initialize_environments",
         params={
@@ -779,11 +802,12 @@ def main() -> int:
             "release_root": str(release_root),
             "apply": args.apply,
         },
-        inputs={"source_root": str(source_root)},
+        inputs={"plan": str(plan_path)},
         outputs=outputs,
         gate_passed=True,
         run_dir=str(run_dir),
     )
+    print("[done] Installation command completed", flush=True)
     return 0
 
 

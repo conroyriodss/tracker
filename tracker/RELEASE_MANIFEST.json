@@ -1,7 +1,7 @@
 {
-  "base_release": "19.2",
-  "base_source_commit": "64bcc4f0ea33af835884c161b6c2ed9583e5ee18",
-  "created_at": "2026-11-10T21:02:10.028588+00:00",
+  "base_release": "19.2.1",
+  "base_source_commit": "014fabaf8695d82647ba119e4d08fcd97af93e2d",
+  "created_at": "2026-11-10T21:37:10.514900+00:00",
   "files": {
     ".gitattributes": {
       "bytes": 57,
@@ -44,8 +44,8 @@
       "sha256": "67bd3369f367500e6be9a3ecc7f7eced890d6163e6465920f87ebcdafe51c765"
     },
     "OPERATIONS_AND_VERSIONING.md": {
-      "bytes": 8709,
-      "sha256": "f9cb9ada691b89f05880833e31127fe6adabd32d2224eb8913b1ae6d6179351b"
+      "bytes": 9148,
+      "sha256": "aa243f4dadd928e52a8a4d2768f6de994ea9609ca6163adac96a30c3e00df884"
     },
     "POLICY_CONTEXT_EVIDENCE_MODEL.md": {
       "bytes": 5356,
@@ -64,12 +64,12 @@
       "sha256": "b549c1a3731aa48259df1e29f273d0f4e02537e4f0a728552e5ac1ba8350d4c3"
     },
     "README.md": {
-      "bytes": 5515,
-      "sha256": "50f83c4618e2f0fe1a1d1534830fcc23c2e8f78e558b174efd11ca22057a936f"
+      "bytes": 5906,
+      "sha256": "29a2d50a755febd8e9d027201c99b63ff7eec92212d035c39615520ecea1f0fc"
     },
     "RELEASE_NOTES.md": {
-      "bytes": 8440,
-      "sha256": "3eb68c3340bdcf249ceb4139fcdfc22c4f2ddbb65657159ca7007f1c863ef140"
+      "bytes": 9450,
+      "sha256": "82ee55e9381cca3e49b86b818e442e729378999fea6c911686aa4948f1876cb0"
     },
     "REPOSITORY_STATUS_EVIDENCE_MODEL.md": {
       "bytes": 3579,
@@ -88,8 +88,8 @@
       "sha256": "e256f060617c622cfcf1de913f9487b87f0b19998ddf44390b8ce34d8ed2625e"
     },
     "VALIDATION_REPORT.txt": {
-      "bytes": 3536,
-      "sha256": "c363213baec542c056bff26b5850ebb9aef0c6335e44e0691ef855edb0538983"
+      "bytes": 4551,
+      "sha256": "d9d7096464d688c846d5b6cac77812d4ce48b4a68534092aeaad78a3e65cd086"
     },
     "build_notebooks.py": {
       "bytes": 88526,
@@ -116,8 +116,8 @@
       "sha256": "5ee9bd177755601aab857e23d5387a8ce9c4f06118373bb10761a223adf58a09"
     },
     "extend_operations_notebooks.py": {
-      "bytes": 6588,
-      "sha256": "283a7827aad3b5d41e35c419386bd35f80f18eca9ee24ac82614938ac556ab8b"
+      "bytes": 9485,
+      "sha256": "c4009bc80a219a8fe048d15a3278e3912958aac0e01dd67a3a2efba4141de0b1"
     },
     "frontend.html": {
       "bytes": 39490,
@@ -136,16 +136,16 @@
       "sha256": "00ec1448d7bdb42d43345663d2ed80e4ecb7ee97fe0f37a3c000b4ab3a6e7911"
     },
     "nih_tracker_colab_v19_maintenance.ipynb": {
-      "bytes": 38294,
-      "sha256": "89259252572b2320ac9b9084dfbccf3bce000a96840a2380374a3ee55d575a7a"
+      "bytes": 40876,
+      "sha256": "8d31e216679f0363a193b8e93861dffddb225dc1214166e184da812cdd743494"
     },
     "nih_tracker_colab_v19_pipeline.ipynb": {
-      "bytes": 49194,
-      "sha256": "bc77d4ee6cb003bc6d5392cdb5021ebf760a0444719efadae5789a7a51126f51"
+      "bytes": 51020,
+      "sha256": "9c57e933536bae31f30914bc6a76a487731c9c68ff103b868246a637d8ae8f00"
     },
     "nih_tracker_colab_v19_review_workbench.ipynb": {
-      "bytes": 50265,
-      "sha256": "fab0bcb90bbc267c354ac0d9bae28dc8b03df7859b6c6223921a2852b7e6b470"
+      "bytes": 52091,
+      "sha256": "febc74510217b5f803e9dac1a0854e1d50cb222c5d4ba19a6c1157e4ec228250"
     },
     "nih_tracker_v19_0_1_to_v19_0_2.diff": {
       "bytes": 83068,
@@ -480,8 +480,8 @@
       "sha256": "a830bff801036d24576ce740159ac7f4d16b240de511ab382971bb0c6828eeb7"
     },
     "scripts/step_initialize_environments.py": {
-      "bytes": 34602,
-      "sha256": "95cfb301e04d507a37acf6321ed80d63e95c2694a48f8daef8760a40682e53bc"
+      "bytes": 36884,
+      "sha256": "b914066d4f72dde1d9889ba9392069c0649890a26d57b6e0d2f4d2c97efe4a49"
     },
     "scripts/step_maintenance.py": {
       "bytes": 29553,
@@ -492,8 +492,8 @@
       "sha256": "41843c7b1748efde00ba7827d7d3afea17d4cf76f23ac459398026c81ebe6881"
     },
     "scripts/step_project_inventory.py": {
-      "bytes": 11027,
-      "sha256": "2e43850ac8efa30026a376cee067706ccff37bccc48db9b7caf73165a6a4a15f"
+      "bytes": 11790,
+      "sha256": "d545698cc5140c70206f49a8ff8ac898129d3c6b2ffafef3dc90b5eba7e6e647"
     },
     "scripts/step_promote_ai_review.py": {
       "bytes": 37115,
@@ -699,16 +699,20 @@
       "bytes": 8523,
       "sha256": "f2cd5f85a9e580a6fb83e99de8ec8b6a2c6cc544c046ddb3f16eba442ee21b4e"
     },
+    "tests/test_v19_2_2_installation.py": {
+      "bytes": 9588,
+      "sha256": "7fceba64a77806f7f49b1623e328093b1aa3e27bf23c0ac3d4228b68f5c8ac88"
+    },
     "tests/test_v19_2_provenance.py": {
       "bytes": 13210,
-      "sha256": "5eef00a6b3a9faa9570a3a3f7dc168616ac13804504c02f3d395858f6541a0f6"
+      "sha256": "49f1439350e73ae302c4605b7e967dddb05323309500b8dadff38fa3190c037f"
     },
     "tests/test_v19_knowledge_graph.py": {
       "bytes": 23193,
       "sha256": "99a200605d60c2de4ccdd527775c80faa5023be9975c244b6db33c2b0beff4d3"
     }
   },
-  "release": "19.2.1",
+  "release": "19.2.2",
   "schema": "nih-tracker-source-release/v1",
   "source_import_commit": "808aebeeffb8e542d0934adb1f88baf913e89e0a",
   "upstream": {
@@ -720,24 +724,25 @@
     "sha256": "14995b1ea44191aa6a75f937a8c54419616e67565cea7a8de20794fc1ee9d06e"
   },
   "validation": {
+    "colab_drive_performance": "NOT_BENCHMARKED: tests verify reduced I/O counts and bounded audit inputs only",
     "dependency_limit": "Three existing Beautiful Soup tests cannot execute locally; one widget test requires ipywidgets. CI installs pinned dependencies.",
     "github_ci": "Consult checks at the exact source commit recorded in BUNDLE_SOURCE.json. CI covers Python 3.12 and 3.13.",
     "local_assertion_failures": 0,
     "local_errors": 3,
-    "local_full_suite_tests": 256,
-    "local_passed": 252,
+    "local_full_suite_tests": 265,
+    "local_passed": 261,
     "local_skipped": 1,
     "notebook_outputs_empty": true,
     "operations_extension_idempotent": true,
-    "patch_tests_passed": 10,
-    "patch_tests_skipped": 1,
+    "patch_tests_passed": 9,
+    "patch_tests_skipped": 0,
     "production_cards_changed": false,
     "production_cleanup_applied": false,
     "production_notebook_code_cells_parsed": 24,
     "public_catalog_republished": false,
-    "python_files_parsed": 97,
+    "python_files_parsed": 98,
     "real_colab_ui": "NOT_VALIDATED: no access to the live Colab runtime",
-    "release": "19.2.1",
+    "release": "19.2.2",
     "schema": "nih-tracker-validation/v1"
   }
 }

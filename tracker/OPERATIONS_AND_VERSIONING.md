@@ -1,4 +1,4 @@
-# NIH Tracker v19.2.1: maintenance corrections and source versioning
+# NIH Tracker v19.2.2: installation and maintenance corrections
 
 This release adds explicit review-source pins, conservative cleanup with verified
 recovery archives, source and input SHA-256 provenance, and two offline reports.
@@ -12,11 +12,15 @@ historical; rerunning the corrected command records the corrected outcome.
 
 ## First use in Colab
 
-1. Upload `nih_tracker_v19_2_1_bundle.zip` to `/content` and open the accompanying
+1. Upload `nih_tracker_v19_2_2_bundle.zip` to `/content` and open the accompanying
    `nih_tracker_colab_v19_maintenance.ipynb` in Colab.
 2. In section 1, leave `APPLY_PREFILL=False` to inspect the installation plan.
-   Set it to true to install the reviewed release. The ZIP inventory is verified
-   before installation. Restart the Colab runtime after installing new code.
+   Preview does not install code. Review the plan, set `APPLY_PREFILL=True`, and
+   rerun section 1 to install it. Wait for **INSTALLATION COMPLETE**. The ZIP
+   inventory is verified before installation. Restart the Colab runtime after
+   installing, then run setup; do not repeat installation after restarting.
+   Setup requires version 19.2.2 and verifies eight critical installed file hashes.
+   A newer notebook cannot be used with older or incompletely installed scripts.
 3. Start the production maintenance runtime. Stop other notebooks and background
    writers before inventory or cleanup; the maintenance/card locks do not lock
    every possible evidence collector or external Drive writer.
@@ -28,7 +32,8 @@ historical; rerunning the corrected command records the corrected outcome.
    sources** and acknowledge that configuration change. This writes
    `inputs/active_review_sources.json` and a selection audit record. It neither
    approves candidates nor applies decisions. Existing pins are never silently
-   replaced. Missing or changed pinned bytes stop review instead of substituting
+   replaced. If pins already exist, use **Inspect existing pins** to validate and
+   display the current selection without rewriting it. Missing or changed pinned bytes stop review instead of substituting
    a different run.
 6. Use the review workbench for the remaining human decisions. Before deliberately
    selecting new run outputs, **Unpin review sources**, refresh the inventory,

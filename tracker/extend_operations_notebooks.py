@@ -1,4 +1,4 @@
-"""Deterministic v19.2.1 maintenance controls; no execution or external writes."""
+"""Deterministic v19.2.2 maintenance controls; no execution or external writes."""
 import hashlib
 import json
 from pathlib import Path
@@ -31,12 +31,16 @@ history; use it before intentionally selecting new runs after a pipeline refresh
 '''
 
 CODE = '''# NIH_TRACKER_OPERATIONS_V19_2
-PROJECT_ACTION = "Inventory only" # @param ["Inventory only", "Pin current review sources", "Unpin review sources"]
+PROJECT_ACTION = "Inventory only" # @param ["Inventory only", "Inspect existing pins", "Pin current review sources", "Unpin review sources"]
 CONFIRM_SOURCE_SELECTION_CHANGE = False # @param {type:"boolean"}
 if PROJECT_ACTION == "Inventory only":
     inventory_result = RUNTIME.run_script("step_project_inventory.py", ["inventory"], label="project_inventory")
     if not inventory_result.ok:
         print("Inventory is incomplete. Inspect its report and log before proceeding.")
+elif PROJECT_ACTION == "Inspect existing pins":
+    pin_status = RUNTIME.run_script("step_project_inventory.py", ["inspect-review"], label="inspect_review_pins")
+    if not pin_status.ok:
+        raise RuntimeError("Existing pins could not be verified; inspect the log before changing them.")
 elif CONFIRM_SOURCE_SELECTION_CHANGE:
     action = "pin-review" if PROJECT_ACTION.startswith("Pin") else "unpin-review"
     token = "PIN_REVIEW_SOURCES" if action == "pin-review" else "UNPIN_REVIEW_SOURCES"
@@ -56,6 +60,31 @@ cleanup_controls = launch_cleanup_controls(
 )
 '''
 
+RUNTIME_CHECK = '''# NIH_TRACKER_INSTALLED_RELEASE_CHECK
+globals().pop("RUNTIME", None)
+import hashlib
+import json
+def _check_installed_release(project, expected):
+    manifest_path = project / "RELEASE_MANIFEST.json"
+    guidance = "Open the matching maintenance notebook, preview step 1, set APPLY_PREFILL=True and rerun step 1. After successful installation, restart the runtime and run setup again."
+    if not manifest_path.is_file():
+        raise RuntimeError("Installed release manifest is missing. " + guidance)
+    manifest = json.loads(manifest_path.read_text())
+    if manifest.get("release") != expected:
+        raise RuntimeError(f"Notebook requires {expected}; Drive has {manifest.get('release', 'unknown')}. " + guidance)
+    critical = ("common.py", "notebook_runtime.py", "run_provenance.py", "code_provenance.py",
+                "step_initialize_environments.py", "step_maintenance.py", "maintenance_widgets.py", "step_project_inventory.py")
+    for name in critical:
+        relative = "scripts/" + name
+        path = project / relative
+        expected_hash = manifest.get("files", {}).get(relative, {}).get("sha256")
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected_hash:
+            raise RuntimeError(f"Installed code is missing or differs from its release manifest: {relative}. " + guidance)
+    print(f"Installed release {expected}: {len(critical)} runtime file hashes verified.")
+_check_installed_release(SCRIPTS.parent, "19.2.2")
+
+'''
+
 
 def extend():
     for path in sorted(ROOT.glob("nih_tracker_colab_v19_*.ipynb")):
@@ -65,12 +94,14 @@ def extend():
         for c in nb["cells"]:
             source = ''.join(c['source'])
             if source.startswith('# NIH Tracker'):
-                source = source.replace('(v19.1.1; extends v19.0.2)', '(v19.2.1; extends v19.2)')
-                source = source.replace('(v19.2; extends v19.1.1)', '(v19.2.1; extends v19.2)')
+                for previous in ('(v19.1.1; extends v19.0.2)', '(v19.2; extends v19.1.1)', '(v19.2.1; extends v19.2)'):
+                    source = source.replace(previous, '(v19.2.2; extends v19.2.1)')
             if c['cell_type'] == 'code' and 'module_name in {' in source and '"run_provenance",' not in source:
                 source = source.replace('"common", "identity_hygiene"', '"run_provenance", "code_provenance", "step_project_inventory", "common", "identity_hygiene"')
             if 'module_name in {' in source and '"maintenance_widgets",' not in source:
                 source = source.replace('"run_provenance",', '"maintenance_widgets", "run_provenance",')
+            if 'previous_scripts = globals()' in source and 'NIH_TRACKER_INSTALLED_RELEASE_CHECK' not in source:
+                source = source.replace('previous_scripts = globals()', RUNTIME_CHECK + 'previous_scripts = globals()')
             if source.startswith('CLEANUP_ACTION =') or source.startswith('# NIH_TRACKER_CLEANUP_CONTROLS_'):
                 source = CLEANUP
             if source.startswith('## 6. Preview or apply bounded cleanup'):
@@ -89,21 +120,33 @@ archived file hash is verified before removal. Recovery ZIPs and receipts are
 retained under `snapshots/maintenance/` and the plan folder. A small or empty
 deletion set is expected when the ledger references historical runs.
 '''
-            if 'Run this block only when installing v19.0.2' in source:
-                source = source.replace('installing v19.0.2', 'installing v19.2.1')
+            if 'Run this block only when installing' in source:
+                for previous in ('v19.0.2', 'v19.2.1'):
+                    source = source.replace('installing ' + previous, 'installing v19.2.2')
             if 'Production release installer was not found.' in source:
-                source = source.replace('v19.0.2 bundle', 'v19.2.1 bundle')
+                for previous in ('v19.0.2', 'v19.2.1'):
+                    source = source.replace(previous + ' bundle', 'v19.2.2 bundle')
             if 'bundle_candidates = []' in source:
-                source = source.replace('parent.glob("*v19*bundle*.zip")', 'parent.glob("nih_tracker_v19_2_1_bundle.zip")')
-                source = source.replace('nih_tracker_v19_2_bundle.zip', 'nih_tracker_v19_2_1_bundle.zip')
-                source = source.replace('EXPECTED_RELEASE_VERSION = "19.2"', 'EXPECTED_RELEASE_VERSION = "19.2.1"')
+                source = source.replace('parent.glob("*v19*bundle*.zip")', 'parent.glob("nih_tracker_v19_2_2_bundle.zip")')
+                for previous in ('nih_tracker_v19_2_bundle.zip', 'nih_tracker_v19_2_1_bundle.zip'):
+                    source = source.replace(previous, 'nih_tracker_v19_2_2_bundle.zip')
+                for previous in ('19.2', '19.2.1'):
+                    source = source.replace(f'EXPECTED_RELEASE_VERSION = "{previous}"', 'EXPECTED_RELEASE_VERSION = "19.2.2"')
+                source = source.replace('    sys.executable,\n    str(INITIALIZER),', '    sys.executable, "-u",\n    str(INITIALIZER),')
+                if 'PREVIEW COMPLETE: release code has NOT been installed' not in source:
+                    source += '''
+if not APPLY_PREFILL:
+    print("PREVIEW COMPLETE: release code has NOT been installed. Review the plan, set APPLY_PREFILL=True, and rerun this cell before continuing.")
+else:
+    print("INSTALLATION COMPLETE: restart the runtime, then run setup. You do not need to reinstall after restarting.")
+'''
                 if 'EXPECTED_RELEASE_VERSION' not in source:
                     source = source.replace('_validate_release_inventory(RELEASE_ROOT)', '''_validate_release_inventory(RELEASE_ROOT)
 import json
-EXPECTED_RELEASE_VERSION = "19.2.1"
+EXPECTED_RELEASE_VERSION = "19.2.2"
 installed_manifest = json.loads((RELEASE_ROOT / "RELEASE_MANIFEST.json").read_text())
 if installed_manifest.get("release") != EXPECTED_RELEASE_VERSION:
-    raise RuntimeError("Upload nih_tracker_v19_2_1_bundle.zip to /content; an older release cannot be installed by this notebook.")''')
+    raise RuntimeError("Upload nih_tracker_v19_2_2_bundle.zip to /content; an older release cannot be installed by this notebook.")''')
             c['source'] = source.splitlines(keepends=True)
             out.append(c)
             if 'status_result = RUNTIME.run_script(' in source and '"step_maintenance.py"' in source:
