@@ -174,6 +174,13 @@ class ProvenanceTests(unittest.TestCase):
         self.assertTrue(Path(row['code_provenance']).is_file())
         self.assertEqual(len(row['source_tree_sha256']), 64)
 
+    def test_ledger_without_run_directory_creates_scoped_receipt(self):
+        row = self.common.ledger_append('maintenance_event', {}, {}, {}, True, '')
+        location = Path(row['code_provenance'])
+        self.assertTrue(location.is_relative_to(self.root/'runs/maintenance_event'))
+        self.assertTrue(location.is_file())
+        self.assertEqual(Path(row['run_dir']), location.parent)
+
     def test_directory_input_hash_changes_with_content(self):
         directory = self.root/'inputs'; path = directory/'sample.txt'; path.write_text('before')
         before = self.common.sha256_path(directory)

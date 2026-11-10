@@ -1,8 +1,8 @@
 NIH Tracker v19.2 validation report
 
-Local regression: 244 tests; 241 passed, 3 dependency-related errors, no assertion
+Local regression: 245 tests; 242 passed, 3 dependency-related errors, no assertion
 failures. The unchanged baseline has the same 3 errors with these dependencies.
-This is not a local full-suite pass. Twenty-one new provenance/retention/report tests
+This is not a local full-suite pass. Twenty-two new provenance/retention/report tests
 pass on isolated synthetic projects. No production Drive data was supplied.
 
 The installer policy regression was intentionally updated: distributed reference
@@ -17,11 +17,11 @@ widgets require visual verification in the intended runtime.
 {
   "schema": "nih-tracker-validation/v1",
   "release": "19.2",
-  "local_full_suite_tests": 244,
-  "local_passed": 241,
+  "local_full_suite_tests": 245,
+  "local_passed": 242,
   "local_errors": 3,
   "local_assertion_failures": 0,
-  "new_tests_passed": 21,
+  "new_tests_passed": 22,
   "dependency_limit": "beautifulsoup4 unavailable; three pre-existing resource-profile extraction tests cannot execute",
   "baseline_with_same_local_dependencies": {
     "tests": 223,
@@ -49,10 +49,15 @@ widgets require visual verification in the intended runtime.
   "production_cards_changed": false,
   "live_cloud_calls": 0,
   "public_catalog_republished": false,
-  "github_ci": "Final installer-version safeguard requires a new CI run; consult the PR head checks.",
+  "github_ci": "Consult PR head checks for the final revision; the previous source revision passed the full dependency-complete workflow.",
   "github_ci_prior_revision": {
     "commit": "86f1ab11a6c1bd5a111d223c647103510c5c2e0f",
     "result": "success",
     "url": "https://github.com/conroyriodss/tracker/actions/runs/42891443557"
+  },
+  "installer_smoke": {
+    "status": "PASS",
+    "preserved_operational_reference_files": 4,
+    "new_release_files_checked": 4
   }
 }

@@ -1570,6 +1570,9 @@ def sha256_path(path):
 
 def ledger_append(step, params, inputs, outputs, gate_passed, run_dir):
     from code_provenance import describe_code
+    # Some maintenance events historically omitted a run directory. Give their
+    # provenance an actual run location instead of writing into the process cwd.
+    run_dir = run_dir or new_run_dir(step)
     code_identity = describe_code(Path(__file__).resolve().parents[1])
     provenance_hash = hashlib.sha256(json.dumps(code_identity, sort_keys=True).encode()).hexdigest()
     provenance_path = Path(run_dir) / f"code_provenance_{provenance_hash[:16]}.json"
