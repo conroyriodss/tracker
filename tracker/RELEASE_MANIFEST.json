@@ -7,8 +7,8 @@
       "sha256": "70b2e0130bb0884a610584eb6b74ba8091099c76d68272fa2f602d7ceb9e6c21"
     },
     ".gitignore": {
-      "bytes": 307,
-      "sha256": "d27cbb575e1fabe6e0ba5af776100762cb69d17e73def9e4d2f7847d23084f6b"
+      "bytes": 389,
+      "sha256": "966b1f314e08842d88f062995e7902b3487f379340c986368147f1b60d3012c7"
     },
     "ASSESSMENT_CRITERIA.md": {
       "bytes": 7908,
@@ -93,10 +93,6 @@
     "build_notebooks.py": {
       "bytes": 88526,
       "sha256": "c1d9d540dc0d40d109d708d9d3ba8afc23d9640ef64c3bc2d39e755194ecbf3e"
-    },
-    "code_provenance.json": {
-      "bytes": 11033,
-      "sha256": "6fc98e74d3d40ed606e4c2464e6a8e511cd0fed7ad633fe7f157b5449a09e8e4"
     },
     "examples/coverage_20260929/PROVENANCE.json": {
       "bytes": 646,

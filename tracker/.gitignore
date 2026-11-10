@@ -22,3 +22,6 @@ secrets/
 *.pem
 *.key
 *.zip
+
+# Legacy local provenance receipts are runtime artifacts.
+/code_provenance*.json
