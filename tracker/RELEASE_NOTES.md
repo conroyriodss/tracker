@@ -1,3 +1,18 @@
+# v19.2.1 — maintenance reporting and plan selection
+
+An already-absent card lock now returns PASS with removed=false and an explicit
+already_unlocked audit outcome. A remaining lock or unlink failure still fails;
+the confirmation requirement remains in force.
+
+The maintenance notebook replaces the manually entered cleanup path with a list
+of valid unapplied sealed plans. No plan is initially selected. Inspection shows
+the exact path, SHA-256, eligible and protected paths. Apply requires both review
+and stopped-writer acknowledgments, and rejects a plan changed since inspection.
+Refreshing or changing selection clears review. Existing ledger history is retained.
+
+CI runs the full suite with pinned dependencies on Python 3.12 and 3.13. Live
+Colab rendering and production Drive operations were not exercised here.
+
 # v19.2 — provenance, maintenance and source versioning
 
 See OPERATIONS_AND_VERSIONING.md for installation and the behavior changes.

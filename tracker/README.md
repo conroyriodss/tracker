@@ -1,4 +1,9 @@
-# NIH Tracker v19.2
+# NIH Tracker v19.2.1
+
+**New in v19.2.1:** an absent card lock is a successful audited no-op. The
+maintenance notebook lists saved cleanup plans, requires inspection and both
+acknowledgments, and binds Apply to the inspected SHA-256. CI now covers
+Python 3.12 and 3.13. See [OPERATIONS_AND_VERSIONING.md](OPERATIONS_AND_VERSIONING.md).
 
 **New in v19.2:** stable review-source ordering and explicit hash pins; inventory
 and coverage reports; dependency-aware retention with verified recovery archives;

@@ -1,4 +1,20 @@
-NIH Tracker v19.2 validation report
+NIH Tracker v19.2.1 validation report
+
+Local regression: 256 tests; 252 passed, 3 existing Beautiful Soup dependency
+errors, 1 skipped ipywidgets test, no assertion failures. The patch adds 11 tests:
+10 pass locally and 1 widget interaction test requires CI dependencies.
+The original no-lock failure was reproduced through NotebookRuntime and now
+returns returncode=0, gate=True, ok=True, with removed=false in the audit.
+Existing-lock removal, invalid confirmation, unlink failure, remaining-lock
+failure, empty selection, both acknowledgments, changed/resealed plans, and
+applied/invalid plan exclusion are covered. Source and 24 notebook code cells
+parse; notebook outputs are empty; the extension is idempotent.
+
+Use the exact source commit in BUNDLE_SOURCE.json to inspect final CI results.
+The workflow tests Python 3.12 and 3.13 with pinned dependencies. No live Colab
+rendering, production Drive modification, cleanup or site publication was done.
+
+Historical v19.2 validation follows (not a new v19.2.1 execution):
 
 Local regression: 245 tests; 242 passed, 3 dependency-related errors, no assertion
 failures. The unchanged baseline has the same 3 errors with these dependencies.

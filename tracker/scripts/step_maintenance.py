@@ -480,11 +480,13 @@ def load_cleanup_plan(plan_path: Path) -> dict[str, Any]:
     return plan
 
 
-def apply_cleanup(plan_path: Path, *, confirm: str) -> dict[str, Any]:
+def apply_cleanup(plan_path: Path, *, confirm: str, reviewed_sha256: str = "") -> dict[str, Any]:
     if confirm != CLEANUP_CONFIRMATION:
         raise RuntimeError(f"Exact confirmation required: {CLEANUP_CONFIRMATION}")
     plan_path = plan_path.expanduser().resolve()
     plan = load_cleanup_plan(plan_path)
+    if reviewed_sha256 and sha256_file(plan_path) != reviewed_sha256:
+        raise RuntimeError("Cleanup plan changed since review; inspect it again. No files were deleted.")
     if card_lock_status():
         raise RuntimeError("cards/.lock is held; maintenance cleanup will not run concurrently")
 
@@ -644,6 +646,7 @@ def main() -> int:
         "--plan", default="", help="Existing sealed cleanup_plan.json to inspect or apply."
     )
     cleanup_parser.add_argument("--apply", action="store_true")
+    cleanup_parser.add_argument("--reviewed-sha256", default="", help="Optional SHA-256 captured during plan inspection.")
     cleanup_parser.add_argument("--confirm", default="")
 
     lock_parser = subparsers.add_parser(
@@ -688,7 +691,7 @@ def main() -> int:
             "applied": False,
         }
         if args.apply:
-            result = apply_cleanup(plan_path, confirm=args.confirm)
+            result = apply_cleanup(plan_path, confirm=args.confirm, reviewed_sha256=args.reviewed_sha256)
             outputs.update(result)
             outputs["applied"] = True
         else:
@@ -714,16 +717,21 @@ def main() -> int:
             print("DRY RUN: no lock was removed.")
             return 0
         removed = remove_card_lock(args.confirm)
-        print(f"Lock removed: {removed}")
+        remaining_lock = card_lock_status()
+        succeeded = remaining_lock is None
+        outcome = "removed" if removed else "already_unlocked"
+        if not succeeded:
+            outcome = "lock_still_held"
+        print(f"Lock maintenance: {outcome}; removed={removed}")
         ledger_append(
             "maintenance_remove_card_lock",
             params={"apply": True},
             inputs={"prior_lock": lock or {}},
-            outputs={"removed": bool(removed)},
-            gate_passed=bool(removed),
+            outputs={"removed": bool(removed), "outcome": outcome, "remaining_lock": remaining_lock},
+            gate_passed=succeeded,
             run_dir="",
         )
-        return 0
+        return 0 if succeeded else 1
 
     if args.command == "reset-cards":
         print(json.dumps(card_lock_status() or {"card_lock": "not held"}, indent=2, default=str))

@@ -1,4 +1,4 @@
-"""Deterministic v19.2 maintenance controls; no execution or external writes."""
+"""Deterministic v19.2.1 maintenance controls; no execution or external writes."""
 import hashlib
 import json
 from pathlib import Path
@@ -47,24 +47,13 @@ else:
     print("Inspect the inventory, then acknowledge the selected source change.")
 '''
 
-CLEANUP = '''CLEANUP_ACTION = "Create a sealed cleanup plan" # @param ["Create a sealed cleanup plan", "Apply selected plan after review"]
+CLEANUP = '''# NIH_TRACKER_CLEANUP_CONTROLS_V19_2_1
 KEEP_RUNS_PER_STEP = 5 # @param [3, 5, 10, 20]
 REMOVE_TEMPORARY_FILES = False # @param {type:"boolean"}
-CLEANUP_PLAN_FILE = "" # @param {type:"string"}
-CONFIRM_NO_ACTIVE_WRITERS = False # @param {type:"boolean"}
-if CLEANUP_ACTION == "Create a sealed cleanup plan":
-    cleanup_arguments = ["cleanup", "--keep-runs", str(KEEP_RUNS_PER_STEP)]
-    if REMOVE_TEMPORARY_FILES:
-        cleanup_arguments.append("--remove-temporary")
-else:
-    if not CONFIRM_NO_ACTIVE_WRITERS:
-        raise RuntimeError("Stop other notebooks and background writers, then acknowledge before cleanup.")
-    if not CLEANUP_PLAN_FILE.strip():
-        raise ValueError("Paste the exact cleanup_plan.json path that you reviewed.")
-    cleanup_arguments = ["cleanup", "--plan", CLEANUP_PLAN_FILE.strip(), "--apply", "--confirm", "APPLY_MAINTENANCE_CLEANUP"]
-cleanup_result = RUNTIME.run_script("step_maintenance.py", cleanup_arguments, label="maintenance_cleanup")
-if not cleanup_result.ok:
-    raise RuntimeError(f"Cleanup did not complete; inspect {cleanup_result.log_path}")
+from maintenance_widgets import launch_cleanup_controls
+cleanup_controls = launch_cleanup_controls(
+    RUNTIME, keep_runs=KEEP_RUNS_PER_STEP, remove_temporary=REMOVE_TEMPORARY_FILES
+)
 '''
 
 
@@ -76,15 +65,24 @@ def extend():
         for c in nb["cells"]:
             source = ''.join(c['source'])
             if source.startswith('# NIH Tracker'):
-                source = source.replace('(v19.1.1; extends v19.0.2)', '(v19.2; extends v19.1.1)')
+                source = source.replace('(v19.1.1; extends v19.0.2)', '(v19.2.1; extends v19.2)')
+                source = source.replace('(v19.2; extends v19.1.1)', '(v19.2.1; extends v19.2)')
             if c['cell_type'] == 'code' and 'module_name in {' in source and '"run_provenance",' not in source:
                 source = source.replace('"common", "identity_hygiene"', '"run_provenance", "code_provenance", "step_project_inventory", "common", "identity_hygiene"')
-            if source.startswith('CLEANUP_ACTION ='):
+            if 'module_name in {' in source and '"maintenance_widgets",' not in source:
+                source = source.replace('"run_provenance",', '"maintenance_widgets", "run_provenance",')
+            if source.startswith('CLEANUP_ACTION =') or source.startswith('# NIH_TRACKER_CLEANUP_CONTROLS_'):
                 source = CLEANUP
             if source.startswith('## 6. Preview or apply bounded cleanup'):
                 source = '''## 6. Preview or apply bounded cleanup
 
-Inspect a sealed plan before applying its exact path. Structured run outputs,
+Run the cell to list saved, unapplied sealed plans. No plan is selected by default.
+Choose a plan and click **Inspect selected plan** to see its exact path, SHA-256,
+eligible paths and protected paths. If the list is empty, click **Create plan**.
+Apply is enabled only after inspection and both acknowledgments. Changed plan
+bytes require fresh inspection; candidate changes are checked before deletion.
+
+Structured run outputs,
 decision dependencies and card transaction history are retained even beyond the
 age/count threshold. Eligible logs and temporary paths are archived and every
 archived file hash is verified before removal. Recovery ZIPs and receipts are
@@ -92,18 +90,20 @@ retained under `snapshots/maintenance/` and the plan folder. A small or empty
 deletion set is expected when the ledger references historical runs.
 '''
             if 'Run this block only when installing v19.0.2' in source:
-                source = source.replace('installing v19.0.2', 'installing v19.2')
+                source = source.replace('installing v19.0.2', 'installing v19.2.1')
             if 'Production release installer was not found.' in source:
-                source = source.replace('v19.0.2 bundle', 'v19.2 bundle')
+                source = source.replace('v19.0.2 bundle', 'v19.2.1 bundle')
             if 'bundle_candidates = []' in source:
-                source = source.replace('parent.glob("*v19*bundle*.zip")', 'parent.glob("nih_tracker_v19_2_bundle.zip")')
+                source = source.replace('parent.glob("*v19*bundle*.zip")', 'parent.glob("nih_tracker_v19_2_1_bundle.zip")')
+                source = source.replace('nih_tracker_v19_2_bundle.zip', 'nih_tracker_v19_2_1_bundle.zip')
+                source = source.replace('EXPECTED_RELEASE_VERSION = "19.2"', 'EXPECTED_RELEASE_VERSION = "19.2.1"')
                 if 'EXPECTED_RELEASE_VERSION' not in source:
                     source = source.replace('_validate_release_inventory(RELEASE_ROOT)', '''_validate_release_inventory(RELEASE_ROOT)
 import json
-EXPECTED_RELEASE_VERSION = "19.2"
+EXPECTED_RELEASE_VERSION = "19.2.1"
 installed_manifest = json.loads((RELEASE_ROOT / "RELEASE_MANIFEST.json").read_text())
 if installed_manifest.get("release") != EXPECTED_RELEASE_VERSION:
-    raise RuntimeError("Upload nih_tracker_v19_2_bundle.zip to /content; an older release cannot be installed by this notebook.")''')
+    raise RuntimeError("Upload nih_tracker_v19_2_1_bundle.zip to /content; an older release cannot be installed by this notebook.")''')
             c['source'] = source.splitlines(keepends=True)
             out.append(c)
             if 'status_result = RUNTIME.run_script(' in source and '"step_maintenance.py"' in source:

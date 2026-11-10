@@ -1,12 +1,18 @@
-# NIH Tracker v19.2: inventory, retention and source versioning
+# NIH Tracker v19.2.1: maintenance corrections and source versioning
 
 This release adds explicit review-source pins, conservative cleanup with verified
 recovery archives, source and input SHA-256 provenance, and two offline reports.
 It preserves human approval as the authority for operational decisions.
 
+The v19.2.1 patch reports an already-absent card lock as a successful no-op,
+retaining `removed=false` and an explicit `already_unlocked` audit outcome.
+Cleanup now lists saved sealed plans and binds inspection to their SHA-256.
+An empty selection never starts cleanup. The earlier FAIL ledger entry remains
+historical; rerunning the corrected command records the corrected outcome.
+
 ## First use in Colab
 
-1. Upload `nih_tracker_v19_2_bundle.zip` to `/content` and open the accompanying
+1. Upload `nih_tracker_v19_2_1_bundle.zip` to `/content` and open the accompanying
    `nih_tracker_colab_v19_maintenance.ipynb` in Colab.
 2. In section 1, leave `APPLY_PREFILL=False` to inspect the installation plan.
    Set it to true to install the reviewed release. The ZIP inventory is verified
@@ -27,8 +33,10 @@ It preserves human approval as the authority for operational decisions.
 6. Use the review workbench for the remaining human decisions. Before deliberately
    selecting new run outputs, **Unpin review sources**, refresh the inventory,
    inspect it and pin again. Unpinning retains the old selection in the audit.
-7. For cleanup, generate a sealed plan and inspect its protected and eligible
-   paths. Apply only the exact plan path you reviewed. All other writers must be
+7. For cleanup, run section 6 and select a saved plan, or click **Create plan**.
+   Click **Inspect selected plan** and review its protected and eligible paths.
+   Check both acknowledgments to enable **Apply reviewed plan**. The selection
+   is initially empty and changes invalidate prior review. All other writers must be
    stopped. Plan and apply both check retention; every eligible file is archived
    and re-read for SHA-256 verification before any source is removed.
 
