@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conroyriodss.github.io/tracker/schemas/catalog_claim.schema.json",
+  "title": "NIH Tracker evidence-bearing claim",
+  "type": "object",
+  "required": ["id", "subject", "predicate", "evidence_state", "source_id", "resolution_status"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "subject": {"type": "string", "minLength": 1},
+    "predicate": {"type": "string", "minLength": 1},
+    "object_id": {"type": "string"},
+    "value": {},
+    "evidence_state": {"enum": ["verified", "officially_reported", "registry_reported", "not_established"]},
+    "source_id": {"type": "string", "minLength": 1},
+    "source_url": {"type": "string"},
+    "source_date": {"type": "string"},
+    "observed_at": {"type": "string"},
+    "reviewed_at": {"type": "string"},
+    "review_due": {"type": "string"},
+    "method": {"type": "string"},
+    "source_sha256": {"type": "string"},
+    "resolution_status": {"enum": ["selected", "supporting", "conflicting", "superseded", "not_established"]},
+    "limitations": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  },
+  "anyOf": [{"required": ["object_id"]}, {"required": ["value"]}],
+  "additionalProperties": false
+}

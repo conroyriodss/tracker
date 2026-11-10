@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conroyriodss.github.io/tracker/schemas/catalog_edge.schema.json",
+  "title": "NIH Tracker catalog edge",
+  "type": "object",
+  "required": ["id", "subject", "predicate", "object"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "subject": {"type": "string", "minLength": 1},
+    "predicate": {"type": "string", "minLength": 1},
+    "object": {"type": "string", "minLength": 1},
+    "properties": {"type": "object"},
+    "claim_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}

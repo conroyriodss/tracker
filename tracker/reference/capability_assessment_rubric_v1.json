@@ -1,0 +1,117 @@
+{
+  "schema": "nih-tracker-capabilities-ad/v1",
+  "criteria": {
+    "A1": {
+      "domain": "A",
+      "label": "Identifier systems",
+      "description": "Globally unique identifiers; namespace, issuer, object scope and examples."
+    },
+    "A2": {
+      "domain": "A",
+      "label": "Resolution",
+      "description": "Resolution of explicitly selected PID examples; dated observation, not a persistence guarantee."
+    },
+    "A3": {
+      "domain": "A",
+      "label": "Version identity",
+      "description": "Version-specific identifiers, version relations, immutable releases and tombstones."
+    },
+    "A4": {
+      "domain": "A",
+      "label": "Persistence",
+      "description": "Published preservation, withdrawal, succession and persistence commitments."
+    },
+    "A5": {
+      "domain": "A",
+      "label": "Collection identifiers",
+      "description": "Collection-level identifiers distinct from item, repository and participant identifiers."
+    },
+    "A6": {
+      "domain": "A",
+      "label": "Citation",
+      "description": "Explicit dataset/release citation examples and machine-readable citation exports."
+    },
+    "B1": {
+      "domain": "B",
+      "label": "Operations and maintenance",
+      "description": "Published maintenance, update, release and operational practices."
+    },
+    "B2": {
+      "domain": "B",
+      "label": "Contacts",
+      "description": "Role-based public support and operational contact routes; avoid personal contact extraction."
+    },
+    "B3": {
+      "domain": "B",
+      "label": "Support",
+      "description": "Documented funding, sustaining support and organizational responsibilities, dated and scoped."
+    },
+    "B4": {
+      "domain": "B",
+      "label": "Policies",
+      "description": "Resource-specific governance, submission, preservation and operational policies."
+    },
+    "B5": {
+      "domain": "B",
+      "label": "RRID",
+      "description": "Exact resource identity in an authoritative RRID record; parent/component distinctions."
+    },
+    "B6": {
+      "domain": "B",
+      "label": "FAIRsharing",
+      "description": "Exact resource identity and record type in FAIRsharing; distinguish listed standards."
+    },
+    "B7": {
+      "domain": "B",
+      "label": "NLM Dataset Catalog",
+      "description": "Dataset-level coverage or repository source inclusion; not a generic repository certification."
+    },
+    "C1": {
+      "domain": "C",
+      "label": "Schemas and formats",
+      "description": "Machine-readable schemas, formats, profile names and exact versions."
+    },
+    "C2": {
+      "domain": "C",
+      "label": "Dictionaries",
+      "description": "Definitions, units, datatypes and permitted values for documented fields."
+    },
+    "C3": {
+      "domain": "C",
+      "label": "Provenance",
+      "description": "Lineage, attribution, transformations and source/release provenance."
+    },
+    "C4": {
+      "domain": "C",
+      "label": "Terminologies and CDEs",
+      "description": "Terminology and Common Data Element identifiers, versions, bindings and local extensions."
+    },
+    "C5": {
+      "domain": "C",
+      "label": "Mappings and ambiguity",
+      "description": "Crosswalks, mapping versions, direction, loss, ambiguity and validation scope."
+    },
+    "D1": {
+      "domain": "D",
+      "label": "Data access and reuse",
+      "description": "Data access conditions, licenses, attribution, consent/use restrictions and version/scope."
+    },
+    "D2": {
+      "domain": "D",
+      "label": "Model access and reuse",
+      "description": "Model weights, model outputs and training/use restrictions; separate from data license."
+    },
+    "D3": {
+      "domain": "D",
+      "label": "Code access and reuse",
+      "description": "Code availability, version, software license and reuse conditions; separate from data/model terms."
+    },
+    "D4": {
+      "domain": "D",
+      "label": "Interfaces",
+      "description": "Documented APIs, download/deposit paths, authentication, versions and rate limits."
+    }
+  },
+  "composite_score": false,
+  "D_scope": "Access and reuse terms for data, models, and code, plus documented interfaces; user text ended here."
+}

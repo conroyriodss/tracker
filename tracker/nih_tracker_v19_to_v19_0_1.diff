@@ -1,0 +1,1277 @@
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/HOTFIX_NOTES.md /mnt/data/v19_0_1_work/HOTFIX_NOTES.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/HOTFIX_NOTES.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/HOTFIX_NOTES.md	2026-09-28 20:43:19.002046391 +0000
+@@ -1,5 +1,31 @@
+-# NIH Tracker v19.0 implementation notes
++# NIH Tracker v19.0.1 hotfix notes
+ 
+-v19.0 is a major release rather than a hotfix. It preserves the v18.5 production-only and guided-review corrections and adds the derived knowledge-graph compiler, public data contract, task-oriented frontend, and recursive static publication.
++v19.0.1 is a bounded operational hotfix for the initial v19 knowledge-graph release. It does not change card content, catalog semantics, controlled vocabularies, graph schemas, or the generated public resource views.
+ 
+-One additional workflow correction is included: imported recommendations awaiting named human approval now block downstream review finalization. No promotion or operational application is attempted in that state.
++## Corrected publication behavior
++
++The v19 catalog correctly represents a change-history stream with zero records as a zero-byte `data/change_history.jsonl` file. This occurs on a first catalog release or whenever no material public field changed. The original GitHub publication planner rejected every zero-byte public artifact, so it blocked a valid catalog after `build_catalog` and `build_frontend` had passed.
++
++v19.0.1:
++
++- Allows a zero-byte `data/change_history.jsonl` as the canonical empty JSONL stream.
++- Continues to reject empty required artifacts such as `resources.json`, `nodes.jsonl`, `edges.jsonl`, `claims.jsonl`, schemas, and `index.html`.
++- Records `empty_payload_files` in the sealed publication plan.
++- Revalidates the empty-file allowlist when a sealed plan is loaded or applied.
++- Does not create a synthetic change event merely to make the file non-empty.
++
++## Corrected production-only maintenance behavior
++
++The development and staging roots were removed before v19. The v19.0 maintenance notebook nevertheless retained the one-time legacy deletion block. When both roots were already absent, the compatibility script created a no-op plan and then passed the entire My Drive root to `ledger_append` as an input. Ledger hashing recursively traversed My Drive and encountered a Google Docs virtual `.gdoc` placeholder that cannot be opened as a normal file on the mounted filesystem.
++
++v19.0.1:
++
++- Removes the completed legacy-environment deletion control from the normal maintenance notebook.
++- Keeps the CLI script only for forensic or delayed upgrades.
++- Treats absent legacy roots as an explicit valid no-op.
++- Never submits the My Drive root for recursive content hashing.
++- Uses the sealed deletion plan as the bounded ledger input.
++
++## Upgrade effect
++
++The hotfix updates release-managed code and notebooks only. It preserves cards, inputs, graph outputs, run history, snapshots, caches, credentials, and the current production build.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/MIGRATION_AND_OPERATIONS.md /mnt/data/v19_0_1_work/MIGRATION_AND_OPERATIONS.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/MIGRATION_AND_OPERATIONS.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/MIGRATION_AND_OPERATIONS.md	2026-09-28 20:43:19.675797475 +0000
+@@ -1,9 +1,9 @@
+-# NIH Tracker v19.0 migration and operations
++# NIH Tracker v19.0.1 migration and operations
+ 
+ ## Upgrade from v18.5
+ 
+ 1. Freeze the current v18.5 production build, publication receipt, card hashes, and source snapshots.
+-2. Upload the v19.0 release bundle to `/content` or the top level of My Drive.
++2. Upload the v19.0.1 release bundle to `/content` or the top level of My Drive.
+ 3. Open `nih_tracker_colab_v19_maintenance.ipynb`.
+ 4. Select **Refresh release code** and check **Apply**.
+ 5. Reopen the v19 notebooks so the runtime imports the new modules.
+@@ -73,3 +73,7 @@
+ ## Data-asset boundary
+ 
+ `schemas/data_asset.schema.json` and `templates/data_asset_template.yaml` are extension points. Do not bulk-materialize dbGaP studies or repository collections as v19 assets. A later pilot should use a bounded, preregistered selection and authoritative accession/DOI snapshots.
++
++## Hotfix-specific operation
++
++After installing v19.0.1, rerun the final publication cell. A new sealed plan may include an empty `data/change_history.jsonl`; this is valid when there are no material prior-catalog changes. The maintenance notebook no longer offers the already-completed dev/staging deletion operation.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/PRODUCTION_ONLY_OPERATIONS.md /mnt/data/v19_0_1_work/PRODUCTION_ONLY_OPERATIONS.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/PRODUCTION_ONLY_OPERATIONS.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/PRODUCTION_ONLY_OPERATIONS.md	2026-09-28 20:43:19.675063601 +0000
+@@ -1,4 +1,4 @@
+-# NIH Tracker v19.0 production-only operations
++# NIH Tracker v19.0.1 production-only operations
+ 
+ ## Retained roots
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/PUBLIC_CATALOG_METHODS.md /mnt/data/v19_0_1_work/PUBLIC_CATALOG_METHODS.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/PUBLIC_CATALOG_METHODS.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/PUBLIC_CATALOG_METHODS.md	2026-09-28 20:43:19.675108575 +0000
+@@ -1,4 +1,4 @@
+-# NIH Tracker v19.0 public catalog methods
++# NIH Tracker v19.0.1 public catalog methods
+ 
+ ## Scope
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/README.md /mnt/data/v19_0_1_work/README.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/README.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/README.md	2026-09-28 20:43:19.674777211 +0000
+@@ -1,6 +1,6 @@
+-# NIH Tracker v19.0
++# NIH Tracker v19.0.1
+ 
+-NIH Tracker v19.0 adds a deterministic, evidence-bearing knowledge graph and a task-oriented public **NIH Data Resource Navigator** while preserving reviewed YAML cards and pinned project snapshots as the authoritative source of truth.
++NIH Tracker v19.0.1 contains a deterministic, evidence-bearing knowledge graph and a task-oriented public **NIH Data Resource Navigator** while preserving reviewed YAML cards and pinned project snapshots as the authoritative source of truth.
+ 
+ ```text
+ reviewed cards + pinned references
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/RELEASE_MANIFEST.json /mnt/data/v19_0_1_work/RELEASE_MANIFEST.json
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/RELEASE_MANIFEST.json	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/RELEASE_MANIFEST.json	2026-09-28 20:47:55.859978300 +0000
+@@ -1,5 +1,5 @@
+ {
+-  "artifact": "static-knowledge-graph-and-task-oriented-resource-navigator",
++  "artifact": "v19-knowledge-graph-publication-and-maintenance-hotfix",
+   "authority_model": {
+     "authoritative_mutable_records": [
+       "cards/*.yaml",
+@@ -12,7 +12,7 @@
+     "derived_catalog": "build/catalog",
+     "external_network_used_by_catalog_build": false
+   },
+-  "base_release": "NIH Tracker v18.5",
++  "base_release": "NIH Tracker v19.0",
+   "catalog": {
+     "artifact_count_in_synthetic_validation": 19,
+     "bulk_data_asset_population": false,
+@@ -102,6 +102,23 @@
+     "path": "reference/catalog_vocabularies_v1.json",
+     "version": "1.1.0"
+   },
++  "hotfix": {
++    "card_content_changed": false,
++    "card_schema_changed": false,
++    "catalog_semantics_changed": false,
++    "maintenance": {
++      "absent_legacy_roots_are_valid_noop": true,
++      "legacy_deletion_removed_from_notebook": true,
++      "my_drive_root_recursive_hashing_removed": true
++    },
++    "publication": {
++      "required_payloads_still_fail_if_empty": true,
++      "sealed_plan_records_empty_payloads": true,
++      "valid_empty_payloads": [
++        "data/change_history.jsonl"
++      ]
++    }
++  },
+   "limitations": [
+     "v19 defines but does not bulk-populate DataAsset records.",
+     "The public release is static and does not deploy a graph database or live service API.",
+@@ -112,22 +129,22 @@
+   ],
+   "notebooks": {
+     "nih_tracker_colab_v19_maintenance.ipynb": {
+-      "cells": 21,
+-      "code_cells": 10,
+-      "hidden_code_cells": 10,
+-      "sha256": "6a2628d741b0115d4238d510c711794c625a8d2fb25051700e63bf726471c1b4"
++      "cells": 19,
++      "code_cells": 9,
++      "hidden_code_cells": 9,
++      "sha256": "8a0c40931296cd4db2185503a7b1a8b2a038cc34b33d344fc93929c619b09504"
+     },
+     "nih_tracker_colab_v19_pipeline.ipynb": {
+       "cells": 11,
+       "code_cells": 5,
+       "hidden_code_cells": 5,
+-      "sha256": "76deb6c96b32322138b7746f7b8f4e24f8d39e84d6f9f497df11be5a5bec7064"
++      "sha256": "cda96e3730d46c59cf5f245a7706dab7250c2f85a9aa9a3ef6da8044a1745a6b"
+     },
+     "nih_tracker_colab_v19_review_workbench.ipynb": {
+       "cells": 17,
+       "code_cells": 8,
+       "hidden_code_cells": 8,
+-      "sha256": "ad3f8ce80e051f7ecfc8f2b8610ab72df02ff6e687905374868bec46441542c1"
++      "sha256": "3234431aa8d83713ea4fefd3b0e8a0d03e7ee69d723067e39d316a3a57ce5241"
+     }
+   },
+   "pipeline_network_control": {
+@@ -207,7 +224,7 @@
+       "verified": true
+     }
+   },
+-  "release": "NIH Tracker v19.0",
++  "release": "NIH Tracker v19.0.1",
+   "release_date": "2026-09-28",
+   "review_workflow": {
+     "named_human_approval_required": true,
+@@ -223,28 +240,31 @@
+   },
+   "schema": "nih-tracker-release-manifest/v2",
+   "validation": {
+-    "cli_help_checks": 35,
++    "bounded_absent_legacy_root_noop_regression": true,
++    "cli_help_checks": 36,
+     "deterministic_catalog_build": true,
+     "deterministic_frontend_build": true,
+     "deterministic_notebook_generation": true,
+     "deterministic_zip_regeneration": true,
++    "empty_change_history_publication_regression": true,
+     "exact_focused_archive_inventory_verified": true,
+-    "exact_focused_archive_targeted_tests_passed": 9,
++    "exact_focused_archive_targeted_tests_passed": 160,
+     "exact_full_archive_inventory_verified": true,
+-    "exact_full_archive_tests_passed": 158,
++    "exact_full_archive_tests_passed": 160,
+     "focused_archive_inventory_entries": 130,
+     "frontend_javascript_checked": true,
+-    "full_bundle_inventory_entries": 137,
++    "full_bundle_inventory_entries": 138,
+     "json_schemas_validated": 6,
+-    "notebook_code_cells_hidden": 23,
+-    "notebook_code_cells_parsed": 23,
++    "notebook_code_cells_hidden": 22,
++    "notebook_code_cells_parsed": 22,
+     "notebook_outputs_empty": true,
+     "notebooks_validated": 3,
+     "production_installer_data_files_collected": 0,
+     "production_installer_dry_apply_regression": true,
+-    "production_release_files_collected": 131,
++    "production_release_files_collected": 132,
+     "python_files_compiled": 73,
+     "reference_hashes_verified": 7,
++    "required_empty_payload_rejection_regression": true,
+     "synthetic_catalog_id": "e0d028650eee43b573a8a3a8f6e5014c03ac87a7a457a9bd06720dff5818b1d8",
+     "synthetic_counts": {
+       "change_events": 0,
+@@ -255,6 +275,6 @@
+     },
+     "synthetic_frontend_sha256": "9fd7ace73798c0750cbf8880d653ec51994995e375015a95eda609f975729bb8",
+     "test_modules": 18,
+-    "tests_passed": 158
++    "tests_passed": 160
+   }
+ }
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/RELEASE_NOTES.md /mnt/data/v19_0_1_work/RELEASE_NOTES.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/RELEASE_NOTES.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/RELEASE_NOTES.md	2026-09-28 20:43:19.675691553 +0000
+@@ -1,4 +1,12 @@
+-# NIH Tracker v19.0 release notes
++# NIH Tracker v19.0.1 release notes
++
++
++## v19.0.1 operational corrections
++
++- GitHub publication accepts the valid zero-record `data/change_history.jsonl` stream while continuing to reject empty required catalog artifacts.
++- Sealed publication plans record and revalidate every intentionally empty payload.
++- The normal maintenance notebook no longer exposes the completed dev/staging deletion workflow.
++- The compatibility deletion planner no longer hashes the entire My Drive root and returns a clean no-op when legacy roots are absent.
+ 
+ v19.0 is a major public-information-architecture and data-contract release. It converts the tracker from a wide repository directory into a small, static, evidence-bearing knowledge graph while retaining the reviewed card collection as the sole mutable source of truth.
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/REVISION_SUMMARY.md /mnt/data/v19_0_1_work/REVISION_SUMMARY.md
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/REVISION_SUMMARY.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/REVISION_SUMMARY.md	2026-09-28 20:43:19.674974383 +0000
+@@ -1,4 +1,4 @@
+-# NIH Tracker v19.0 revision summary
++# NIH Tracker v19.0.1 revision summary
+ 
+ ## Data architecture
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/VALIDATION_REPORT.txt /mnt/data/v19_0_1_work/VALIDATION_REPORT.txt
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/VALIDATION_REPORT.txt	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/VALIDATION_REPORT.txt	2026-09-28 20:47:55.860121821 +0000
+@@ -1,132 +1,97 @@
+-NIH TRACKER v19.0 VALIDATION REPORT
+-==================================
++NIH TRACKER v19.0.1 VALIDATION REPORT
++=====================================
+ 
+-Release scope
+--------------
+-NIH Tracker v19.0 adds a deterministic, read-only knowledge-graph compiler,
+-claim-level evidence and review dates, versioned public vocabularies, static
+-machine-readable exports, a task-oriented NIH Data Resource Navigator,
+-resource comparison, explainable no-match behavior, material change history,
+-and recursive GitHub Pages publication of the site plus catalog artifacts.
+-Reviewed YAML cards and pinned project snapshots remain the authoritative
+-mutable records. Base release: NIH Tracker v18.5.
+ Validation date: 2026-09-28.
+ 
++Purpose
++-------
++v19.0.1 is a bounded operational hotfix for the v19 static knowledge graph.
++It changes neither reviewed card content nor catalog semantics. It corrects two
++failures observed in the first production installation:
++
++1. A valid zero-record build/data/change_history.jsonl was rejected by the
++   GitHub publication planner because it was zero bytes.
++2. The completed dev/staging deletion workflow remained in the maintenance
++   notebook and submitted the entire My Drive root to ledger hashing, which
++   encountered an unreadable Google Docs virtual placeholder.
++
+ Core results
+ ------------
+-- 158 unit and integration tests passed across 18 test modules.
++- 160 unit and integration tests passed across 18 test modules.
+ - 73 Python files compiled successfully.
+-- 35 of 35 command-line entry points completed --help.
+-- All 3 v19 notebooks passed nbformat validation.
+-- All 23 notebook code cells passed Python AST parsing.
+-- All 23 code cells carry hidden-by-default Colab/Jupyter metadata.
+-- Released v19 notebooks contain no execution counts or saved outputs.
++- 36 of 36 command-line entry points completed --help.
++- All 3 v19.0.1 notebooks passed nbformat validation.
++- All 22 notebook code cells passed Python AST parsing.
++- All 22 code cells carry hidden-by-default Colab/Jupyter metadata.
++- Released notebooks contain no execution counts or saved outputs.
+ - Consecutive notebook generations were byte-identical.
+-- All 6 JSON Schemas parsed and representative catalog/resource objects
+-  validated against the manifest and public-resource schemas.
++- Frontend JavaScript extracted from frontend.html passed node --check.
+ - All 7 pinned reference artifacts matched their metadata SHA-256 values.
+ 
+-Knowledge-graph compiler
+-------------------------
+-- The compiler completed with network access disabled and did not mutate its
+-  source card.
+-- Two consecutive catalog builds from identical inputs and the same explicit
+-  2026-09-28 compilation date were byte-identical.
+-- The synthetic validation catalog contained:
+-    resources: 1
+-    nodes: 24
+-    edges: 11
+-    claims: 38
+-    change events: 0
+-    catalog artifacts: 19
+-- Synthetic catalog ID:
+-  e0d028650eee43b573a8a3a8f6e5014c03ac87a7a457a9bd06720dff5818b1d8
+-- The representative resource included source-bound resource type, NIH
+-  relationship, ICO, deposit, access, operational status, API, standard, PID,
+-  GUID, publisher, modality, taxonomy, organism/model-system, and cautious
+-  human-data-context claims.
+-- Every graph edge referenced existing nodes.
+-- Every public claim included a categorical evidence state, source node,
+-  observation date, review-due date, method, resolution state, and limitations
+-  field where applicable.
+-- No composite completeness, maturity, FAIRness, confidence, or fit score was
+-  generated.
+-
+-Frontend and public data contract
+----------------------------------
+-- Two consecutive frontend builds from the same catalog were byte-identical.
+-- Synthetic frontend SHA-256:
+-  9fd7ace73798c0750cbf8880d653ec51994995e375015a95eda609f975729bb8
+-- JavaScript extracted from the generated site passed node --check.
+-- The interface regression suite covered all four primary task paths, faceted
+-  search, explainable categorical fit, no-match guidance, progressive resource
+-  profiles, comparison, observatory views, public methods, evidence history,
+-  and static downloads.
+-- Accessibility checks confirmed hidden-code notebook defaults, keyboard-focus
+-  support, skip navigation, text equivalents for statuses, descriptive links,
+-  and no color-only status encoding.
+-- Public exports include JSON, JSONL, CSV, JSON-LD, controlled vocabularies,
+-  nodes, edges, claims, change history, coverage audits, source freshness,
+-  migration audit, schemas, and a sealed manifest.
+-
+-Review and mutation boundary
+-----------------------------
+-- Imported recommendations awaiting named human approval take precedence over
+-  finalization.
+-- The guided finalizer refuses validation or application while unapproved
+-  imported recommendations remain.
+-- Existing source, item, card, and manifest hash binding remains in force.
+-- Existing card locks, snapshots, rollback, optimistic concurrency,
+-  write-then-replace behavior, and transactional application remain unchanged.
+-- The catalog compiler and frontend builder are read-only with respect to cards.
+-
+-Production installer
+---------------------
+-- The production-only installer collected 131 release-managed files.
+-- It collected zero card, input, or block files.
+-- Dry run changed no target files.
+-- Apply required the exact INSTALL_PRODUCTION_RELEASE confirmation.
+-- Apply installed all 131 planned release files into an isolated production
+-  fixture.
+-- Pre-existing sentinel card and input files remained byte-identical.
+-- v19 scripts, schemas, and all three v19 notebooks were installed.
+-
+ Publication regression
+ ----------------------
+-- The GitHub publication planner recursively sealed index.html, data artifacts,
+-  and schemas.
+-- Apply retained exact plan-hash and source-hash verification.
+-- Managed-file cleanup owns only files from an earlier tracker publication
+-  manifest and does not claim unrelated repository content.
+-- Legacy v1 publication plans remain readable; v19 plans use the recursive
+-  publication contract.
++- The planner accepts a zero-byte data/change_history.jsonl and records it in
++  empty_payload_files in the sealed publication plan.
++- The plan loader revalidates the empty-file inventory before apply.
++- A zero-byte required graph artifact such as data/nodes.jsonl remains a
++  blocking error.
++- index.html remains required and non-empty.
++- Existing recursive payload hashing, secret scanning, plan sealing,
++  provenance binding, and managed-file cleanup remain in force.
++- No synthetic change event is written merely to make an empty history stream
++  non-empty.
++
++Production-only maintenance regression
++--------------------------------------
++- The normal maintenance notebook no longer exposes the completed dev/staging
++  deletion workflow.
++- The compatibility CLI remains available for delayed or forensic upgrades.
++- When NIH_Tracker_dev and NIH_Tracker_staging are absent, planning completes
++  as a valid no-op and requires no apply step.
++- The planner submits only its sealed plan as a ledger input; it never hashes
++  /content/drive/MyDrive recursively.
++- An unrelated Drive document does not enter the operation's hash scope.
++- The existing guarded deletion test still confirms preservation of production
++  and NIH_Tracker_shared when legacy roots actually exist.
++
++Knowledge-graph compatibility
++-----------------------------
++- step_build_catalog.py, graph schemas, controlled vocabularies, claim
++  resolution, resource views, frontend semantics, and data-asset extension
++  points are unchanged from v19.0.
++- The prior v19 deterministic catalog and frontend regression suite continues
++  to pass.
++- The catalog compiler remains read-only with respect to cards.
++- Offline/cached-only remains the pipeline default.
++- No composite completeness, maturity, FAIRness, confidence, or fit score was
++  introduced.
+ 
+-Deterministic packaged archives
++Notebook and installer behavior
+ -------------------------------
+-- The complete v19 ZIP was extracted into a clean directory.
+-- All 137 internal SHA-256 inventory entries verified.
+-- All 158 tests passed from the exact complete-archive extraction in three
+-  bounded test groups: 62, 42, and 54 tests.
+-- All 35 command-line help checks passed from the exact extraction.
+-- The exact extraction passed compilation, notebook validation, deterministic
+-  catalog/frontend builds, JavaScript syntax validation, schema validation,
+-  reference-hash verification, and production-installer dry/apply regression.
+-- The focused code/tests ZIP was extracted separately.
+-- All 130 focused-archive inventory entries verified.
+-- All 9 v19 knowledge-graph regression tests passed from that extraction.
++- The pipeline and review workbench retain their v19 workflow and controls.
++- The maintenance notebook now contains 19 cells and 9 code cells, down from
++  21 and 10 after removal of the obsolete migration control.
++- The production-only installer collects 132 release-managed files after the
++  v19-to-v19.0.1 diff is included.
++- The installer continues to collect zero cards, inputs, or blocks.
++- Cards, inputs, runs, snapshots, builds, caches, credentials, and locks remain
++  outside release-code installation scope.
++
++Packaged archive checks
++-----------------------
++- Complete bundle internal inventory: 138 entries.
++- Focused code/tests archive internal inventory: 130 entries.
++- The complete bundle was extracted into a clean directory, all inventory
++  entries were verified, and all 160 tests passed from the extraction.
++- The focused archive was extracted separately, all inventory entries were
++  verified, and all 160 tests passed.
+ - Consecutive deterministic generations of both ZIP archives were
+   byte-identical.
+ 
+-Interpretation limits
+----------------------
+-- v19 defines but does not bulk-populate DataAsset records.
+-- The public release remains static; it does not deploy a graph database or a
+-  live service API.
+-- Organism/model-system scope and human-data context are source-bound discovery
+-  aids, not asset-level consent, de-identification, privacy, or legal
+-  classifications.
+-- API reported, documented, reachable, and conformance-tested are distinct.
+-- CADR listing does not by itself establish current user-facing availability,
+-  universal DMS suitability, or study-level data residency.
+-- Public categorical evidence states do not replace curator-side review notes,
+-  adjudication records, or source snapshots.
++Interpretation
++--------------
++A zero-byte JSONL file is the canonical representation of a stream containing
++zero records. In this release that allowance is intentionally narrow:
++only data/change_history.jsonl may be empty. The hotfix does not relax the
++public data contract for nodes, edges, claims, resources, vocabularies,
++schemas, or the HTML entry point.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/build_notebooks.py /mnt/data/v19_0_1_work/build_notebooks.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/build_notebooks.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/build_notebooks.py	2026-09-28 20:42:18.346051778 +0000
+@@ -104,7 +104,7 @@
+ pipeline_cells = [
+     md(
+         """
+-        # NIH Tracker pipeline notebook (v19.0)
++        # NIH Tracker pipeline notebook (v19.0.1)
+ 
+         This notebook performs one standard tracker refresh. It contains no review workbench and no destructive maintenance controls. Compile, input, lock, and card-parse checks always run. External API/service smoke checks and live evidence refreshes run only when the explicit external-network option is selected. A scope-aware crosswalk preflight runs before normal card mutations, and idempotent transformation steps treat zero required changes as success. Every subprocess streams to the notebook and is also retained under `runs/notebook_debug/pipeline/`.
+ 
+@@ -853,7 +853,7 @@
+     return [
+         md(
+             """
+-            # NIH Tracker guided review workbench (v19.0)
++            # NIH Tracker guided review workbench (v19.0.1)
+ 
+             The normal workflow is now **Review → Approve → Finalize**. The notebook shows only the next material action and skips decision families that have no pending work. Evidence-gap inventories and historical queues are available under **Advanced diagnostics**; they are not mixed into the operational review path and do not block publication.
+ 
+@@ -1472,7 +1472,7 @@
+         ),
+         md(
+             """
+-            ## 6. Advanced diagnostics (optional)
++            ## 5. Advanced diagnostics (optional)
+ 
+             Open this section only for historical queues, targeted family-level troubleshooting, or evidence-curation planning. Evidence gaps are descriptive backlogs—not adjudication queues—and are summarized without automatically rendering thousand-row tables. The current files are `interoperability_gaps.csv` with `templates/interoperability_curated_template.csv`, and `resource_profile_gaps.csv` with `templates/resource_profile_curated_template.csv`.
+ 
+@@ -1561,7 +1561,7 @@
+         ),
+         md(
+             """
+-            ## 7. Session audit
++            ## 6. Session audit
+ 
+             This read-only summary lists only subprocesses actually launched during the guided session. When the dashboard is complete, proceed to the main pipeline notebook.
+             """
+@@ -1584,9 +1584,9 @@
+ maintenance_cells = [
+     md(
+         """
+-        # NIH Tracker maintenance notebook (v19.0)
++        # NIH Tracker maintenance notebook (v19.0.1)
+ 
+-        This production-only notebook contains the low-frequency operational controls intentionally excluded from the pipeline and review notebooks: release installation or refresh, removal of the retired dev/staging folders, lock handling, bounded cleanup, transaction restoration, and archive-backed reset.
++        This production-only notebook contains the low-frequency operational controls intentionally excluded from the pipeline and review notebooks: release installation or refresh, reference updates, lock handling, bounded cleanup, transaction restoration, and archive-backed reset.
+ 
+         Destructive operations are preview-first and require checkboxes. Exact CLI confirmation tokens are generated internally rather than entered into free-text fields.
+         """
+@@ -1595,7 +1595,7 @@
+         """
+         ## 1. Install or refresh the production release
+ 
+-        Run this block only when installing v19.0 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.
++        Run this block only when installing v19.0.1 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.
+ 
+         **Create missing files** never overwrites an existing release file. **Refresh release code** replaces only changed release-managed files.
+         """
+@@ -1741,7 +1741,7 @@
+ INITIALIZER = next((path.resolve() for path in script_candidates if path.is_file()), None)
+ if INITIALIZER is None:
+     raise FileNotFoundError(
+-        "Production release installer was not found. Upload/extract the v19.0 bundle to /content."
++        "Production release installer was not found. Upload/extract the v19.0.1 bundle to /content."
+     )
+ RELEASE_ROOT = INITIALIZER.parents[1]
+ _validate_release_inventory(RELEASE_ROOT)
+@@ -1812,7 +1812,7 @@
+         """
+         ## 2. Start production maintenance
+ 
+-        After the release block has installed the scripts, start the production runtime. Card restoration, reset, reference updates, and legacy-environment deletion require the production-write acknowledgement where indicated.
++        After the release block has installed the scripts, start the production runtime. Card restoration, reset, and reference updates require the production-write acknowledgement where indicated.
+         """
+     ),
+     code('NOTEBOOK_NAME = "maintenance"\n' + SHARED_SETUP),
+@@ -1837,70 +1837,7 @@
+     ),
+     md(
+         """
+-        ## 4. Remove the retired dev and staging folders
+-
+-        This operation targets only `/content/drive/MyDrive/NIH_Tracker_dev` and `/content/drive/MyDrive/NIH_Tracker_staging`. It never targets production or `/content/drive/MyDrive/NIH_Tracker_shared`. First create and inspect a sealed plan. Apply only that exact plan after confirming no process is using either legacy folder. Deletion is irreversible.
+-        """
+-    ),
+-    code(
+-        r'''
+-LEGACY_ENV_ACTION = "Create deletion plan"  # @param ["Create deletion plan", "Apply newest unapplied plan"]
+-CONFIRM_LEGACY_ENV_DELETION = False  # @param {type:"boolean"}
+-
+-from pathlib import Path
+-import json
+-
+-run_legacy_operation = True
+-if LEGACY_ENV_ACTION == "Create deletion plan":
+-    legacy_args = []
+-    legacy_label = "plan_remove_nonproduction_environments"
+-else:
+-    plans = sorted(
+-        (Path(common.RUNS) / "remove_nonproduction_environments").glob("*/nonproduction_deletion_plan.json"),
+-        key=lambda path: path.stat().st_mtime_ns,
+-        reverse=True,
+-    )
+-    unapplied = [
+-        path for path in plans
+-        if not (path.parent / "nonproduction_deletion_receipt.json").is_file()
+-    ]
+-    if not unapplied:
+-        raise FileNotFoundError("No unapplied nonproduction deletion plan was found.")
+-    if not CONFIRM_LEGACY_ENV_DELETION:
+-        print("Deletion not applied. Review the newest plan below, then check CONFIRM_LEGACY_ENV_DELETION.")
+-        run_legacy_operation = False
+-    else:
+-        legacy_args = [
+-            "--plan", str(unapplied[0]),
+-            "--apply",
+-            "--confirm", "DELETE_DEV_STAGING_ENVIRONMENTS",
+-        ]
+-        legacy_label = "remove_nonproduction_environments"
+-
+-if run_legacy_operation:
+-    legacy_result = RUNTIME.run_script(
+-        "step_remove_nonproduction_environments.py",
+-        legacy_args,
+-        label=legacy_label,
+-        writes_cards=False,
+-    )
+-    if not legacy_result.ok:
+-        raise RuntimeError(f"Legacy-environment operation failed; inspect {legacy_result.log_path}")
+-
+-plan_dirs = sorted(
+-    (Path(common.RUNS) / "remove_nonproduction_environments").glob("*/nonproduction_deletion_plan.json"),
+-    key=lambda path: path.stat().st_mtime_ns,
+-    reverse=True,
+-)
+-if plan_dirs:
+-    current_plan = plan_dirs[0]
+-    print(f"Plan: {current_plan}")
+-    print(json.dumps(json.loads(current_plan.read_text(encoding="utf-8")), indent=2))
+-'''
+-    ),
+-    md(
+-        """
+-        ## 5. Refresh BMIC, dbGaP, or publisher-policy source information
++        ## 4. Refresh BMIC, dbGaP, or publisher-policy source information
+ 
+         Select one bounded update. For BMIC, upload a CSV whose filename contains `BMIC` to `/content`; when no upload is present, the updater validates the existing environment snapshot and reports a no-op. The dbGaP updater follows the official FHIR `ResearchStudy` catalogue and honors the response charset recorded by the service. Publisher refresh permits a bounded partial update: successfully fetched pages are pinned, while up to two transiently failed source rows retain their prior fields unchanged and are listed for retry. No updater changes semantic publisher-to-repository assertions automatically.
+ 
+@@ -1981,7 +1918,7 @@
+     ),
+     md(
+         """
+-        ## 6. Inspect or remove an abandoned card lock
++        ## 5. Inspect or remove an abandoned card lock
+ 
+         Lock age alone is not proof that a writer has stopped. Removal is permitted only after independently confirming that no notebook or process is writing cards.
+         """
+@@ -2009,7 +1946,7 @@
+     ),
+     md(
+         """
+-        ## 7. Preview or apply bounded cleanup
++        ## 6. Preview or apply bounded cleanup
+ 
+         First create and inspect a sealed cleanup plan. A later execution can apply only that exact plan; the deletion set is not recalculated during apply. Cleanup keeps the newest run folders per step and can remove old temporary files. Card transaction snapshots are preserved unless their separate checkbox is selected. `latest/`, active debug output, and lock files are never deleted.
+         """
+@@ -2069,7 +2006,7 @@
+     ),
+     md(
+         """
+-        ## 8. Restore a committed card transaction
++        ## 7. Restore a committed card transaction
+ 
+         Select a committed transaction from the dropdown. Preview verifies that current files still match the recorded after-images. Applying restoration creates a new transaction and will not overwrite legitimate later changes.
+         """
+@@ -2158,7 +2095,7 @@
+     ),
+     md(
+         """
+-        ## 9. Archive and reset all cards
++        ## 8. Archive and reset all cards
+ 
+         Reset first creates a collision-resistant ZIP archive, then deletes card files inside one rollback-capable transaction. Select the reset action and check the confirmation box only when a full environment rebuild is intended.
+         """
+@@ -2199,7 +2136,7 @@
+     ),
+     md(
+         """
+-        ## 10. Persist the maintenance audit summary
++        ## 9. Persist the maintenance audit summary
+ 
+         This final read-only cell consolidates operation results, recent ledger entries, and the current diagnostic state into the notebook debug directory.
+         """
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/nih_tracker_colab_v19_maintenance.ipynb /mnt/data/v19_0_1_work/nih_tracker_colab_v19_maintenance.ipynb
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/nih_tracker_colab_v19_maintenance.ipynb	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/nih_tracker_colab_v19_maintenance.ipynb	2026-09-28 20:45:42.284409802 +0000
+@@ -2,24 +2,24 @@
+  "cells": [
+   {
+    "cell_type": "markdown",
+-   "id": "cell-00-f6f52cf369bc",
++   "id": "cell-00-3d9a764825c3",
+    "metadata": {},
+    "source": [
+-    "# NIH Tracker maintenance notebook (v19.0)\n",
++    "# NIH Tracker maintenance notebook (v19.0.1)\n",
+     "\n",
+-    "This production-only notebook contains the low-frequency operational controls intentionally excluded from the pipeline and review notebooks: release installation or refresh, removal of the retired dev/staging folders, lock handling, bounded cleanup, transaction restoration, and archive-backed reset.\n",
++    "This production-only notebook contains the low-frequency operational controls intentionally excluded from the pipeline and review notebooks: release installation or refresh, reference updates, lock handling, bounded cleanup, transaction restoration, and archive-backed reset.\n",
+     "\n",
+     "Destructive operations are preview-first and require checkboxes. Exact CLI confirmation tokens are generated internally rather than entered into free-text fields.\n"
+    ]
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-01-f4e21e23220d",
++   "id": "cell-01-41c2e6220f97",
+    "metadata": {},
+    "source": [
+     "## 1. Install or refresh the production release\n",
+     "\n",
+-    "Run this block only when installing v19.0 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.\n",
++    "Run this block only when installing v19.0.1 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.\n",
+     "\n",
+     "**Create missing files** never overwrites an existing release file. **Refresh release code** replaces only changed release-managed files.\n"
+    ]
+@@ -27,7 +27,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-02-d2bd9896f430",
++   "id": "cell-02-a802543306b9",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -179,7 +179,7 @@
+     "INITIALIZER = next((path.resolve() for path in script_candidates if path.is_file()), None)\n",
+     "if INITIALIZER is None:\n",
+     "    raise FileNotFoundError(\n",
+-    "        \"Production release installer was not found. Upload/extract the v19.0 bundle to /content.\"\n",
++    "        \"Production release installer was not found. Upload/extract the v19.0.1 bundle to /content.\"\n",
+     "    )\n",
+     "RELEASE_ROOT = INITIALIZER.parents[1]\n",
+     "_validate_release_inventory(RELEASE_ROOT)\n",
+@@ -248,12 +248,12 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-03-da506895df02",
++   "id": "cell-03-bde964d50a8c",
+    "metadata": {},
+    "source": [
+     "## 2. Start production maintenance\n",
+     "\n",
+-    "After the release block has installed the scripts, start the production runtime. Card restoration, reset, reference updates, and legacy-environment deletion require the production-write acknowledgement where indicated.\n"
++    "After the release block has installed the scripts, start the production runtime. Card restoration, reset, and reference updates require the production-write acknowledgement where indicated.\n"
+    ]
+   },
+   {
+@@ -367,90 +367,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-07-199a6437ed20",
++   "id": "cell-07-0ac8229327cc",
+    "metadata": {},
+    "source": [
+-    "## 4. Remove the retired dev and staging folders\n",
+-    "\n",
+-    "This operation targets only `/content/drive/MyDrive/NIH_Tracker_dev` and `/content/drive/MyDrive/NIH_Tracker_staging`. It never targets production or `/content/drive/MyDrive/NIH_Tracker_shared`. First create and inspect a sealed plan. Apply only that exact plan after confirming no process is using either legacy folder. Deletion is irreversible.\n"
+-   ]
+-  },
+-  {
+-   "cell_type": "code",
+-   "execution_count": null,
+-   "id": "cell-08-95ca817bf08f",
+-   "metadata": {
+-    "cellView": "form",
+-    "colab": {
+-     "base_uri": "",
+-     "view-in-form": true
+-    },
+-    "jupyter": {
+-     "source_hidden": true
+-    }
+-   },
+-   "outputs": [],
+-   "source": [
+-    "LEGACY_ENV_ACTION = \"Create deletion plan\"  # @param [\"Create deletion plan\", \"Apply newest unapplied plan\"]\n",
+-    "CONFIRM_LEGACY_ENV_DELETION = False  # @param {type:\"boolean\"}\n",
+-    "\n",
+-    "from pathlib import Path\n",
+-    "import json\n",
+-    "\n",
+-    "run_legacy_operation = True\n",
+-    "if LEGACY_ENV_ACTION == \"Create deletion plan\":\n",
+-    "    legacy_args = []\n",
+-    "    legacy_label = \"plan_remove_nonproduction_environments\"\n",
+-    "else:\n",
+-    "    plans = sorted(\n",
+-    "        (Path(common.RUNS) / \"remove_nonproduction_environments\").glob(\"*/nonproduction_deletion_plan.json\"),\n",
+-    "        key=lambda path: path.stat().st_mtime_ns,\n",
+-    "        reverse=True,\n",
+-    "    )\n",
+-    "    unapplied = [\n",
+-    "        path for path in plans\n",
+-    "        if not (path.parent / \"nonproduction_deletion_receipt.json\").is_file()\n",
+-    "    ]\n",
+-    "    if not unapplied:\n",
+-    "        raise FileNotFoundError(\"No unapplied nonproduction deletion plan was found.\")\n",
+-    "    if not CONFIRM_LEGACY_ENV_DELETION:\n",
+-    "        print(\"Deletion not applied. Review the newest plan below, then check CONFIRM_LEGACY_ENV_DELETION.\")\n",
+-    "        run_legacy_operation = False\n",
+-    "    else:\n",
+-    "        legacy_args = [\n",
+-    "            \"--plan\", str(unapplied[0]),\n",
+-    "            \"--apply\",\n",
+-    "            \"--confirm\", \"DELETE_DEV_STAGING_ENVIRONMENTS\",\n",
+-    "        ]\n",
+-    "        legacy_label = \"remove_nonproduction_environments\"\n",
+-    "\n",
+-    "if run_legacy_operation:\n",
+-    "    legacy_result = RUNTIME.run_script(\n",
+-    "        \"step_remove_nonproduction_environments.py\",\n",
+-    "        legacy_args,\n",
+-    "        label=legacy_label,\n",
+-    "        writes_cards=False,\n",
+-    "    )\n",
+-    "    if not legacy_result.ok:\n",
+-    "        raise RuntimeError(f\"Legacy-environment operation failed; inspect {legacy_result.log_path}\")\n",
+-    "\n",
+-    "plan_dirs = sorted(\n",
+-    "    (Path(common.RUNS) / \"remove_nonproduction_environments\").glob(\"*/nonproduction_deletion_plan.json\"),\n",
+-    "    key=lambda path: path.stat().st_mtime_ns,\n",
+-    "    reverse=True,\n",
+-    ")\n",
+-    "if plan_dirs:\n",
+-    "    current_plan = plan_dirs[0]\n",
+-    "    print(f\"Plan: {current_plan}\")\n",
+-    "    print(json.dumps(json.loads(current_plan.read_text(encoding=\"utf-8\")), indent=2))\n"
+-   ]
+-  },
+-  {
+-   "cell_type": "markdown",
+-   "id": "cell-09-5703abf8fa2a",
+-   "metadata": {},
+-   "source": [
+-    "## 5. Refresh BMIC, dbGaP, or publisher-policy source information\n",
++    "## 4. Refresh BMIC, dbGaP, or publisher-policy source information\n",
+     "\n",
+     "Select one bounded update. For BMIC, upload a CSV whose filename contains `BMIC` to `/content`; when no upload is present, the updater validates the existing environment snapshot and reports a no-op. The dbGaP updater follows the official FHIR `ResearchStudy` catalogue and honors the response charset recorded by the service. Publisher refresh permits a bounded partial update: successfully fetched pages are pinned, while up to two transiently failed source rows retain their prior fields unchanged and are listed for retry. No updater changes semantic publisher-to-repository assertions automatically.\n",
+     "\n",
+@@ -460,7 +380,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-10-bf5700caa38f",
++   "id": "cell-08-bf5700caa38f",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -545,10 +465,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-11-a838ed66af14",
++   "id": "cell-09-b5a793b01ed1",
+    "metadata": {},
+    "source": [
+-    "## 6. Inspect or remove an abandoned card lock\n",
++    "## 5. Inspect or remove an abandoned card lock\n",
+     "\n",
+     "Lock age alone is not proof that a writer has stopped. Removal is permitted only after independently confirming that no notebook or process is writing cards.\n"
+    ]
+@@ -556,7 +476,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-12-973ec07bf598",
++   "id": "cell-10-973ec07bf598",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -590,10 +510,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-13-2a14b7f9f931",
++   "id": "cell-11-a2f4f824d434",
+    "metadata": {},
+    "source": [
+-    "## 7. Preview or apply bounded cleanup\n",
++    "## 6. Preview or apply bounded cleanup\n",
+     "\n",
+     "First create and inspect a sealed cleanup plan. A later execution can apply only that exact plan; the deletion set is not recalculated during apply. Cleanup keeps the newest run folders per step and can remove old temporary files. Card transaction snapshots are preserved unless their separate checkbox is selected. `latest/`, active debug output, and lock files are never deleted.\n"
+    ]
+@@ -601,7 +521,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-14-e9757cb12047",
++   "id": "cell-12-e9757cb12047",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -667,10 +587,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-15-ae9763287025",
++   "id": "cell-13-5625c631ec26",
+    "metadata": {},
+    "source": [
+-    "## 8. Restore a committed card transaction\n",
++    "## 7. Restore a committed card transaction\n",
+     "\n",
+     "Select a committed transaction from the dropdown. Preview verifies that current files still match the recorded after-images. Applying restoration creates a new transaction and will not overwrite legitimate later changes.\n"
+    ]
+@@ -678,7 +598,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-16-796ce253dbbd",
++   "id": "cell-14-796ce253dbbd",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -773,10 +693,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-17-619c83118176",
++   "id": "cell-15-c5f9154e9bc0",
+    "metadata": {},
+    "source": [
+-    "## 9. Archive and reset all cards\n",
++    "## 8. Archive and reset all cards\n",
+     "\n",
+     "Reset first creates a collision-resistant ZIP archive, then deletes card files inside one rollback-capable transaction. Select the reset action and check the confirmation box only when a full environment rebuild is intended.\n"
+    ]
+@@ -784,7 +704,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-18-b846a64b5027",
++   "id": "cell-16-b846a64b5027",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -831,10 +751,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-19-4c84d2a43434",
++   "id": "cell-17-96c269b3d8bb",
+    "metadata": {},
+    "source": [
+-    "## 10. Persist the maintenance audit summary\n",
++    "## 9. Persist the maintenance audit summary\n",
+     "\n",
+     "This final read-only cell consolidates operation results, recent ledger entries, and the current diagnostic state into the notebook debug directory.\n"
+    ]
+@@ -842,7 +762,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-20-388b4cf465a1",
++   "id": "cell-18-388b4cf465a1",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/nih_tracker_colab_v19_pipeline.ipynb /mnt/data/v19_0_1_work/nih_tracker_colab_v19_pipeline.ipynb
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/nih_tracker_colab_v19_pipeline.ipynb	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/nih_tracker_colab_v19_pipeline.ipynb	2026-09-28 20:45:42.281394126 +0000
+@@ -2,10 +2,10 @@
+  "cells": [
+   {
+    "cell_type": "markdown",
+-   "id": "cell-00-44109cbb0518",
++   "id": "cell-00-3f852344c893",
+    "metadata": {},
+    "source": [
+-    "# NIH Tracker pipeline notebook (v19.0)\n",
++    "# NIH Tracker pipeline notebook (v19.0.1)\n",
+     "\n",
+     "This notebook performs one standard tracker refresh. It contains no review workbench and no destructive maintenance controls. Compile, input, lock, and card-parse checks always run. External API/service smoke checks and live evidence refreshes run only when the explicit external-network option is selected. A scope-aware crosswalk preflight runs before normal card mutations, and idempotent transformation steps treat zero required changes as success. Every subprocess streams to the notebook and is also retained under `runs/notebook_debug/pipeline/`.\n",
+     "\n",
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/nih_tracker_colab_v19_review_workbench.ipynb /mnt/data/v19_0_1_work/nih_tracker_colab_v19_review_workbench.ipynb
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/nih_tracker_colab_v19_review_workbench.ipynb	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/nih_tracker_colab_v19_review_workbench.ipynb	2026-09-28 20:45:42.282977602 +0000
+@@ -2,10 +2,10 @@
+  "cells": [
+   {
+    "cell_type": "markdown",
+-   "id": "cell-00-daf6db0694a0",
++   "id": "cell-00-2252451f80d6",
+    "metadata": {},
+    "source": [
+-    "# NIH Tracker guided review workbench (v19.0)\n",
++    "# NIH Tracker guided review workbench (v19.0.1)\n",
+     "\n",
+     "The normal workflow is now **Review → Approve → Finalize**. The notebook shows only the next material action and skips decision families that have no pending work. Evidence-gap inventories and historical queues are available under **Advanced diagnostics**; they are not mixed into the operational review path and do not block publication.\n",
+     "\n",
+@@ -784,10 +784,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-13-23d522d9756f",
++   "id": "cell-13-d1a542753d59",
+    "metadata": {},
+    "source": [
+-    "## 6. Advanced diagnostics (optional)\n",
++    "## 5. Advanced diagnostics (optional)\n",
+     "\n",
+     "            Open this section only for historical queues, targeted family-level troubleshooting, or evidence-curation planning. Evidence gaps are descriptive backlogs—not adjudication queues—and are summarized without automatically rendering thousand-row tables. The current files are `interoperability_gaps.csv` with `templates/interoperability_curated_template.csv`, and `resource_profile_gaps.csv` with `templates/resource_profile_curated_template.csv`.\n",
+     "\n",
+@@ -890,10 +890,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-15-8574aad0b47c",
++   "id": "cell-15-0d3d5b91a6a0",
+    "metadata": {},
+    "source": [
+-    "## 7. Session audit\n",
++    "## 6. Session audit\n",
+     "\n",
+     "This read-only summary lists only subprocesses actually launched during the guided session. When the dashboard is complete, proceed to the main pipeline notebook.\n"
+    ]
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/common.py /mnt/data/v19_0_1_work/scripts/common.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/common.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/scripts/common.py	2026-09-28 20:42:18.346789282 +0000
+@@ -29,7 +29,7 @@
+ # ---------------------------------------------------------------------------
+ # Environment and project layout
+ # ---------------------------------------------------------------------------
+-# v19.0 notebooks run in a single production environment.  The compatibility
++# v19.0.1 notebooks run in a single production environment.  The compatibility
+ # branch remains available for isolated tests and older command-line tooling,
+ # but production notebooks set NIH_TRACKER_PRODUCTION_ONLY=1 before importing
+ # this module.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/notebook_runtime.py /mnt/data/v19_0_1_work/scripts/notebook_runtime.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/notebook_runtime.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/scripts/notebook_runtime.py	2026-09-28 20:42:18.346901067 +0000
+@@ -131,7 +131,7 @@
+ ) -> tuple[Path, Path]:
+     """Configure environment variables before importing tracker modules.
+ 
+-    v19.0 notebooks set production-only mode before importing this module.
++    v19.0.1 notebooks set production-only mode before importing this module.
+     The compatibility branch for dev/staging remains available only when that
+     mode is not enabled, primarily for isolated tests and legacy command lines.
+     """
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/step_initialize_environments.py /mnt/data/v19_0_1_work/scripts/step_initialize_environments.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/step_initialize_environments.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/scripts/step_initialize_environments.py	2026-09-28 20:42:18.346488505 +0000
+@@ -1,6 +1,6 @@
+ """Install or refresh NIH Tracker release code.
+ 
+-In v19.0 production notebooks set ``NIH_TRACKER_PRODUCTION_ONLY=1``. In that
++In v19.0.1 production notebooks set ``NIH_TRACKER_PRODUCTION_ONLY=1``. In that
+ mode this command inspects and updates only ``/content/drive/MyDrive/NIH_Tracker``
+ and never scans, stages, or recreates dev/staging project data. The legacy
+ multi-environment branch remains available only for backward-compatible tests
+@@ -68,6 +68,7 @@
+     "nih_tracker_v18_2_to_v18_3.diff",
+     "nih_tracker_v18_4_to_v18_5.diff",
+     "nih_tracker_v18_5_to_v19.diff",
++    "nih_tracker_v19_to_v19_0_1.diff",
+     "PRODUCTION_ONLY_OPERATIONS.md",
+     "AUTOMATED_REVIEW_EXCHANGE.md",
+     "KNOWLEDGE_GRAPH_MODEL.md",
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/step_publish_github.py /mnt/data/v19_0_1_work/scripts/step_publish_github.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/step_publish_github.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/scripts/step_publish_github.py	2026-09-28 20:44:17.243617739 +0000
+@@ -44,6 +44,11 @@
+     MANAGED_MANIFEST,
+ )
+ PUBLIC_BUILD_SUBDIRECTORIES = ("data", "schemas")
++# A JSONL stream with zero records is represented by a zero-byte file.  That is
++# a valid state for change history on the first catalog release or whenever no
++# material public field changed.  Other public payloads remain non-empty by
++# contract so a truncated catalog still fails closed.
++EMPTY_PAYLOAD_ALLOWLIST = frozenset({"data/change_history.jsonl"})
+ REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+ BRANCH_RE = re.compile(r"^[A-Za-z0-9._/-]+$")
+ KNOWN_SECRET_NAMES = (
+@@ -178,7 +183,7 @@
+     payload_files: list[dict[str, Any]] = []
+     for relative, path in _publication_files(source):
+         data = path.read_bytes()
+-        if not data and relative != ".nojekyll":
++        if not data and relative not in EMPTY_PAYLOAD_ALLOWLIST:
+             raise ValueError(f"Public payload is empty: {path}")
+         scan_public_payload(data, source=path)
+         target = payload_dir / relative
+@@ -216,6 +221,9 @@
+         "payload_files": payload_files,
+         "payload_file_count": len(payload_files),
+         "payload_bytes": sum(item["bytes"] for item in payload_files),
++        "empty_payload_files": [
++            item["path"] for item in payload_files if int(item["bytes"]) == 0
++        ],
+     }
+     plan_path = run_dir / "publication_plan.json"
+     atomic_write_json(plan_path, plan)
+@@ -231,6 +239,8 @@
+     print(f"  source_bytes={plan['source_bytes']:,}")
+     print(f"  payload_files={plan['payload_file_count']}")
+     print(f"  payload_bytes={plan['payload_bytes']:,}")
++    if plan["empty_payload_files"]:
++        print(f"  valid_empty_payloads={', '.join(plan['empty_payload_files'])}")
+     print(f"  repository={repository or '[not configured]'}")
+     print(f"  branch={branch}")
+     print(f"  publish_dir={publish_dir}")
+@@ -294,6 +304,7 @@
+     if not isinstance(records, list) or not records:
+         raise ValueError("Publication plan has no payload files")
+     paths: list[str] = []
++    empty_paths: list[str] = []
+     for record in records:
+         if not isinstance(record, dict):
+             raise ValueError("Publication payload file record must be an object")
+@@ -311,14 +322,21 @@
+         expected_hash = str(record.get("sha256") or "")
+         if not re.fullmatch(r"[0-9a-f]{64}", expected_hash) or sha256_file(payload) != expected_hash:
+             raise ValueError(f"Publication payload hash mismatch: {relative}")
+-        if payload.stat().st_size != int(record.get("bytes", -1)):
++        recorded_bytes = int(record.get("bytes", -1))
++        if payload.stat().st_size != recorded_bytes:
+             raise ValueError(f"Publication payload byte count mismatch: {relative}")
++        if recorded_bytes == 0:
++            if relative not in EMPTY_PAYLOAD_ALLOWLIST:
++                raise ValueError(f"Unexpected empty publication payload: {relative}")
++            empty_paths.append(relative)
+         paths.append(relative)
+     expected_managed = paths + list(STATIC_MANAGED_FILES)
+     if plan.get("managed_files") != expected_managed:
+         raise ValueError("Publication plan managed-file policy is missing or unexpected")
+     if "index.html" not in paths:
+         raise ValueError("Publication payload must include index.html")
++    if plan.get("empty_payload_files", []) != empty_paths:
++        raise ValueError("Publication plan empty-payload inventory is missing or unexpected")
+     return plan
+ 
+ 
+@@ -371,6 +389,7 @@
+         "source_bytes": plan["source_bytes"],
+         "payload_file_count": int(plan.get("payload_file_count") or 1),
+         "payload_bytes": int(plan.get("payload_bytes") or plan["source_bytes"]),
++        "empty_payload_files": list(plan.get("empty_payload_files") or []),
+         "managed_files": plan["managed_files"],
+     }
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/step_remove_nonproduction_environments.py /mnt/data/v19_0_1_work/scripts/step_remove_nonproduction_environments.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/scripts/step_remove_nonproduction_environments.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/scripts/step_remove_nonproduction_environments.py	2026-09-28 20:42:18.347013099 +0000
+@@ -1,6 +1,7 @@
+-"""Plan or remove the legacy NIH Tracker dev and staging directories.
++"""Compatibility command to plan or remove legacy dev and staging directories.
+ 
+-The command is production-only and fail-closed.  Dry run creates a sealed plan
++The v19.0.1 maintenance notebook no longer exposes this completed migration.
++The command remains production-only and fail-closed for forensic or delayed upgrades.  Dry run creates a sealed plan
+ under the production run history.  Apply accepts only that exact plan and the
+ fixed confirmation token ``DELETE_DEV_STAGING_ENVIRONMENTS``.  The production
+ root and ``NIH_Tracker_shared`` cache are never deletion candidates.
+@@ -147,6 +148,7 @@
+             f"Production root must be {drive_root / 'NIH_Tracker'}; got {production}"
+         )
+     targets = [_tree_state(drive_root / name, drive_root) for name in LEGACY_NAMES]
++    existing_targets = [target for target in targets if target["exists"]]
+     blockers = []
+     for target in targets:
+         blockers.extend(f"{target['name']}: active/unknown lock {item}" for item in target["locks"])
+@@ -160,6 +162,8 @@
+         "drive_root": str(drive_root),
+         "protected_paths": [str(production), str((drive_root / "NIH_Tracker_shared").resolve())],
+         "targets": targets,
++        "existing_target_count": len(existing_targets),
++        "requires_apply": bool(existing_targets),
+         "blockers": blockers,
+         "confirmation": CONFIRM,
+     }
+@@ -173,7 +177,10 @@
+             f"  {target['name']}: exists={target['exists']} | files={target['files']:,} | "
+             f"directories={target['directories']:,} | bytes={target['bytes']:,}"
+         )
+-    if blockers:
++    if not existing_targets:
++        print("Legacy nonproduction environments are already absent; valid no-op.")
++        print("No deletion apply step is required.")
++    elif blockers:
+         print("BLOCKERS:")
+         for blocker in blockers:
+             print(f"  - {blocker}")
+@@ -181,9 +188,19 @@
+         print(f"Apply only after review with exact confirmation: {CONFIRM}")
+     ledger_append(
+         "remove_nonproduction_environments_plan",
+-        params={},
+-        inputs={"drive_root": str(drive_root)},
+-        outputs={"plan": str(plan_path), "plan_sha256": digest, "targets": len(targets)},
++        params={"drive_root": str(drive_root)},
++        # Never pass the My Drive root as a ledger input.  ledger_append hashes
++        # inputs recursively, and Google Docs placeholders are not ordinary
++        # readable files on the mounted filesystem.  The sealed plan is the
++        # bounded, reproducible input artifact for this operation.
++        inputs={"plan": str(plan_path)},
++        outputs={
++            "plan": str(plan_path),
++            "plan_sha256": digest,
++            "targets": len(targets),
++            "existing_targets": len(existing_targets),
++            "requires_apply": bool(existing_targets),
++        },
+         gate_passed=not blockers,
+         run_dir=str(run_dir),
+     )
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/tests/test_v18_5_production_only.py /mnt/data/v19_0_1_work/tests/test_v18_5_production_only.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/tests/test_v18_5_production_only.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/tests/test_v18_5_production_only.py	2026-09-28 20:42:00.846673977 +0000
+@@ -103,6 +103,33 @@
+             self.assertFalse((drive / "NIH_Tracker_dev").exists())
+             self.assertFalse((drive / "NIH_Tracker_staging").exists())
+ 
++    def test_nonproduction_plan_is_bounded_noop_when_legacy_roots_are_absent(self) -> None:
++        with tempfile.TemporaryDirectory() as temporary:
++            drive = Path(temporary)
++            prod = drive / "NIH_Tracker"
++            (prod / "runs").mkdir(parents=True)
++            (drive / "NIH_Tracker_shared" / "cache").mkdir(parents=True)
++            # This unrelated Drive content must never be traversed or hashed by
++            # the legacy-root planner.
++            unrelated = drive / "Docs" / "virtual.gdoc"
++            unrelated.parent.mkdir()
++            unrelated.write_text("not part of the operation", encoding="utf-8")
++            self.configure(prod)
++            remover = importlib.import_module("step_remove_nonproduction_environments")
++            captured: dict[str, object] = {}
++
++            def capture_ledger(step, **kwargs):
++                captured["step"] = step
++                captured.update(kwargs)
++
++            remover.ledger_append = capture_ledger
++            plan_path = remover.create_plan(drive_root=drive)
++            plan = json.loads(plan_path.read_text(encoding="utf-8"))
++            self.assertFalse(plan["requires_apply"])
++            self.assertEqual(plan["existing_target_count"], 0)
++            self.assertEqual(captured["inputs"], {"plan": str(plan_path)})
++            self.assertEqual(captured["params"], {"drive_root": str(drive.resolve())})
++
+     def test_new_recommendation_reopens_terminal_approval(self) -> None:
+         with tempfile.TemporaryDirectory() as temporary:
+             prod = Path(temporary) / "NIH_Tracker"
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_to_v19_0_1.diff' /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/tests/test_v19_knowledge_graph.py /mnt/data/v19_0_1_work/tests/test_v19_knowledge_graph.py
+--- /mnt/data/v19_work/nih_tracker_v19_knowledge_graph/tests/test_v19_knowledge_graph.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_1_work/tests/test_v19_knowledge_graph.py	2026-09-28 20:41:59.776343959 +0000
+@@ -402,6 +402,43 @@
+             self.assertEqual(paths, {"index.html", "data/resources.json", "schemas/catalog_node.schema.json"})
+             self.assertTrue((run_dir / publisher.PLAN_SEAL_NAME).is_file())
+ 
++    def test_publication_allows_empty_change_history_but_rejects_other_empty_payloads(self) -> None:
++        with tempfile.TemporaryDirectory() as temporary:
++            project = Path(temporary) / "NIH_Tracker"
++            project_layout(project)
++            configure(project)
++            build = project / "build"
++            (build / "index.html").write_text("<html>v19.0.1</html>", encoding="utf-8")
++            (build / "data").mkdir()
++            (build / "data" / "resources.json").write_text("[]\n", encoding="utf-8")
++            (build / "data" / "change_history.jsonl").write_bytes(b"")
++            publisher = importlib.import_module("step_publish_github")
++            run_dir = project / "runs" / "publish_github" / "empty-history"
++            plan_path = publisher.build_publication_plan(
++                source=build / "index.html",
++                repository="owner/repository",
++                branch="main",
++                publish_dir="docs",
++                run_dir=run_dir,
++            )
++            plan = publisher.load_publication_plan(plan_path)
++            self.assertEqual(plan["empty_payload_files"], ["data/change_history.jsonl"])
++            history_record = next(
++                row for row in plan["payload_files"]
++                if row["path"] == "data/change_history.jsonl"
++            )
++            self.assertEqual(history_record["bytes"], 0)
++
++            (build / "data" / "nodes.jsonl").write_bytes(b"")
++            with self.assertRaisesRegex(ValueError, "Public payload is empty"):
++                publisher.build_publication_plan(
++                    source=build / "index.html",
++                    repository="owner/repository",
++                    branch="main",
++                    publish_dir="docs",
++                    run_dir=project / "runs" / "publish_github" / "empty-required",
++                )
++
+     def test_review_state_prioritizes_unapproved_imports_and_finalizer_blocks(self) -> None:
+         source = (ROOT / "scripts" / "review_workflow.py").read_text(encoding="utf-8")
+         approval_index = source.index('state = "APPROVAL_REQUIRED"')
+@@ -426,6 +463,9 @@
+         pipeline = (ROOT / "nih_tracker_colab_v19_pipeline.ipynb").read_text(encoding="utf-8")
+         self.assertIn("step_build_catalog.py", pipeline)
+         self.assertLess(pipeline.index("step_build_catalog.py"), pipeline.index("step_build_frontend.py"))
++        maintenance = (ROOT / "nih_tracker_colab_v19_maintenance.ipynb").read_text(encoding="utf-8")
++        self.assertNotIn("step_remove_nonproduction_environments.py", maintenance)
++        self.assertNotIn("DELETE_DEV_STAGING_ENVIRONMENTS", maintenance)
+ 
+     def test_production_installer_collects_v19_notebooks_and_schemas_only(self) -> None:
+         with tempfile.TemporaryDirectory() as temporary:

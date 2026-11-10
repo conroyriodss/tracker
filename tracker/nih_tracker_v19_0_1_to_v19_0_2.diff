@@ -1,0 +1,1561 @@
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/AUTOMATED_REVIEW_EXCHANGE.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/AUTOMATED_REVIEW_EXCHANGE.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/AUTOMATED_REVIEW_EXCHANGE.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/AUTOMATED_REVIEW_EXCHANGE.md	2026-09-29 14:23:04.908847850 +0000
+@@ -1,4 +1,4 @@
+-# NIH Tracker automated-review exchange (v19.0)
++# NIH Tracker automated-review exchange (v19.0.2)
+ 
+ The exchange remains file-based, source-bound, restart-safe, and human governed:
+ 
+@@ -34,6 +34,10 @@
+ 
+ After approval, the normal single finalization control delegates to the existing identifier, crosswalk, and card/name transaction-safe scripts.
+ 
++## Existing human decisions take precedence
++
++A later provider recommendation does not reopen a review item when a non-pending operational adjudication already exists for the same stable `review_key`. The model output remains available for audit, but the durable human decision remains authoritative until a reviewer explicitly edits or reopens it. This prevents recommendation inventory churn from blocking application of already-reviewed identifier or crosswalk decisions.
++
+ ## Catalog boundary
+ 
+ Automated-review records and internal adjudication artifacts are not published as public catalog evidence. Only normalized, reviewed claims, sources, dates, limitations, and public evidence states enter the v19 catalog.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/HOTFIX_NOTES.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/HOTFIX_NOTES.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/HOTFIX_NOTES.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/HOTFIX_NOTES.md	2026-09-29 14:23:04.407151787 +0000
+@@ -1,31 +1,50 @@
+-# NIH Tracker v19.0.1 hotfix notes
++# NIH Tracker v19.0.2 hotfix notes
+ 
+-v19.0.1 is a bounded operational hotfix for the initial v19 knowledge-graph release. It does not change card content, catalog semantics, controlled vocabularies, graph schemas, or the generated public resource views.
++v19.0.2 is a bounded guided-review state correction for the v19 knowledge-graph release. It preserves all cards, catalog semantics, graph schemas, controlled vocabularies, imported recommendations, human approvals, and operational adjudications.
+ 
+-## Corrected publication behavior
++## Incident corrected
+ 
+-The v19 catalog correctly represents a change-history stream with zero records as a zero-byte `data/change_history.jsonl` file. This occurs on a first catalog release or whenever no material public field changed. The original GitHub publication planner rejected every zero-byte public artifact, so it blocked a valid catalog after `build_catalog` and `build_frontend` had passed.
++The review dashboard could report both:
+ 
+-v19.0.1:
++```text
++APPROVAL_REQUIRED
++Imported items awaiting approval: 2
++Identifier adjudications awaiting application: 2
++```
+ 
+-- Allows a zero-byte `data/change_history.jsonl` as the canonical empty JSONL stream.
+-- Continues to reject empty required artifacts such as `resources.json`, `nodes.jsonl`, `edges.jsonl`, `claims.jsonl`, schemas, and `index.html`.
+-- Records `empty_payload_files` in the sealed publication plan.
+-- Revalidates the empty-file allowlist when a sealed plan is loaded or applied.
+-- Does not create a synthetic change event merely to make the file non-empty.
++while every current queue row was already decided. The candidate selectors were therefore correctly empty, but the state engine had reopened two newer model recommendations after older approvals ended as `superseded:` or `quarantined:`. It did not account for the fact that durable human identifier decisions already existed for the same stable review keys.
+ 
+-## Corrected production-only maintenance behavior
++## Decision precedence
+ 
+-The development and staging roots were removed before v19. The v19.0 maintenance notebook nevertheless retained the one-time legacy deletion block. When both roots were already absent, the compatibility script created a no-op plan and then passed the entire My Drive root to `ledger_append` as an input. Ledger hashing recursively traversed My Drive and encountered a Google Docs virtual `.gdoc` placeholder that cannot be opened as a normal file on the mounted filesystem.
++v19.0.2 applies this order:
+ 
+-v19.0.1:
++1. A non-pending operational adjudication is the authoritative human decision for its stable review key.
++2. A later provider recommendation for that key remains in the audit inventory but does not reopen human approval automatically.
++3. A recommendation may reopen an item only when no current operational decision exists and every prior approval is terminally superseded or quarantined.
++4. Reconsidering an existing adjudication requires an explicit human edit or manual reopen; model output alone cannot displace it.
+ 
+-- Removes the completed legacy-environment deletion control from the normal maintenance notebook.
+-- Keeps the CLI script only for forensic or delayed upgrades.
+-- Treats absent legacy roots as an explicit valid no-op.
+-- Never submits the My Drive root for recursive content hashing.
+-- Uses the sealed deletion plan as the bounded ledger input.
++This changes workflow state only. It neither applies nor rewrites the two identifier adjudications.
+ 
+-## Upgrade effect
++## Workbench correction
+ 
+-The hotfix updates release-managed code and notebooks only. It preserves cards, inputs, graph outputs, run history, snapshots, caches, credentials, and the current production build.
++The workbench now has a state-aware next-action panel:
++
++- `APPROVAL_REQUIRED` shows one prominent approval button.
++- `REVIEW_REQUIRED` shows only nonempty candidate queues.
++- `READY_TO_FINALIZE` hides empty queue selectors and directs the reviewer to finalization.
++- `COMPLETE` directs the user to the main pipeline.
++
++The dashboard also reports how many later recommendations are already covered by current human decisions.
++
++## Expected effect for the reported state
++
++After installation and **Refresh review status**, the supplied state should become approximately:
++
++```text
++READY_TO_FINALIZE
++Imported items awaiting approval: 0
++Later recommendations already covered by current decisions: 2
++Identifier adjudications awaiting application: 2
++```
++
++Run **Validate**, inspect the identifier decision plan, then **Apply all**. No re-import or repeated model review is required.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/MIGRATION_AND_OPERATIONS.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/MIGRATION_AND_OPERATIONS.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/MIGRATION_AND_OPERATIONS.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/MIGRATION_AND_OPERATIONS.md	2026-09-29 14:23:49.791672693 +0000
+@@ -1,9 +1,9 @@
+-# NIH Tracker v19.0.1 migration and operations
++# NIH Tracker v19.0.2 migration and operations
+ 
+ ## Upgrade from v18.5
+ 
+ 1. Freeze the current v18.5 production build, publication receipt, card hashes, and source snapshots.
+-2. Upload the v19.0.1 release bundle to `/content` or the top level of My Drive.
++2. Upload the v19.0.2 release bundle to `/content` or the top level of My Drive.
+ 3. Open `nih_tracker_colab_v19_maintenance.ipynb`.
+ 4. Select **Refresh release code** and check **Apply**.
+ 5. Reopen the v19 notebooks so the runtime imports the new modules.
+@@ -76,4 +76,17 @@
+ 
+ ## Hotfix-specific operation
+ 
+-After installing v19.0.1, rerun the final publication cell. A new sealed plan may include an empty `data/change_history.jsonl`; this is valid when there are no material prior-catalog changes. The maintenance notebook no longer offers the already-completed dev/staging deletion operation.
++After installing v19.0.2, rerun the final publication cell. A new sealed plan may include an empty `data/change_history.jsonl`; this is valid when there are no material prior-catalog changes. The maintenance notebook no longer offers the already-completed dev/staging deletion operation.
++## v19.0.2 review-state recovery
++
++After installation, reopen the v19.0.2 review workbench and run **Refresh review status**. If later model recommendations are already covered by durable human adjudications, the dashboard reports them separately and moves directly to `READY_TO_FINALIZE`.
++
++For the reported two-row identifier state:
++
++1. Select **Validate** under Finalize all reviewed decisions.
++2. Inspect the generated identifier `decision_plan.csv`.
++3. Enable production writes only after review.
++4. Select **Apply all**.
++5. Refresh status and confirm `COMPLETE`.
++
++Do not re-export, re-import, or re-approve those items solely because a later provider recommendation exists. Reopening a current human decision must be an explicit manual action.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/PRODUCTION_ONLY_OPERATIONS.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/PRODUCTION_ONLY_OPERATIONS.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/PRODUCTION_ONLY_OPERATIONS.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/PRODUCTION_ONLY_OPERATIONS.md	2026-09-29 14:23:49.791596839 +0000
+@@ -1,4 +1,4 @@
+-# NIH Tracker v19.0.1 production-only operations
++# NIH Tracker v19.0.2 production-only operations
+ 
+ ## Retained roots
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/PUBLIC_CATALOG_METHODS.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/PUBLIC_CATALOG_METHODS.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/PUBLIC_CATALOG_METHODS.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/PUBLIC_CATALOG_METHODS.md	2026-09-29 14:23:49.791536418 +0000
+@@ -1,4 +1,4 @@
+-# NIH Tracker v19.0.1 public catalog methods
++# NIH Tracker v19.0.2 public catalog methods
+ 
+ ## Scope
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/README.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/README.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/README.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/README.md	2026-09-29 14:23:49.791635026 +0000
+@@ -1,6 +1,6 @@
+-# NIH Tracker v19.0.1
++# NIH Tracker v19.0.2
+ 
+-NIH Tracker v19.0.1 contains a deterministic, evidence-bearing knowledge graph and a task-oriented public **NIH Data Resource Navigator** while preserving reviewed YAML cards and pinned project snapshots as the authoritative source of truth.
++NIH Tracker v19.0.2 contains a deterministic, evidence-bearing knowledge graph and a task-oriented public **NIH Data Resource Navigator** while preserving reviewed YAML cards and pinned project snapshots as the authoritative source of truth.
+ 
+ ```text
+ reviewed cards + pinned references
+@@ -22,6 +22,8 @@
+        GitHub Pages /docs
+ ```
+ 
++The v19.0.2 hotfix also makes the guided review state-aware: durable human adjudications take precedence over later model recommendations, and empty queue controls are hidden.
++
+ The public interface is organized around four decisions:
+ 
+ 1. Find a place to share data.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/RELEASE_MANIFEST.json /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/RELEASE_MANIFEST.json
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/RELEASE_MANIFEST.json	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/RELEASE_MANIFEST.json	2026-09-29 14:27:44.325809766 +0000
+@@ -1,5 +1,5 @@
+ {
+-  "artifact": "v19-knowledge-graph-publication-and-maintenance-hotfix",
++  "artifact": "v19-knowledge-graph-review-state-hotfix",
+   "authority_model": {
+     "authoritative_mutable_records": [
+       "cards/*.yaml",
+@@ -12,7 +12,7 @@
+     "derived_catalog": "build/catalog",
+     "external_network_used_by_catalog_build": false
+   },
+-  "base_release": "NIH Tracker v19.0",
++  "base_release": "NIH Tracker v19.0.1",
+   "catalog": {
+     "artifact_count_in_synthetic_validation": 19,
+     "bulk_data_asset_population": false,
+@@ -117,6 +117,15 @@
+       "valid_empty_payloads": [
+         "data/change_history.jsonl"
+       ]
++    },
++    "review_workflow": {
++      "card_or_adjudication_content_changed_by_install": false,
++      "durable_operational_decision_precedence": true,
++      "empty_queue_controls_hidden": true,
++      "explicit_human_reopen_still_supported": true,
++      "later_model_recommendation_does_not_reopen_decided_item": true,
++      "later_model_recommendation_preserved_for_audit": true,
++      "state_aware_next_action_panel": true
+     }
+   },
+   "limitations": [
+@@ -132,19 +141,19 @@
+       "cells": 19,
+       "code_cells": 9,
+       "hidden_code_cells": 9,
+-      "sha256": "8a0c40931296cd4db2185503a7b1a8b2a038cc34b33d344fc93929c619b09504"
++      "sha256": "aa66ff1d18b59865c8d8b5b4d512532223ee08daa08cad7d00e60ffd9f1e5854"
+     },
+     "nih_tracker_colab_v19_pipeline.ipynb": {
+       "cells": 11,
+       "code_cells": 5,
+       "hidden_code_cells": 5,
+-      "sha256": "cda96e3730d46c59cf5f245a7706dab7250c2f85a9aa9a3ef6da8044a1745a6b"
++      "sha256": "f6278ff7069430d6ec644c6a3816f851344f35471fdfca14ffec27b719068611"
+     },
+     "nih_tracker_colab_v19_review_workbench.ipynb": {
+       "cells": 17,
+       "code_cells": 8,
+       "hidden_code_cells": 8,
+-      "sha256": "3234431aa8d83713ea4fefd3b0e8a0d03e7ee69d723067e39d316a3a57ce5241"
++      "sha256": "7c0c02b0c345c84e56210d1d01f87bb65ed10abeaa682325e642b6dc3360d993"
+     }
+   },
+   "pipeline_network_control": {
+@@ -224,11 +233,13 @@
+       "verified": true
+     }
+   },
+-  "release": "NIH Tracker v19.0.1",
+-  "release_date": "2026-09-28",
++  "release": "NIH Tracker v19.0.2",
++  "release_date": "2026-09-29",
+   "review_workflow": {
+     "named_human_approval_required": true,
++    "operational_adjudication_prevents_automatic_reopen": true,
+     "source_item_card_and_manifest_hash_binding_preserved": true,
++    "state_aware_controls": true,
+     "state_precedence": [
+       "APPROVAL_REQUIRED",
+       "READY_TO_FINALIZE",
+@@ -248,23 +259,26 @@
+     "deterministic_zip_regeneration": true,
+     "empty_change_history_publication_regression": true,
+     "exact_focused_archive_inventory_verified": true,
+-    "exact_focused_archive_targeted_tests_passed": 160,
++    "exact_focused_archive_targeted_tests_passed": 163,
+     "exact_full_archive_inventory_verified": true,
+-    "exact_full_archive_tests_passed": 160,
+-    "focused_archive_inventory_entries": 130,
++    "exact_full_archive_tests_passed": 163,
++    "focused_archive_inventory_entries": 132,
+     "frontend_javascript_checked": true,
+-    "full_bundle_inventory_entries": 138,
++    "full_bundle_inventory_entries": 140,
+     "json_schemas_validated": 6,
+     "notebook_code_cells_hidden": 22,
+     "notebook_code_cells_parsed": 22,
+     "notebook_outputs_empty": true,
+     "notebooks_validated": 3,
++    "operational_decision_precedence_regression": true,
+     "production_installer_data_files_collected": 0,
+     "production_installer_dry_apply_regression": true,
+-    "production_release_files_collected": 132,
+-    "python_files_compiled": 73,
++    "production_release_files_collected": 134,
++    "python_files_compiled": 74,
+     "reference_hashes_verified": 7,
++    "reported_two_decision_state_regression": true,
+     "required_empty_payload_rejection_regression": true,
++    "state_aware_review_controls_regression": true,
+     "synthetic_catalog_id": "e0d028650eee43b573a8a3a8f6e5014c03ac87a7a457a9bd06720dff5818b1d8",
+     "synthetic_counts": {
+       "change_events": 0,
+@@ -274,7 +288,7 @@
+       "resources": 1
+     },
+     "synthetic_frontend_sha256": "9fd7ace73798c0750cbf8880d653ec51994995e375015a95eda609f975729bb8",
+-    "test_modules": 18,
+-    "tests_passed": 160
++    "test_modules": 19,
++    "tests_passed": 163
+   }
+ }
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/RELEASE_NOTES.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/RELEASE_NOTES.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/RELEASE_NOTES.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/RELEASE_NOTES.md	2026-09-29 14:23:04.909018797 +0000
+@@ -1,5 +1,12 @@
+-# NIH Tracker v19.0.1 release notes
++# NIH Tracker v19.0.2 release notes
+ 
++## v19.0.2 guided-review state correction
++
++- A later model recommendation no longer reopens an item that already has a non-pending human operational adjudication for the same stable review key.
++- Such recommendations remain in the audit inventory and are counted as covered by current decisions.
++- The review workbench now presents one state-appropriate next action and hides empty candidate selectors.
++- A state with zero pending queue rows and two unapplied identifier adjudications resolves to `READY_TO_FINALIZE`, not `APPROVAL_REQUIRED`.
++- No card, catalog, recommendation, approval, or adjudication content is rewritten by the hotfix.
+ 
+ ## v19.0.1 operational corrections
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/REVISION_SUMMARY.md /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/REVISION_SUMMARY.md
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/REVISION_SUMMARY.md	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/REVISION_SUMMARY.md	2026-09-29 14:23:04.909197125 +0000
+@@ -1,4 +1,11 @@
+-# NIH Tracker v19.0.1 revision summary
++# NIH Tracker v19.0.2 revision summary
++
++## v19.0.2 workflow correction
++
++- Made operational human adjudications authoritative over later provider recommendations for the same stable review key.
++- Added a count of recommendation items already covered by current decisions.
++- Replaced empty review dropdowns with a state-aware next-action panel.
++- Preserved explicit manual reopening for genuine reconsideration.
+ 
+ ## Data architecture
+ 
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/VALIDATION_REPORT.txt /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/VALIDATION_REPORT.txt
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/VALIDATION_REPORT.txt	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/VALIDATION_REPORT.txt	2026-09-29 14:33:14.589711346 +0000
+@@ -1,97 +1,103 @@
+-NIH TRACKER v19.0.1 VALIDATION REPORT
++NIH TRACKER v19.0.2 VALIDATION REPORT
+ =====================================
+ 
+-Validation date: 2026-09-28.
++Validation date: 2026-09-29.
+ 
+ Purpose
+ -------
+-v19.0.1 is a bounded operational hotfix for the v19 static knowledge graph.
+-It changes neither reviewed card content nor catalog semantics. It corrects two
+-failures observed in the first production installation:
+-
+-1. A valid zero-record build/data/change_history.jsonl was rejected by the
+-   GitHub publication planner because it was zero bytes.
+-2. The completed dev/staging deletion workflow remained in the maintenance
+-   notebook and submitted the entire My Drive root to ledger hashing, which
+-   encountered an unreadable Google Docs virtual placeholder.
+-
+-Core results
+-------------
+-- 160 unit and integration tests passed across 18 test modules.
+-- 73 Python files compiled successfully.
++v19.0.2 is a bounded guided-review state hotfix. It corrects a state in which
++later model recommendations were reopened for approval even though durable,
++non-pending human identifier adjudications already existed for the same stable
++review keys. In the reported production state, all five current queue families
++had zero pending rows, while two identifier adjudications remained unapplied.
++
++Behavioral correction
++---------------------
++- A current operational human adjudication now takes precedence over any later
++  provider recommendation for the same stable review_key.
++- The later recommendation remains in the recommendation inventory for audit.
++- It does not become an approval blocker and cannot displace the human decision.
++- A genuinely new recommendation still reopens a terminally superseded or
++  quarantined item when no operational adjudication exists.
++- Explicit human editing or reopening remains available through manual review.
++- No card, recommendation, approval, or adjudication row is rewritten merely by
++  computing the corrected status.
++
++Expected reported-state result
++------------------------------
++The regression fixture reproduces the material state:
++
++- zero pending candidate rows;
++- a newer provider recommendation after a terminal historical approval;
++- a current non-pending identifier adjudication for the same review key;
++- one operational row awaiting application.
++
++The corrected status is READY_TO_FINALIZE, with zero imported items awaiting
++approval and one recommendation item reported as covered by a current decision.
++The production case with two such rows therefore proceeds directly to validation
++and application of the two identifier adjudications.
++
++Notebook correction
++-------------------
++- Section 3 is now a state-aware next-action panel.
++- APPROVAL_REQUIRED shows a single approval button.
++- REVIEW_REQUIRED shows only nonempty candidate-queue controls.
++- READY_TO_FINALIZE hides empty queue dropdowns and directs the reviewer to the
++  finalization control.
++- COMPLETE directs the reviewer to the main pipeline.
++- The dashboard reports later recommendations already covered by current human
++  decisions.
++- The import section remains available for new web-review result files but no
++  longer duplicates the approval control.
++
++Core validation
++---------------
++- 163 unit and integration tests passed across 19 test modules.
++- 74 Python files compiled successfully.
+ - 36 of 36 command-line entry points completed --help.
+-- All 3 v19.0.1 notebooks passed nbformat validation.
++- All 3 v19.0.2 notebooks passed nbformat validation.
+ - All 22 notebook code cells passed Python AST parsing.
+ - All 22 code cells carry hidden-by-default Colab/Jupyter metadata.
+ - Released notebooks contain no execution counts or saved outputs.
+ - Consecutive notebook generations were byte-identical.
+ - Frontend JavaScript extracted from frontend.html passed node --check.
+ - All 7 pinned reference artifacts matched their metadata SHA-256 values.
++- The production installer collected 134 release-managed files and no cards,
++  inputs, or blocks.
+ 
+-Publication regression
+-----------------------
+-- The planner accepts a zero-byte data/change_history.jsonl and records it in
+-  empty_payload_files in the sealed publication plan.
+-- The plan loader revalidates the empty-file inventory before apply.
+-- A zero-byte required graph artifact such as data/nodes.jsonl remains a
+-  blocking error.
+-- index.html remains required and non-empty.
+-- Existing recursive payload hashing, secret scanning, plan sealing,
+-  provenance binding, and managed-file cleanup remain in force.
+-- No synthetic change event is written merely to make an empty history stream
+-  non-empty.
+-
+-Production-only maintenance regression
+---------------------------------------
+-- The normal maintenance notebook no longer exposes the completed dev/staging
+-  deletion workflow.
+-- The compatibility CLI remains available for delayed or forensic upgrades.
+-- When NIH_Tracker_dev and NIH_Tracker_staging are absent, planning completes
+-  as a valid no-op and requires no apply step.
+-- The planner submits only its sealed plan as a ledger input; it never hashes
+-  /content/drive/MyDrive recursively.
+-- An unrelated Drive document does not enter the operation's hash scope.
+-- The existing guarded deletion test still confirms preservation of production
+-  and NIH_Tracker_shared when legacy roots actually exist.
+-
+-Knowledge-graph compatibility
+------------------------------
+-- step_build_catalog.py, graph schemas, controlled vocabularies, claim
+-  resolution, resource views, frontend semantics, and data-asset extension
+-  points are unchanged from v19.0.
+-- The prior v19 deterministic catalog and frontend regression suite continues
+-  to pass.
+-- The catalog compiler remains read-only with respect to cards.
++Regression coverage
++-------------------
++The added tests establish that:
++
++1. A later recommendation reopens a terminal approval when no current human
++   adjudication exists.
++2. The same recommendation is suppressed from the approval queue when a current
++   operational adjudication exists for the review key.
++3. The status engine moves to READY_TO_FINALIZE rather than APPROVAL_REQUIRED.
++4. The operational adjudication remains pending for the guarded apply step.
++5. The v19 review notebook contains the state-aware next-action panel and hides
++   empty candidate controls.
++
++Compatibility
++-------------
++- v19 knowledge-graph schemas, controlled vocabularies, claims, edges, public
++  resource views, and catalog build semantics are unchanged.
++- v19.0.1 publication handling for an empty change_history.jsonl remains in
++  force.
++- v19.0.1 production-only maintenance corrections remain in force.
++- Existing cards, recommendations, approvals, adjudications, receipts, run
++  history, snapshots, builds, caches, credentials, and locks are preserved.
+ - Offline/cached-only remains the pipeline default.
+ - No composite completeness, maturity, FAIRness, confidence, or fit score was
+   introduced.
+ 
+-Notebook and installer behavior
+--------------------------------
+-- The pipeline and review workbench retain their v19 workflow and controls.
+-- The maintenance notebook now contains 19 cells and 9 code cells, down from
+-  21 and 10 after removal of the obsolete migration control.
+-- The production-only installer collects 132 release-managed files after the
+-  v19-to-v19.0.1 diff is included.
+-- The installer continues to collect zero cards, inputs, or blocks.
+-- Cards, inputs, runs, snapshots, builds, caches, credentials, and locks remain
+-  outside release-code installation scope.
+-
+ Packaged archive checks
+ -----------------------
+-- Complete bundle internal inventory: 138 entries.
+-- Focused code/tests archive internal inventory: 130 entries.
+-- The complete bundle was extracted into a clean directory, all inventory
+-  entries were verified, and all 160 tests passed from the extraction.
+-- The focused archive was extracted separately, all inventory entries were
+-  verified, and all 160 tests passed.
+-- Consecutive deterministic generations of both ZIP archives were
+-  byte-identical.
+-
+-Interpretation
+---------------
+-A zero-byte JSONL file is the canonical representation of a stream containing
+-zero records. In this release that allowance is intentionally narrow:
+-only data/change_history.jsonl may be empty. The hotfix does not relax the
+-public data contract for nodes, edges, claims, resources, vocabularies,
+-schemas, or the HTML entry point.
++- Complete bundle internal inventory: 140 entries.
++- Focused code/tests archive internal inventory: 132 entries.
++- Both archives were built with normalized timestamps and deterministic ordering.
++- The complete bundle was extracted cleanly; all 140 inventory entries verified
++  and all 163 tests passed from that extraction.
++- The focused archive was extracted separately; all 132 inventory entries
++  verified and all 163 tests passed from that extraction.
++- Consecutive deterministic ZIP generations were byte-identical.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/build_notebooks.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/build_notebooks.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/build_notebooks.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/build_notebooks.py	2026-09-29 14:23:49.790965509 +0000
+@@ -104,7 +104,7 @@
+ pipeline_cells = [
+     md(
+         """
+-        # NIH Tracker pipeline notebook (v19.0.1)
++        # NIH Tracker pipeline notebook (v19.0.2)
+ 
+         This notebook performs one standard tracker refresh. It contains no review workbench and no destructive maintenance controls. Compile, input, lock, and card-parse checks always run. External API/service smoke checks and live evidence refreshes run only when the explicit external-network option is selected. A scope-aware crosswalk preflight runs before normal card mutations, and idempotent transformation steps treat zero required changes as success. Every subprocess streams to the notebook and is also retained under `runs/notebook_debug/pipeline/`.
+ 
+@@ -853,7 +853,7 @@
+     return [
+         md(
+             """
+-            # NIH Tracker guided review workbench (v19.0.1)
++            # NIH Tracker guided review workbench (v19.0.2)
+ 
+             The normal workflow is now **Review → Approve → Finalize**. The notebook shows only the next material action and skips decision families that have no pending work. Evidence-gap inventories and historical queues are available under **Advanced diagnostics**; they are not mixed into the operational review path and do not block publication.
+ 
+@@ -947,6 +947,9 @@
+         f"{item['domain']}: {item['rows']}"
+         for item in status.get("non_gating_evidence_backlogs", [])
+     ) or "none"
++    covered = int(
++        rec.get("recommendation_items_covered_by_current_decision", 0) or 0
++    )
+     html = f"""
+     <div style='border:1px solid #dadce0;border-radius:8px;padding:14px'>
+       <div style='font-size:20px;font-weight:700;color:{_status_color(status['state'])}'>
+@@ -955,6 +958,7 @@
+       <div style='margin:6px 0 12px 0'>{status['next_action']}</div>
+       <table style='border-collapse:collapse'>
+         <tr><th style='text-align:left;padding-right:24px'>Imported items awaiting approval</th><td>{rec['review_items_awaiting_human_approval']}</td></tr>
++        <tr><th style='text-align:left;padding-right:24px'>Later recommendations already covered by current decisions</th><td>{covered}</td></tr>
+         <tr><th style='text-align:left;padding-right:24px'>Approved recommendations awaiting promotion</th><td>{rec['approved_recommendations_pending_promotion']}</td></tr>
+         <tr><th style='text-align:left;padding-right:24px'>Identifier adjudications awaiting application</th><td>{ops['identifier']}</td></tr>
+         <tr><th style='text-align:left;padding-right:24px'>Crosswalk adjudications awaiting application</th><td>{ops['crosswalk']}</td></tr>
+@@ -984,9 +988,9 @@
+         ),
+         md(
+             """
+-            ## 3. Review pending candidates
++            ## 3. Follow the current review action
+ 
+-            Card/name candidates use the manual-review panel. Identifier, RRID, FAIRsharing, and crosswalk candidates may be reviewed manually or exported as sealed ChatGPT/Perplexity batches. Unsupported queue types are never offered to the batch exporter. Each exported batch remains on Drive and can be restored after a Colab restart.
++            This panel is state-aware. It shows recommendation approval when imported items need a human decision, candidate-queue controls when new rows need review, and a direct instruction to continue to finalization when only operational adjudications remain. Empty queue dropdowns are hidden.
+             """
+         ),
+         code(
+@@ -1047,6 +1051,12 @@
+     icon="refresh",
+ )
+ review_action_output = widgets.Output()
++guided_next_action_html = widgets.HTML()
++open_triage_button = widgets.Button(
++    description="Open recommendations for approval",
++    icon="tasks",
++    button_style="success",
++)
+ 
+ AI_EXPORTABLE_FAMILIES = {"identifier", "rrid", "fairsharing", "crosswalk"}
+ 
+@@ -1085,16 +1095,90 @@
+     _set_widget_options(ai_queue_widget, ai_options)
+     open_manual_button.disabled = not bool(manual_options) or not bool(REVIEWER)
+     export_button.disabled = not bool(ai_options)
++
+     status = GUIDED_REVIEW_STATUS or {}
++    state = status.get("state", "")
+     rec = status.get("recommendations", {})
+     pending_approval = int(rec.get("review_items_awaiting_human_approval", 0) or 0)
+-    if "open_triage_button" in globals():
+-        open_triage_button.disabled = pending_approval == 0 or not bool(REVIEWER)
+-    pending_finalize = int(rec.get("approved_recommendations_pending_promotion", 0) or 0) + int(status.get("operational_pending_rows", 0) or 0)
++    pending_finalize = (
++        int(rec.get("approved_recommendations_pending_promotion", 0) or 0)
++        + int(status.get("operational_pending_rows", 0) or 0)
++    )
++
++    open_triage_button.disabled = pending_approval == 0 or not bool(REVIEWER)
++    open_triage_button.description = (
++        f"Open {pending_approval} recommendation"
++        f"{'s' if pending_approval != 1 else ''} for approval"
++    )
++    open_triage_button.layout.display = "" if pending_approval else "none"
++
++    show_candidate_controls = state == "REVIEW_REQUIRED" and bool(
++        manual_options or ai_options
++    )
++    if "candidate_controls_box" in globals():
++        candidate_controls_box.layout.display = (
++            "" if show_candidate_controls else "none"
++        )
++
++    if state == "APPROVAL_REQUIRED":
++        guided_next_action_html.value = (
++            "<div style='border-left:4px solid #b06000;padding:10px 12px'>"
++            f"<b>Next:</b> inspect and approve {pending_approval} imported "
++            "recommendation item(s). Candidate queues are already decided, so "
++            "no queue dropdown is shown.</div>"
++        )
++    elif state == "READY_TO_FINALIZE":
++        guided_next_action_html.value = (
++            "<div style='border-left:4px solid #8a3ffc;padding:10px 12px'>"
++            f"<b>Next:</b> continue to Finalize all reviewed decisions. "
++            f"{pending_finalize} reviewed decision row(s) remain.</div>"
++        )
++    elif state == "REVIEW_REQUIRED":
++        guided_next_action_html.value = (
++            "<div style='border-left:4px solid #b06000;padding:10px 12px'>"
++            "<b>Next:</b> review the pending queue shown below.</div>"
++        )
++    elif state == "COMPLETE":
++        guided_next_action_html.value = (
++            "<div style='border-left:4px solid #137333;padding:10px 12px'>"
++            "<b>Review complete.</b> Continue to the main pipeline.</div>"
++        )
++    else:
++        guided_next_action_html.value = ""
++
+     if "finalize_button" in globals():
+         finalize_button.disabled = pending_approval > 0 or pending_finalize == 0
+ 
+ 
++def _open_pending_triage(_button):
++    with review_action_output:
++        clear_output(wait=True)
++        if not REVIEWER:
++            print("Reviewer identity is missing.")
++            return
++        recommendations = load_recommendations()
++        if recommendations.empty:
++            print("No imported recommendations were found.")
++            return
++        approvals = load_approvals()
++        pending = pending_recommendations_for_human_approval(
++            recommendations, approvals
++        )
++        if pending.empty:
++            print(
++                "No imported review item requires approval. "
++                "A current human adjudication may already cover the item."
++            )
++            refresh_guided_status()
++            return
++        print(f"Opening {pending['review_key'].nunique()} review item(s) awaiting approval.")
++        globals()["GUIDED_AI_TRIAGE"] = launch_ai_recommendation_triage(
++            recommendations=pending,
++            reviewer=REVIEWER,
++            page_size=10,
++        )
++
++
+ def _open_manual(_button):
+     with review_action_output:
+         clear_output(wait=True)
+@@ -1222,21 +1306,33 @@
+             print(f"Use the Colab Files pane: {path}")
+ 
+ 
++open_triage_button.on_click(_open_pending_triage)
+ open_manual_button.on_click(_open_manual)
+ export_button.on_click(_export_batches)
+ download_button.on_click(_download_batch)
+ restore_export_button.on_click(_restore_export)
+ _refresh_saved_exports()
++
++candidate_controls_box = widgets.VBox(
++    [
++        widgets.HTML("<b>Manual review</b> — all pending queue families"),
++        widgets.HBox([manual_queue_widget, open_manual_button]),
++        widgets.HTML(
++            "<b>ChatGPT/Perplexity batches</b> — identifiers and crosswalks only"
++        ),
++        ai_queue_widget,
++        widgets.HBox([review_method_widget, batch_size_widget, export_button]),
++        widgets.HBox([saved_export_widget, restore_export_button]),
++        widgets.HBox([download_choice, download_button]),
++    ]
++)
++
+ display(
+     widgets.VBox(
+         [
+-            widgets.HTML("<b>Manual review</b> — all pending queue families"),
+-            widgets.HBox([manual_queue_widget, open_manual_button]),
+-            widgets.HTML("<b>ChatGPT/Perplexity batches</b> — identifiers and crosswalks only"),
+-            ai_queue_widget,
+-            widgets.HBox([review_method_widget, batch_size_widget, export_button]),
+-            widgets.HBox([saved_export_widget, restore_export_button]),
+-            widgets.HBox([download_choice, download_button]),
++            guided_next_action_html,
++            open_triage_button,
++            candidate_controls_box,
+             review_action_output,
+         ]
+     )
+@@ -1246,9 +1342,9 @@
+         ),
+         md(
+             """
+-            ## 4. Import returned files and approve recommendations
++            ## 4. Import returned files when needed
+ 
+-            **Import returned files** opens a browser chooser, saves the selected JSON/JSONL/ZIP files to Drive before validation, and runs the strict source/hash/target checks. Then open the triage interface and save named human approvals. Importing or approving does not change cards.
++            Use this section only after completing a ChatGPT/Perplexity web batch. **Import returned files** saves selected JSON/JSONL/ZIP files to Drive before validation and runs the strict source/hash/target checks. The state-aware panel above then exposes the human-approval action. Importing does not change cards.
+             """
+         ),
+         code(
+@@ -1258,11 +1354,6 @@
+     icon="upload",
+     button_style="primary",
+ )
+-open_triage_button = widgets.Button(
+-    description="Open recommendations awaiting approval",
+-    icon="tasks",
+-    button_style="success",
+-)
+ saved_upload_widget = widgets.Dropdown(
+     options=[],
+     description="Saved uploads",
+@@ -1368,41 +1459,15 @@
+         _import_paths(paths, destination)
+ 
+ 
+-def _open_pending_triage(_button):
+-    with import_triage_output:
+-        clear_output(wait=True)
+-        if not REVIEWER:
+-            print("Reviewer identity is missing.")
+-            return
+-        recommendations = load_recommendations()
+-        if recommendations.empty:
+-            print("No imported recommendations were found.")
+-            return
+-        approvals = load_approvals()
+-        pending = pending_recommendations_for_human_approval(
+-            recommendations, approvals
+-        )
+-        if pending.empty:
+-            print("No imported review item is awaiting human approval.")
+-            refresh_guided_status()
+-            return
+-        print(f"Opening {pending['review_key'].nunique()} review item(s) awaiting approval.")
+-        globals()["GUIDED_AI_TRIAGE"] = launch_ai_recommendation_triage(
+-            recommendations=pending,
+-            reviewer=REVIEWER,
+-            page_size=10,
+-        )
+-
+ 
+ import_button.on_click(_import_returned)
+-open_triage_button.on_click(_open_pending_triage)
+ refresh_uploads_button.on_click(_refresh_persisted_uploads)
+ import_saved_button.on_click(_import_saved)
+ _refresh_persisted_uploads()
+ display(
+     widgets.VBox(
+         [
+-            widgets.HBox([import_button, open_triage_button]),
++            widgets.HBox([import_button]),
+             widgets.HBox([saved_upload_widget, refresh_uploads_button, import_saved_button]),
+             import_triage_output,
+         ]
+@@ -1472,7 +1537,7 @@
+         ),
+         md(
+             """
+-            ## 5. Advanced diagnostics (optional)
++            ## 6. Advanced diagnostics (optional)
+ 
+             Open this section only for historical queues, targeted family-level troubleshooting, or evidence-curation planning. Evidence gaps are descriptive backlogs—not adjudication queues—and are summarized without automatically rendering thousand-row tables. The current files are `interoperability_gaps.csv` with `templates/interoperability_curated_template.csv`, and `resource_profile_gaps.csv` with `templates/resource_profile_curated_template.csv`.
+ 
+@@ -1561,7 +1626,7 @@
+         ),
+         md(
+             """
+-            ## 6. Session audit
++            ## 7. Session audit
+ 
+             This read-only summary lists only subprocesses actually launched during the guided session. When the dashboard is complete, proceed to the main pipeline notebook.
+             """
+@@ -1584,7 +1649,7 @@
+ maintenance_cells = [
+     md(
+         """
+-        # NIH Tracker maintenance notebook (v19.0.1)
++        # NIH Tracker maintenance notebook (v19.0.2)
+ 
+         This production-only notebook contains the low-frequency operational controls intentionally excluded from the pipeline and review notebooks: release installation or refresh, reference updates, lock handling, bounded cleanup, transaction restoration, and archive-backed reset.
+ 
+@@ -1595,7 +1660,7 @@
+         """
+         ## 1. Install or refresh the production release
+ 
+-        Run this block only when installing v19.0.1 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.
++        Run this block only when installing v19.0.2 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.
+ 
+         **Create missing files** never overwrites an existing release file. **Refresh release code** replaces only changed release-managed files.
+         """
+@@ -1741,7 +1806,7 @@
+ INITIALIZER = next((path.resolve() for path in script_candidates if path.is_file()), None)
+ if INITIALIZER is None:
+     raise FileNotFoundError(
+-        "Production release installer was not found. Upload/extract the v19.0.1 bundle to /content."
++        "Production release installer was not found. Upload/extract the v19.0.2 bundle to /content."
+     )
+ RELEASE_ROOT = INITIALIZER.parents[1]
+ _validate_release_inventory(RELEASE_ROOT)
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/nih_tracker_colab_v19_maintenance.ipynb /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/nih_tracker_colab_v19_maintenance.ipynb
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/nih_tracker_colab_v19_maintenance.ipynb	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/nih_tracker_colab_v19_maintenance.ipynb	2026-09-29 14:27:13.239563577 +0000
+@@ -2,10 +2,10 @@
+  "cells": [
+   {
+    "cell_type": "markdown",
+-   "id": "cell-00-3d9a764825c3",
++   "id": "cell-00-14f1b1cac2dd",
+    "metadata": {},
+    "source": [
+-    "# NIH Tracker maintenance notebook (v19.0.1)\n",
++    "# NIH Tracker maintenance notebook (v19.0.2)\n",
+     "\n",
+     "This production-only notebook contains the low-frequency operational controls intentionally excluded from the pipeline and review notebooks: release installation or refresh, reference updates, lock handling, bounded cleanup, transaction restoration, and archive-backed reset.\n",
+     "\n",
+@@ -14,12 +14,12 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-01-41c2e6220f97",
++   "id": "cell-01-41b8e09f41db",
+    "metadata": {},
+    "source": [
+     "## 1. Install or refresh the production release\n",
+     "\n",
+-    "Run this block only when installing v19.0.1 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.\n",
++    "Run this block only when installing v19.0.2 or repairing release code. It updates only `/content/drive/MyDrive/NIH_Tracker`; it does not scan or recreate dev/staging. Release-managed scripts, notebooks, references, templates, and documentation may be updated, while cards, inputs, runs, snapshots, builds, locks, caches, and credentials are preserved.\n",
+     "\n",
+     "**Create missing files** never overwrites an existing release file. **Refresh release code** replaces only changed release-managed files.\n"
+    ]
+@@ -27,7 +27,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-02-a802543306b9",
++   "id": "cell-02-713a1c128bda",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -179,7 +179,7 @@
+     "INITIALIZER = next((path.resolve() for path in script_candidates if path.is_file()), None)\n",
+     "if INITIALIZER is None:\n",
+     "    raise FileNotFoundError(\n",
+-    "        \"Production release installer was not found. Upload/extract the v19.0.1 bundle to /content.\"\n",
++    "        \"Production release installer was not found. Upload/extract the v19.0.2 bundle to /content.\"\n",
+     "    )\n",
+     "RELEASE_ROOT = INITIALIZER.parents[1]\n",
+     "_validate_release_inventory(RELEASE_ROOT)\n",
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/nih_tracker_colab_v19_pipeline.ipynb /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/nih_tracker_colab_v19_pipeline.ipynb
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/nih_tracker_colab_v19_pipeline.ipynb	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/nih_tracker_colab_v19_pipeline.ipynb	2026-09-29 14:27:13.236970494 +0000
+@@ -2,10 +2,10 @@
+  "cells": [
+   {
+    "cell_type": "markdown",
+-   "id": "cell-00-3f852344c893",
++   "id": "cell-00-52fc3f0f0d6d",
+    "metadata": {},
+    "source": [
+-    "# NIH Tracker pipeline notebook (v19.0.1)\n",
++    "# NIH Tracker pipeline notebook (v19.0.2)\n",
+     "\n",
+     "This notebook performs one standard tracker refresh. It contains no review workbench and no destructive maintenance controls. Compile, input, lock, and card-parse checks always run. External API/service smoke checks and live evidence refreshes run only when the explicit external-network option is selected. A scope-aware crosswalk preflight runs before normal card mutations, and idempotent transformation steps treat zero required changes as success. Every subprocess streams to the notebook and is also retained under `runs/notebook_debug/pipeline/`.\n",
+     "\n",
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/nih_tracker_colab_v19_review_workbench.ipynb /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/nih_tracker_colab_v19_review_workbench.ipynb
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/nih_tracker_colab_v19_review_workbench.ipynb	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/nih_tracker_colab_v19_review_workbench.ipynb	2026-09-29 14:27:13.238235939 +0000
+@@ -2,10 +2,10 @@
+  "cells": [
+   {
+    "cell_type": "markdown",
+-   "id": "cell-00-2252451f80d6",
++   "id": "cell-00-3214b2208edf",
+    "metadata": {},
+    "source": [
+-    "# NIH Tracker guided review workbench (v19.0.1)\n",
++    "# NIH Tracker guided review workbench (v19.0.2)\n",
+     "\n",
+     "The normal workflow is now **Review → Approve → Finalize**. The notebook shows only the next material action and skips decision families that have no pending work. Evidence-gap inventories and historical queues are available under **Advanced diagnostics**; they are not mixed into the operational review path and do not block publication.\n",
+     "\n",
+@@ -162,7 +162,7 @@
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-06-2d24e3f0b4c0",
++   "id": "cell-06-984812d73b1c",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -208,6 +208,9 @@
+     "        f\"{item['domain']}: {item['rows']}\"\n",
+     "        for item in status.get(\"non_gating_evidence_backlogs\", [])\n",
+     "    ) or \"none\"\n",
++    "    covered = int(\n",
++    "        rec.get(\"recommendation_items_covered_by_current_decision\", 0) or 0\n",
++    "    )\n",
+     "    html = f\"\"\"\n",
+     "    <div style='border:1px solid #dadce0;border-radius:8px;padding:14px'>\n",
+     "      <div style='font-size:20px;font-weight:700;color:{_status_color(status['state'])}'>\n",
+@@ -216,6 +219,7 @@
+     "      <div style='margin:6px 0 12px 0'>{status['next_action']}</div>\n",
+     "      <table style='border-collapse:collapse'>\n",
+     "        <tr><th style='text-align:left;padding-right:24px'>Imported items awaiting approval</th><td>{rec['review_items_awaiting_human_approval']}</td></tr>\n",
++    "        <tr><th style='text-align:left;padding-right:24px'>Later recommendations already covered by current decisions</th><td>{covered}</td></tr>\n",
+     "        <tr><th style='text-align:left;padding-right:24px'>Approved recommendations awaiting promotion</th><td>{rec['approved_recommendations_pending_promotion']}</td></tr>\n",
+     "        <tr><th style='text-align:left;padding-right:24px'>Identifier adjudications awaiting application</th><td>{ops['identifier']}</td></tr>\n",
+     "        <tr><th style='text-align:left;padding-right:24px'>Crosswalk adjudications awaiting application</th><td>{ops['crosswalk']}</td></tr>\n",
+@@ -245,18 +249,18 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-07-f4fa62db85dc",
++   "id": "cell-07-571cd1784277",
+    "metadata": {},
+    "source": [
+-    "## 3. Review pending candidates\n",
++    "## 3. Follow the current review action\n",
+     "\n",
+-    "Card/name candidates use the manual-review panel. Identifier, RRID, FAIRsharing, and crosswalk candidates may be reviewed manually or exported as sealed ChatGPT/Perplexity batches. Unsupported queue types are never offered to the batch exporter. Each exported batch remains on Drive and can be restored after a Colab restart.\n"
++    "This panel is state-aware. It shows recommendation approval when imported items need a human decision, candidate-queue controls when new rows need review, and a direct instruction to continue to finalization when only operational adjudications remain. Empty queue dropdowns are hidden.\n"
+    ]
+   },
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-08-95b452b11be5",
++   "id": "cell-08-9c592f6fed38",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -325,6 +329,12 @@
+     "    icon=\"refresh\",\n",
+     ")\n",
+     "review_action_output = widgets.Output()\n",
++    "guided_next_action_html = widgets.HTML()\n",
++    "open_triage_button = widgets.Button(\n",
++    "    description=\"Open recommendations for approval\",\n",
++    "    icon=\"tasks\",\n",
++    "    button_style=\"success\",\n",
++    ")\n",
+     "\n",
+     "AI_EXPORTABLE_FAMILIES = {\"identifier\", \"rrid\", \"fairsharing\", \"crosswalk\"}\n",
+     "\n",
+@@ -363,16 +373,90 @@
+     "    _set_widget_options(ai_queue_widget, ai_options)\n",
+     "    open_manual_button.disabled = not bool(manual_options) or not bool(REVIEWER)\n",
+     "    export_button.disabled = not bool(ai_options)\n",
++    "\n",
+     "    status = GUIDED_REVIEW_STATUS or {}\n",
++    "    state = status.get(\"state\", \"\")\n",
+     "    rec = status.get(\"recommendations\", {})\n",
+     "    pending_approval = int(rec.get(\"review_items_awaiting_human_approval\", 0) or 0)\n",
+-    "    if \"open_triage_button\" in globals():\n",
+-    "        open_triage_button.disabled = pending_approval == 0 or not bool(REVIEWER)\n",
+-    "    pending_finalize = int(rec.get(\"approved_recommendations_pending_promotion\", 0) or 0) + int(status.get(\"operational_pending_rows\", 0) or 0)\n",
++    "    pending_finalize = (\n",
++    "        int(rec.get(\"approved_recommendations_pending_promotion\", 0) or 0)\n",
++    "        + int(status.get(\"operational_pending_rows\", 0) or 0)\n",
++    "    )\n",
++    "\n",
++    "    open_triage_button.disabled = pending_approval == 0 or not bool(REVIEWER)\n",
++    "    open_triage_button.description = (\n",
++    "        f\"Open {pending_approval} recommendation\"\n",
++    "        f\"{'s' if pending_approval != 1 else ''} for approval\"\n",
++    "    )\n",
++    "    open_triage_button.layout.display = \"\" if pending_approval else \"none\"\n",
++    "\n",
++    "    show_candidate_controls = state == \"REVIEW_REQUIRED\" and bool(\n",
++    "        manual_options or ai_options\n",
++    "    )\n",
++    "    if \"candidate_controls_box\" in globals():\n",
++    "        candidate_controls_box.layout.display = (\n",
++    "            \"\" if show_candidate_controls else \"none\"\n",
++    "        )\n",
++    "\n",
++    "    if state == \"APPROVAL_REQUIRED\":\n",
++    "        guided_next_action_html.value = (\n",
++    "            \"<div style='border-left:4px solid #b06000;padding:10px 12px'>\"\n",
++    "            f\"<b>Next:</b> inspect and approve {pending_approval} imported \"\n",
++    "            \"recommendation item(s). Candidate queues are already decided, so \"\n",
++    "            \"no queue dropdown is shown.</div>\"\n",
++    "        )\n",
++    "    elif state == \"READY_TO_FINALIZE\":\n",
++    "        guided_next_action_html.value = (\n",
++    "            \"<div style='border-left:4px solid #8a3ffc;padding:10px 12px'>\"\n",
++    "            f\"<b>Next:</b> continue to Finalize all reviewed decisions. \"\n",
++    "            f\"{pending_finalize} reviewed decision row(s) remain.</div>\"\n",
++    "        )\n",
++    "    elif state == \"REVIEW_REQUIRED\":\n",
++    "        guided_next_action_html.value = (\n",
++    "            \"<div style='border-left:4px solid #b06000;padding:10px 12px'>\"\n",
++    "            \"<b>Next:</b> review the pending queue shown below.</div>\"\n",
++    "        )\n",
++    "    elif state == \"COMPLETE\":\n",
++    "        guided_next_action_html.value = (\n",
++    "            \"<div style='border-left:4px solid #137333;padding:10px 12px'>\"\n",
++    "            \"<b>Review complete.</b> Continue to the main pipeline.</div>\"\n",
++    "        )\n",
++    "    else:\n",
++    "        guided_next_action_html.value = \"\"\n",
++    "\n",
+     "    if \"finalize_button\" in globals():\n",
+     "        finalize_button.disabled = pending_approval > 0 or pending_finalize == 0\n",
+     "\n",
+     "\n",
++    "def _open_pending_triage(_button):\n",
++    "    with review_action_output:\n",
++    "        clear_output(wait=True)\n",
++    "        if not REVIEWER:\n",
++    "            print(\"Reviewer identity is missing.\")\n",
++    "            return\n",
++    "        recommendations = load_recommendations()\n",
++    "        if recommendations.empty:\n",
++    "            print(\"No imported recommendations were found.\")\n",
++    "            return\n",
++    "        approvals = load_approvals()\n",
++    "        pending = pending_recommendations_for_human_approval(\n",
++    "            recommendations, approvals\n",
++    "        )\n",
++    "        if pending.empty:\n",
++    "            print(\n",
++    "                \"No imported review item requires approval. \"\n",
++    "                \"A current human adjudication may already cover the item.\"\n",
++    "            )\n",
++    "            refresh_guided_status()\n",
++    "            return\n",
++    "        print(f\"Opening {pending['review_key'].nunique()} review item(s) awaiting approval.\")\n",
++    "        globals()[\"GUIDED_AI_TRIAGE\"] = launch_ai_recommendation_triage(\n",
++    "            recommendations=pending,\n",
++    "            reviewer=REVIEWER,\n",
++    "            page_size=10,\n",
++    "        )\n",
++    "\n",
++    "\n",
+     "def _open_manual(_button):\n",
+     "    with review_action_output:\n",
+     "        clear_output(wait=True)\n",
+@@ -500,21 +584,33 @@
+     "            print(f\"Use the Colab Files pane: {path}\")\n",
+     "\n",
+     "\n",
++    "open_triage_button.on_click(_open_pending_triage)\n",
+     "open_manual_button.on_click(_open_manual)\n",
+     "export_button.on_click(_export_batches)\n",
+     "download_button.on_click(_download_batch)\n",
+     "restore_export_button.on_click(_restore_export)\n",
+     "_refresh_saved_exports()\n",
++    "\n",
++    "candidate_controls_box = widgets.VBox(\n",
++    "    [\n",
++    "        widgets.HTML(\"<b>Manual review</b> — all pending queue families\"),\n",
++    "        widgets.HBox([manual_queue_widget, open_manual_button]),\n",
++    "        widgets.HTML(\n",
++    "            \"<b>ChatGPT/Perplexity batches</b> — identifiers and crosswalks only\"\n",
++    "        ),\n",
++    "        ai_queue_widget,\n",
++    "        widgets.HBox([review_method_widget, batch_size_widget, export_button]),\n",
++    "        widgets.HBox([saved_export_widget, restore_export_button]),\n",
++    "        widgets.HBox([download_choice, download_button]),\n",
++    "    ]\n",
++    ")\n",
++    "\n",
+     "display(\n",
+     "    widgets.VBox(\n",
+     "        [\n",
+-    "            widgets.HTML(\"<b>Manual review</b> — all pending queue families\"),\n",
+-    "            widgets.HBox([manual_queue_widget, open_manual_button]),\n",
+-    "            widgets.HTML(\"<b>ChatGPT/Perplexity batches</b> — identifiers and crosswalks only\"),\n",
+-    "            ai_queue_widget,\n",
+-    "            widgets.HBox([review_method_widget, batch_size_widget, export_button]),\n",
+-    "            widgets.HBox([saved_export_widget, restore_export_button]),\n",
+-    "            widgets.HBox([download_choice, download_button]),\n",
++    "            guided_next_action_html,\n",
++    "            open_triage_button,\n",
++    "            candidate_controls_box,\n",
+     "            review_action_output,\n",
+     "        ]\n",
+     "    )\n",
+@@ -524,18 +620,18 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-09-3f6caf9fbe2d",
++   "id": "cell-09-4869127c6851",
+    "metadata": {},
+    "source": [
+-    "## 4. Import returned files and approve recommendations\n",
++    "## 4. Import returned files when needed\n",
+     "\n",
+-    "**Import returned files** opens a browser chooser, saves the selected JSON/JSONL/ZIP files to Drive before validation, and runs the strict source/hash/target checks. Then open the triage interface and save named human approvals. Importing or approving does not change cards.\n"
++    "Use this section only after completing a ChatGPT/Perplexity web batch. **Import returned files** saves selected JSON/JSONL/ZIP files to Drive before validation and runs the strict source/hash/target checks. The state-aware panel above then exposes the human-approval action. Importing does not change cards.\n"
+    ]
+   },
+   {
+    "cell_type": "code",
+    "execution_count": null,
+-   "id": "cell-10-a48761ae7bc4",
++   "id": "cell-10-3d9f7b270e3b",
+    "metadata": {
+     "cellView": "form",
+     "colab": {
+@@ -553,11 +649,6 @@
+     "    icon=\"upload\",\n",
+     "    button_style=\"primary\",\n",
+     ")\n",
+-    "open_triage_button = widgets.Button(\n",
+-    "    description=\"Open recommendations awaiting approval\",\n",
+-    "    icon=\"tasks\",\n",
+-    "    button_style=\"success\",\n",
+-    ")\n",
+     "saved_upload_widget = widgets.Dropdown(\n",
+     "    options=[],\n",
+     "    description=\"Saved uploads\",\n",
+@@ -663,41 +754,15 @@
+     "        _import_paths(paths, destination)\n",
+     "\n",
+     "\n",
+-    "def _open_pending_triage(_button):\n",
+-    "    with import_triage_output:\n",
+-    "        clear_output(wait=True)\n",
+-    "        if not REVIEWER:\n",
+-    "            print(\"Reviewer identity is missing.\")\n",
+-    "            return\n",
+-    "        recommendations = load_recommendations()\n",
+-    "        if recommendations.empty:\n",
+-    "            print(\"No imported recommendations were found.\")\n",
+-    "            return\n",
+-    "        approvals = load_approvals()\n",
+-    "        pending = pending_recommendations_for_human_approval(\n",
+-    "            recommendations, approvals\n",
+-    "        )\n",
+-    "        if pending.empty:\n",
+-    "            print(\"No imported review item is awaiting human approval.\")\n",
+-    "            refresh_guided_status()\n",
+-    "            return\n",
+-    "        print(f\"Opening {pending['review_key'].nunique()} review item(s) awaiting approval.\")\n",
+-    "        globals()[\"GUIDED_AI_TRIAGE\"] = launch_ai_recommendation_triage(\n",
+-    "            recommendations=pending,\n",
+-    "            reviewer=REVIEWER,\n",
+-    "            page_size=10,\n",
+-    "        )\n",
+-    "\n",
+     "\n",
+     "import_button.on_click(_import_returned)\n",
+-    "open_triage_button.on_click(_open_pending_triage)\n",
+     "refresh_uploads_button.on_click(_refresh_persisted_uploads)\n",
+     "import_saved_button.on_click(_import_saved)\n",
+     "_refresh_persisted_uploads()\n",
+     "display(\n",
+     "    widgets.VBox(\n",
+     "        [\n",
+-    "            widgets.HBox([import_button, open_triage_button]),\n",
++    "            widgets.HBox([import_button]),\n",
+     "            widgets.HBox([saved_upload_widget, refresh_uploads_button, import_saved_button]),\n",
+     "            import_triage_output,\n",
+     "        ]\n",
+@@ -784,10 +849,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-13-d1a542753d59",
++   "id": "cell-13-23d522d9756f",
+    "metadata": {},
+    "source": [
+-    "## 5. Advanced diagnostics (optional)\n",
++    "## 6. Advanced diagnostics (optional)\n",
+     "\n",
+     "            Open this section only for historical queues, targeted family-level troubleshooting, or evidence-curation planning. Evidence gaps are descriptive backlogs—not adjudication queues—and are summarized without automatically rendering thousand-row tables. The current files are `interoperability_gaps.csv` with `templates/interoperability_curated_template.csv`, and `resource_profile_gaps.csv` with `templates/resource_profile_curated_template.csv`.\n",
+     "\n",
+@@ -890,10 +955,10 @@
+   },
+   {
+    "cell_type": "markdown",
+-   "id": "cell-15-0d3d5b91a6a0",
++   "id": "cell-15-8574aad0b47c",
+    "metadata": {},
+    "source": [
+-    "## 6. Session audit\n",
++    "## 7. Session audit\n",
+     "\n",
+     "This read-only summary lists only subprocesses actually launched during the guided session. When the dashboard is complete, proceed to the main pipeline notebook.\n"
+    ]
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/common.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/common.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/common.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/common.py	2026-09-29 14:23:49.791316447 +0000
+@@ -29,7 +29,7 @@
+ # ---------------------------------------------------------------------------
+ # Environment and project layout
+ # ---------------------------------------------------------------------------
+-# v19.0.1 notebooks run in a single production environment.  The compatibility
++# v19.0.2 notebooks run in a single production environment.  The compatibility
+ # branch remains available for isolated tests and older command-line tooling,
+ # but production notebooks set NIH_TRACKER_PRODUCTION_ONLY=1 before importing
+ # this module.
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/notebook_runtime.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/notebook_runtime.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/notebook_runtime.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/notebook_runtime.py	2026-09-29 14:23:49.791433473 +0000
+@@ -131,7 +131,7 @@
+ ) -> tuple[Path, Path]:
+     """Configure environment variables before importing tracker modules.
+ 
+-    v19.0.1 notebooks set production-only mode before importing this module.
++    v19.0.2 notebooks set production-only mode before importing this module.
+     The compatibility branch for dev/staging remains available only when that
+     mode is not enabled, primarily for isolated tests and legacy command lines.
+     """
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/review_workflow.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/review_workflow.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/review_workflow.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/review_workflow.py	2026-09-29 14:22:17.588820642 +0000
+@@ -161,11 +161,46 @@
+     return sorted(rows, key=lambda item: (item["pending_rows"] == 0, item["label"]))
+ 
+ 
++def operationally_decided_review_keys() -> set[str]:
++    """Return review items that already have a durable human adjudication.
++
++    Imported model recommendations are advisory.  Once a reviewer has written a
++    non-pending decision to an operational adjudication file, a later provider
++    recommendation for the same stable review key must not reopen the item
++    automatically.  The existing decision remains authoritative until a human
++    explicitly edits or reopens it in the manual review workflow.
++    """
++    decided: set[str] = set()
++    for kind in ("verify", "crosswalk", "card"):
++        frame = load_adjudications(kind, adjudication_path(kind))
++        if frame.empty or "review_key" not in frame.columns:
++            continue
++        if kind == "card":
++            decision = frame.get(
++                "review_decision", pd.Series("", index=frame.index, dtype=str)
++            ).astype(str).str.strip().str.upper()
++            verdict = frame.get(
++                "verdict", pd.Series("", index=frame.index, dtype=str)
++            ).astype(str).str.strip()
++            mask = (~decision.isin(["", "PENDING"])) | verdict.ne("")
++        else:
++            decision = frame.get(
++                "decision", pd.Series("", index=frame.index, dtype=str)
++            ).astype(str).str.strip().str.upper()
++            mask = ~decision.isin(["", "PENDING"])
++        decided.update(
++            key
++            for key in frame.loc[mask, "review_key"].astype(str).str.strip()
++            if key
++        )
++    return decided
+ 
+ 
+ def pending_recommendations_for_human_approval(
+     recommendations: pd.DataFrame | None = None,
+     approvals: pd.DataFrame | None = None,
++    *,
++    decided_review_keys: set[str] | None = None,
+ ) -> pd.DataFrame:
+     """Return recommendation rows for review items that require a new approval.
+ 
+@@ -182,6 +217,11 @@
+         return recommendations
+     recommendations = recommendations.fillna("")
+     approvals = approvals.fillna("")
++    decided_review_keys = (
++        operationally_decided_review_keys()
++        if decided_review_keys is None
++        else {_clean(value) for value in decided_review_keys if _clean(value)}
++    )
+     pending_indices: list[int] = []
+     for review_key, group in recommendations.groupby(
+         recommendations["review_key"].astype(str).str.strip(), sort=False
+@@ -189,6 +229,11 @@
+         review_key = _clean(review_key)
+         if not review_key:
+             continue
++        if review_key in decided_review_keys:
++            # A current human decision already exists in an operational
++            # adjudication file.  Preserve the later model output for audit,
++            # but do not require another approval or block finalization.
++            continue
+         approved_rows = approvals.loc[
+             approvals.get("review_key", pd.Series("", index=approvals.index))
+             .astype(str)
+@@ -242,12 +287,28 @@
+             "review_items_awaiting_human_approval": 0,
+             "approved_recommendations_pending_promotion": 0,
+             "quarantined_or_superseded_approvals": 0,
++            "recommendation_items_covered_by_current_decision": 0,
+         }
+ 
+     review_items = set(recommendations["review_key"].astype(str).str.strip()) - {""}
++    decided_keys = operationally_decided_review_keys()
++    pending_without_operational_decisions = pending_recommendations_for_human_approval(
++        recommendations, approvals, decided_review_keys=set()
++    )
+     pending_for_approval = pending_recommendations_for_human_approval(
+-        recommendations, approvals
++        recommendations, approvals, decided_review_keys=decided_keys
+     )
++    pending_without_keys = set(
++        pending_without_operational_decisions.get(
++            "review_key", pd.Series(dtype=str)
++        ).astype(str).str.strip()
++    ) - {""}
++    pending_with_keys = set(
++        pending_for_approval.get("review_key", pd.Series(dtype=str))
++        .astype(str)
++        .str.strip()
++    ) - {""}
++    covered_by_current_decision = len(pending_without_keys - pending_with_keys)
+     pending_promotion = 0
+     terminal_attention = 0
+     if not approvals.empty:
+@@ -274,6 +335,9 @@
+         ),
+         "approved_recommendations_pending_promotion": pending_promotion,
+         "quarantined_or_superseded_approvals": terminal_attention,
++        "recommendation_items_covered_by_current_decision": int(
++            covered_by_current_decision
++        ),
+     }
+ 
+ 
+@@ -395,6 +459,10 @@
+             f"{recommendations['review_items_awaiting_human_approval']}"
+         ),
+         (
++            "Imported recommendations already covered by current decisions: "
++            f"{recommendations.get('recommendation_items_covered_by_current_decision', 0)}"
++        ),
++        (
+             "Approved recommendations awaiting promotion: "
+             f"{recommendations['approved_recommendations_pending_promotion']}"
+         ),
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/step_initialize_environments.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/step_initialize_environments.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/step_initialize_environments.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/step_initialize_environments.py	2026-09-29 14:23:49.791135264 +0000
+@@ -1,6 +1,6 @@
+ """Install or refresh NIH Tracker release code.
+ 
+-In v19.0.1 production notebooks set ``NIH_TRACKER_PRODUCTION_ONLY=1``. In that
++In v19.0.2 production notebooks set ``NIH_TRACKER_PRODUCTION_ONLY=1``. In that
+ mode this command inspects and updates only ``/content/drive/MyDrive/NIH_Tracker``
+ and never scans, stages, or recreates dev/staging project data. The legacy
+ multi-environment branch remains available only for backward-compatible tests
+@@ -69,6 +69,7 @@
+     "nih_tracker_v18_4_to_v18_5.diff",
+     "nih_tracker_v18_5_to_v19.diff",
+     "nih_tracker_v19_to_v19_0_1.diff",
++    "nih_tracker_v19_0_1_to_v19_0_2.diff",
+     "PRODUCTION_ONLY_OPERATIONS.md",
+     "AUTOMATED_REVIEW_EXCHANGE.md",
+     "KNOWLEDGE_GRAPH_MODEL.md",
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/step_remove_nonproduction_environments.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/step_remove_nonproduction_environments.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/scripts/step_remove_nonproduction_environments.py	1980-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/scripts/step_remove_nonproduction_environments.py	2026-09-29 14:23:49.791488917 +0000
+@@ -1,6 +1,6 @@
+ """Compatibility command to plan or remove legacy dev and staging directories.
+ 
+-The v19.0.1 maintenance notebook no longer exposes this completed migration.
++The v19.0.2 maintenance notebook no longer exposes this completed migration.
+ The command remains production-only and fail-closed for forensic or delayed upgrades.  Dry run creates a sealed plan
+ under the production run history.  Apply accepts only that exact plan and the
+ fixed confirmation token ``DELETE_DEV_STAGING_ENVIRONMENTS``.  The production
+diff -ruN '--exclude=__pycache__' '--exclude=*.pyc' '--exclude=SHA256SUMS' '--exclude=nih_tracker_v19_0_1_to_v19_0_2.diff' /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/tests/test_v19_0_2_review_state.py /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/tests/test_v19_0_2_review_state.py
+--- /mnt/data/v19_0_1_work/nih_tracker_v19_0_1_publication_hotfix/tests/test_v19_0_2_review_state.py	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/v19_0_2_work/nih_tracker_v19_0_2_review_state_hotfix/tests/test_v19_0_2_review_state.py	2026-09-29 14:21:50.389874050 +0000
+@@ -0,0 +1,182 @@
++from __future__ import annotations
++
++import importlib
++import os
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++import nbformat
++import pandas as pd
++
++ROOT = Path(__file__).resolve().parents[1]
++SCRIPTS = ROOT / "scripts"
++if str(SCRIPTS) not in sys.path:
++    sys.path.insert(0, str(SCRIPTS))
++
++MODULES = [
++    "common",
++    "review_widgets",
++    "automated_review",
++    "review_workflow",
++]
++
++
++def configure(root: Path):
++    for name in MODULES:
++        sys.modules.pop(name, None)
++    for key in list(os.environ):
++        if key.startswith("NIH_TRACKER_ROOT_") or key in {
++            "NIH_TRACKER",
++            "NIH_TRACKER_ENV",
++            "NIH_TRACKER_RUN_ID",
++            "NIH_TRACKER_ALLOW_PROJECT_OVERRIDE",
++            "NIH_TRACKER_SHARED_CACHE_ROOT",
++            "NIH_TRACKER_PRODUCTION_ONLY",
++        }:
++            os.environ.pop(key, None)
++    project = root / "NIH_Tracker"
++    os.environ["NIH_TRACKER_ENV"] = "prod"
++    os.environ["NIH_TRACKER_PRODUCTION_ONLY"] = "1"
++    os.environ["NIH_TRACKER_ROOT_PROD"] = str(project)
++    os.environ["NIH_TRACKER_SHARED_CACHE_ROOT"] = str(root / "shared" / "cache")
++    common = importlib.import_module("common")
++    review = importlib.import_module("review_widgets")
++    automated = importlib.import_module("automated_review")
++    workflow = importlib.import_module("review_workflow")
++    return common, review, automated, workflow
++
++
++class ReviewStateHotfixTests(unittest.TestCase):
++    def tearDown(self) -> None:
++        for name in MODULES:
++            sys.modules.pop(name, None)
++        for key in list(os.environ):
++            if key.startswith("NIH_TRACKER_ROOT_") or key in {
++                "NIH_TRACKER",
++                "NIH_TRACKER_ENV",
++                "NIH_TRACKER_RUN_ID",
++                "NIH_TRACKER_ALLOW_PROJECT_OVERRIDE",
++                "NIH_TRACKER_SHARED_CACHE_ROOT",
++                "NIH_TRACKER_PRODUCTION_ONLY",
++            }:
++                os.environ.pop(key, None)
++
++    def test_current_operational_decision_suppresses_reopened_model_recommendation(self):
++        with tempfile.TemporaryDirectory() as temporary:
++            _, review, _, workflow = configure(Path(temporary))
++            decision = {field: "" for field in review.VERIFY_FIELDS}
++            decision.update(
++                {
++                    "review_key": "same-item",
++                    "repo_uid": "R1",
++                    "card_name": "Resource One",
++                    "id_type": "re3data",
++                    "candidate_id": "r3d100000001",
++                    "candidate_url": "https://www.re3data.org/repository/r3d100000001",
++                    "decision": "REJECT",
++                    "reviewer": "Richard",
++                    "reviewed_at": "2026-09-29T12:00:00+00:00",
++                }
++            )
++            review.upsert_adjudications("verify", [decision])
++
++            recommendations = pd.DataFrame(
++                [
++                    {
++                        "review_key": "same-item",
++                        "recommendation_key": "old-rec",
++                        "imported_at": "2026-09-20T12:00:00+00:00",
++                    },
++                    {
++                        "review_key": "same-item",
++                        "recommendation_key": "new-rec",
++                        "imported_at": "2026-09-29T13:00:00+00:00",
++                    },
++                ]
++            )
++            approvals = pd.DataFrame(
++                [
++                    {
++                        "review_key": "same-item",
++                        "recommendation_key": "old-rec",
++                        "approved": "true",
++                        "approved_at": "2026-09-22T12:00:00+00:00",
++                        "promotion_status": "superseded:source_changed",
++                    }
++                ]
++            )
++
++            pending_without_decision = workflow.pending_recommendations_for_human_approval(
++                recommendations,
++                approvals,
++                decided_review_keys=set(),
++            )
++            self.assertEqual(set(pending_without_decision["recommendation_key"]), {"new-rec"})
++
++            pending = workflow.pending_recommendations_for_human_approval(
++                recommendations,
++                approvals,
++            )
++            self.assertTrue(pending.empty)
++            self.assertEqual(workflow.operationally_decided_review_keys(), {"same-item"})
++
++    def test_status_prefers_finalization_when_recommendation_is_already_decided(self):
++        with tempfile.TemporaryDirectory() as temporary:
++            _, review, automated, workflow = configure(Path(temporary))
++            decision = {field: "" for field in review.VERIFY_FIELDS}
++            decision.update(
++                {
++                    "review_key": "same-item",
++                    "repo_uid": "R1",
++                    "card_name": "Resource One",
++                    "id_type": "re3data",
++                    "candidate_id": "r3d100000001",
++                    "candidate_url": "https://www.re3data.org/repository/r3d100000001",
++                    "decision": "REJECT",
++                    "reviewer": "Richard",
++                    "reviewed_at": "2026-09-29T12:00:00+00:00",
++                }
++            )
++            review.upsert_adjudications("verify", [decision])
++
++            rec = {field: "" for field in automated.RECOMMENDATION_FIELDS}
++            rec.update(
++                {
++                    "recommendation_key": "new-rec",
++                    "review_key": "same-item",
++                    "queue_kind": "verify",
++                    "imported_at": "2026-09-29T13:00:00+00:00",
++                    "recommended_decision": "REJECT",
++                    "human_review_required": "true",
++                }
++            )
++            pd.DataFrame([rec], columns=automated.RECOMMENDATION_FIELDS).to_csv(
++                automated.AI_RECOMMENDATIONS_CSV, index=False
++            )
++
++            status = workflow.compute_review_status(include_evidence=False)
++            self.assertEqual(status["state"], "READY_TO_FINALIZE")
++            self.assertEqual(
++                status["recommendations"]["review_items_awaiting_human_approval"], 0
++            )
++            self.assertEqual(
++                status["recommendations"]["recommendation_items_covered_by_current_decision"], 1
++            )
++            self.assertEqual(status["operational_adjudications"]["identifier"], 1)
++
++    def test_notebook_uses_state_aware_next_action_panel(self):
++        notebook = nbformat.read(
++            ROOT / "nih_tracker_colab_v19_review_workbench.ipynb", as_version=4
++        )
++        text = "\n".join(cell.source for cell in notebook.cells)
++        self.assertIn("Follow the current review action", text)
++        self.assertIn("guided_next_action_html", text)
++        self.assertIn("candidate_controls_box.layout.display", text)
++        self.assertIn("already covered by current decisions", text)
++        self.assertIn("v19.0.2", text)
++
++
++if __name__ == "__main__":
++    unittest.main()

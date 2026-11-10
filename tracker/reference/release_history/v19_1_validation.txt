@@ -1,0 +1,96 @@
+NIH Tracker v19.1 validation report
+
+Current validation is local, synthetic/mocked, and read-only with respect to the
+supplied live archive. No production or cloud validation is claimed.
+
+New tests cover content identity/versioning, cache permission and corruption,
+GCS create-only writes and collision handling, bounded parameterized BigQuery
+queries, robots policy, private-address blocking, loading stubs, exact quotes,
+source/model cache reuse, frozen plans, truncation, selected schema examples,
+original registry snapshot import, dated PID checks, named separate review,
+Gemini import into the existing approval state machine, stale card rejection,
+incomplete batches and unconsulted web-source rejection.
+
+The existing full suite was attempted before and after the changes. The same
+20 environment-related errors occurred both times: missing requests,
+beautifulsoup4 and nbformat. Some legacy modules therefore could not load.
+This is not a full regression-suite pass. Install the pinned requirements in
+Colab and run `python -m unittest discover -s tests -v` before production use.
+
+The existing production installer was exercised in an isolated synthetic
+project. Cards, operational adjudications, existing configuration, prior runs,
+human reviews, cache and snapshots were unchanged; new release modules and
+documentation installed correctly.
+
+Both PDFs captured in the earlier BMIC pilot parsed successfully with the
+installed pinned pypdf version. This checks text extraction, not completeness,
+semantic accuracy or the validity of any extracted repository claim.
+
+Machine-readable details:
+{
+  "checked_at": "2026-11-10T17:28:32.768876+00:00",
+  "new_offline_and_mocked_tests_passed": 31,
+  "full_legacy_suite_status": "BLOCKED_BY_MISSING_RUNTIME_DEPENDENCIES",
+  "legacy_baseline_unittest_entries": 106,
+  "updated_unittest_entries": 137,
+  "same_environment_errors_in_baseline_and_updated_suite": 20,
+  "unavailable_legacy_test_dependencies": [
+    "requests",
+    "beautifulsoup4",
+    "nbformat"
+  ],
+  "dependency_installation": "attempted; public package downloads returned HTTP 403 in this execution environment",
+  "legacy_test_error_names": [
+    "test_direct_verifier_apply_does_not_add_second_identifier_of_same_type (test_safety_and_review.ReviewTests.test_direct_verifier_apply_does_not_add_second_identifier_of_same_type)",
+    "test_direct_verifier_apply_refuses_card_hash_drift (test_safety_and_review.ReviewTests.test_direct_verifier_apply_refuses_card_hash_drift)",
+    "test_standalone_verifier_apply_fails_closed_without_common (test_safety_and_review.ReviewTests.test_standalone_verifier_apply_fails_closed_without_common)",
+    "test_v13_4_1_release_cell (unittest.loader._FailedTest.test_v13_4_1_release_cell)",
+    "test_v13_notebooks_and_operations (unittest.loader._FailedTest.test_v13_notebooks_and_operations)",
+    "test_dry_run_apply_and_idempotence (test_v14_interoperability.InteroperabilityBuildTests.test_dry_run_apply_and_idempotence)",
+    "test_re3data_fetch_pins_exact_response_bytes (test_v14_interoperability.InteroperabilityBuildTests.test_re3data_fetch_pins_exact_response_bytes)",
+    "test_dry_run_apply_and_idempotence_with_source_bound_profiles (test_v15_resource_profiles.ResourceProfileBuildTests.test_dry_run_apply_and_idempotence_with_source_bound_profiles)",
+    "test_website_description_fallback_is_limited_to_main_content (test_v15_resource_profiles.ResourceProfileSchemaTests.test_website_description_fallback_is_limited_to_main_content)",
+    "test_website_metadata_is_bounded_and_does_not_mine_footer_people (test_v15_resource_profiles.ResourceProfileSchemaTests.test_website_metadata_is_bounded_and_does_not_mine_footer_people)",
+    "test_catalog_alias_is_retained_and_exact_alias_match_is_direct_evidence (test_v16_repository_context.Re3dataV16Tests.test_catalog_alias_is_retained_and_exact_alias_match_is_direct_evidence)",
+    "test_only_missing_replaces_url_only_re3data_placeholder (test_v16_repository_context.Re3dataV16Tests.test_only_missing_replaces_url_only_re3data_placeholder)",
+    "test_re3data_cross_identifier_match_survives_name_and_host_drift (test_v16_repository_context.Re3dataV16Tests.test_re3data_cross_identifier_match_survives_name_and_host_drift)",
+    "test_v18_2_restart_and_network (unittest.loader._FailedTest.test_v18_2_restart_and_network)",
+    "test_v18_3_bulk_ai_review (unittest.loader._FailedTest.test_v18_3_bulk_ai_review)",
+    "test_v18_4_guided_review (unittest.loader._FailedTest.test_v18_4_guided_review)",
+    "test_v18_5_production_only (unittest.loader._FailedTest.test_v18_5_production_only)",
+    "test_v18_automated_review (unittest.loader._FailedTest.test_v18_automated_review)",
+    "test_v19_0_2_review_state (unittest.loader._FailedTest.test_v19_0_2_review_state)",
+    "test_v19_knowledge_graph (unittest.loader._FailedTest.test_v19_knowledge_graph)"
+  ],
+  "new_test_failures": 0,
+  "python_files_parsed": 85,
+  "v19_notebook_code_cells_parsed": 23,
+  "notebook_extension_idempotent": true,
+  "notebook_outputs_empty": true,
+  "original_release_hash_inventory_entries_verified": 132,
+  "original_reference_files_preserved_byte_for_byte": 16,
+  "isolated_production_installer_test": "PASS; 7 existing data/review/cache files preserved; 9 new release files checked",
+  "captured_pdf_parser_validation": {
+    "parser_version_installed": "6.21.4",
+    "captured_pdf_checks": [
+      {
+        "source_sha256": "05b762220671c6bdd3543e61efb11f0a3201a1191e664f89c0b6877aba5db65c",
+        "parse_status": "PARSED",
+        "text_characters": 35033
+      },
+      {
+        "source_sha256": "3548e842bc61a09ce5fc5edd44b372075161f0837ab58bb256c1ca61927af0d5",
+        "parse_status": "PARSED",
+        "text_characters": 7581
+      }
+    ],
+    "network_calls": 0
+  },
+  "live_gcp_calls": 0,
+  "live_web_collection_calls": 0,
+  "cloud_resources_created": 0,
+  "production_cards_changed": 0,
+  "live_extraction_accuracy": "NOT_VALIDATED",
+  "actual_colab_widgets_and_authentication": "NOT_RUN",
+  "deployment": "NOT_DEPLOYED"
+}

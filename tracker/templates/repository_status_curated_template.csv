@@ -1,0 +1,2 @@
+repo_uid,operational_status,operational_label,submission_status,accepting_user_contributed_data,submission_policy_url,submission_policy_text,submission_note,source_url,source_as_of,note
+# R000,active,Active,accepting_broad_submissions,yes,https://example.org/deposit-policy,,,https://example.org/status,2026-09,Reviewed resource-specific evidence

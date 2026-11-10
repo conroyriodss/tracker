@@ -1,0 +1,103 @@
+NIH TRACKER v19.0.2 VALIDATION REPORT
+=====================================
+
+Validation date: 2026-09-29.
+
+Purpose
+-------
+v19.0.2 is a bounded guided-review state hotfix. It corrects a state in which
+later model recommendations were reopened for approval even though durable,
+non-pending human identifier adjudications already existed for the same stable
+review keys. In the reported production state, all five current queue families
+had zero pending rows, while two identifier adjudications remained unapplied.
+
+Behavioral correction
+---------------------
+- A current operational human adjudication now takes precedence over any later
+  provider recommendation for the same stable review_key.
+- The later recommendation remains in the recommendation inventory for audit.
+- It does not become an approval blocker and cannot displace the human decision.
+- A genuinely new recommendation still reopens a terminally superseded or
+  quarantined item when no operational adjudication exists.
+- Explicit human editing or reopening remains available through manual review.
+- No card, recommendation, approval, or adjudication row is rewritten merely by
+  computing the corrected status.
+
+Expected reported-state result
+------------------------------
+The regression fixture reproduces the material state:
+
+- zero pending candidate rows;
+- a newer provider recommendation after a terminal historical approval;
+- a current non-pending identifier adjudication for the same review key;
+- one operational row awaiting application.
+
+The corrected status is READY_TO_FINALIZE, with zero imported items awaiting
+approval and one recommendation item reported as covered by a current decision.
+The production case with two such rows therefore proceeds directly to validation
+and application of the two identifier adjudications.
+
+Notebook correction
+-------------------
+- Section 3 is now a state-aware next-action panel.
+- APPROVAL_REQUIRED shows a single approval button.
+- REVIEW_REQUIRED shows only nonempty candidate-queue controls.
+- READY_TO_FINALIZE hides empty queue dropdowns and directs the reviewer to the
+  finalization control.
+- COMPLETE directs the reviewer to the main pipeline.
+- The dashboard reports later recommendations already covered by current human
+  decisions.
+- The import section remains available for new web-review result files but no
+  longer duplicates the approval control.
+
+Core validation
+---------------
+- 163 unit and integration tests passed across 19 test modules.
+- 74 Python files compiled successfully.
+- 36 of 36 command-line entry points completed --help.
+- All 3 v19.0.2 notebooks passed nbformat validation.
+- All 22 notebook code cells passed Python AST parsing.
+- All 22 code cells carry hidden-by-default Colab/Jupyter metadata.
+- Released notebooks contain no execution counts or saved outputs.
+- Consecutive notebook generations were byte-identical.
+- Frontend JavaScript extracted from frontend.html passed node --check.
+- All 7 pinned reference artifacts matched their metadata SHA-256 values.
+- The production installer collected 134 release-managed files and no cards,
+  inputs, or blocks.
+
+Regression coverage
+-------------------
+The added tests establish that:
+
+1. A later recommendation reopens a terminal approval when no current human
+   adjudication exists.
+2. The same recommendation is suppressed from the approval queue when a current
+   operational adjudication exists for the review key.
+3. The status engine moves to READY_TO_FINALIZE rather than APPROVAL_REQUIRED.
+4. The operational adjudication remains pending for the guarded apply step.
+5. The v19 review notebook contains the state-aware next-action panel and hides
+   empty candidate controls.
+
+Compatibility
+-------------
+- v19 knowledge-graph schemas, controlled vocabularies, claims, edges, public
+  resource views, and catalog build semantics are unchanged.
+- v19.0.1 publication handling for an empty change_history.jsonl remains in
+  force.
+- v19.0.1 production-only maintenance corrections remain in force.
+- Existing cards, recommendations, approvals, adjudications, receipts, run
+  history, snapshots, builds, caches, credentials, and locks are preserved.
+- Offline/cached-only remains the pipeline default.
+- No composite completeness, maturity, FAIRness, confidence, or fit score was
+  introduced.
+
+Packaged archive checks
+-----------------------
+- Complete bundle internal inventory: 140 entries.
+- Focused code/tests archive internal inventory: 132 entries.
+- Both archives were built with normalized timestamps and deterministic ordering.
+- The complete bundle was extracted cleanly; all 140 inventory entries verified
+  and all 163 tests passed from that extraction.
+- The focused archive was extracted separately; all 132 inventory entries
+  verified and all 163 tests passed from that extraction.
+- Consecutive deterministic ZIP generations were byte-identical.

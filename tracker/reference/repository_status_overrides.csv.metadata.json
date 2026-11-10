@@ -1,0 +1,8 @@
+{
+  "schema": "nih-tracker-repository-status-overrides/v1",
+  "source_file": "repository_status_overrides.csv",
+  "source_sha256": "5bda58428ab04104f9bd2feba27db97ad2c5492db047ccb1bd585212e4ced393",
+  "rows": 5,
+  "verified_at": "2026-09-16",
+  "basis": "Reviewed official resource and NIH CADR status evidence; no fuzzy matching."
+}

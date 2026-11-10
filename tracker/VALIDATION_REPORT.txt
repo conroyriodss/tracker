@@ -1,0 +1,89 @@
+NIH Tracker v19.1.1 validation report
+
+60 focused tests pass: 29 new semi-automated-review tests and all 31 prior GCP
+evidence tests. Tests use synthetic inputs, mocked transports and isolated
+temporary projects. No production candidate CSV was supplied for this update.
+
+The new tests cover the reported 132-card plus one-identifier queue shape,
+source and registry binding, exact-label alias promotion, rejection and deferral,
+existing guided finalization, source-cache excerpts, separate Gemini/Claude
+results, disagreement, no sharing of another model's answer, per-call bounds,
+resume/recovery, failure handling, stale evidence, human precedence, hash
+tampering, transport permissions, truncation and concurrent execution locks.
+
+The full suite was attempted: 166 entries, with the same 20 dependency-related
+errors as v19.1 (requests, beautifulsoup4 and nbformat unavailable here). No other
+test failures were reported. This is NOT a full regression-suite pass. Install
+the pinned requirements and run `python -m unittest discover -s tests -v` in
+the intended runtime before wider production use.
+
+The actual production release installer was run against an isolated synthetic
+project. Eight existing data/configuration/review/cache/snapshot files remained
+byte-identical. Ten installed release files were checked against this source.
+Python and v19 notebook code parses; notebook outputs are empty and extension
+generation is idempotent. The Colab widget UI itself was not run here.
+
+Claude's managed API, model ID and structured-output policy were checked against
+Google Cloud documentation on November 10, 2026. Requests are locally tested
+with mocks only. No live Gemini, Claude, Google Search, GCS or BigQuery call was
+made. No project access, cloud creation, recommendation correctness, human
+agreement or extraction accuracy is established by this release.
+
+Machine-readable details:
+{
+  "checked_at": "2026-11-10T18:14:24.014403+00:00",
+  "new_semiautomated_review_tests_passed": 29,
+  "prior_gcp_tests_passed": 31,
+  "focused_tests_passed": 60,
+  "full_suite_entries": 166,
+  "full_suite_dependency_errors": 20,
+  "same_dependency_errors_as_v19_1": true,
+  "full_suite_status": "BLOCKED_BY_MISSING_RUNTIME_DEPENDENCIES",
+  "missing_legacy_dependencies": [
+    "requests",
+    "beautifulsoup4",
+    "nbformat"
+  ],
+  "legacy_error_names": [
+    "test_direct_verifier_apply_does_not_add_second_identifier_of_same_type (test_safety_and_review.ReviewTests.test_direct_verifier_apply_does_not_add_second_identifier_of_same_type)",
+    "test_direct_verifier_apply_refuses_card_hash_drift (test_safety_and_review.ReviewTests.test_direct_verifier_apply_refuses_card_hash_drift)",
+    "test_standalone_verifier_apply_fails_closed_without_common (test_safety_and_review.ReviewTests.test_standalone_verifier_apply_fails_closed_without_common)",
+    "test_v13_4_1_release_cell (unittest.loader._FailedTest.test_v13_4_1_release_cell)",
+    "test_v13_notebooks_and_operations (unittest.loader._FailedTest.test_v13_notebooks_and_operations)",
+    "test_dry_run_apply_and_idempotence (test_v14_interoperability.InteroperabilityBuildTests.test_dry_run_apply_and_idempotence)",
+    "test_re3data_fetch_pins_exact_response_bytes (test_v14_interoperability.InteroperabilityBuildTests.test_re3data_fetch_pins_exact_response_bytes)",
+    "test_dry_run_apply_and_idempotence_with_source_bound_profiles (test_v15_resource_profiles.ResourceProfileBuildTests.test_dry_run_apply_and_idempotence_with_source_bound_profiles)",
+    "test_website_description_fallback_is_limited_to_main_content (test_v15_resource_profiles.ResourceProfileSchemaTests.test_website_description_fallback_is_limited_to_main_content)",
+    "test_website_metadata_is_bounded_and_does_not_mine_footer_people (test_v15_resource_profiles.ResourceProfileSchemaTests.test_website_metadata_is_bounded_and_does_not_mine_footer_people)",
+    "test_catalog_alias_is_retained_and_exact_alias_match_is_direct_evidence (test_v16_repository_context.Re3dataV16Tests.test_catalog_alias_is_retained_and_exact_alias_match_is_direct_evidence)",
+    "test_only_missing_replaces_url_only_re3data_placeholder (test_v16_repository_context.Re3dataV16Tests.test_only_missing_replaces_url_only_re3data_placeholder)",
+    "test_re3data_cross_identifier_match_survives_name_and_host_drift (test_v16_repository_context.Re3dataV16Tests.test_re3data_cross_identifier_match_survives_name_and_host_drift)",
+    "test_v18_2_restart_and_network (unittest.loader._FailedTest.test_v18_2_restart_and_network)",
+    "test_v18_3_bulk_ai_review (unittest.loader._FailedTest.test_v18_3_bulk_ai_review)",
+    "test_v18_4_guided_review (unittest.loader._FailedTest.test_v18_4_guided_review)",
+    "test_v18_5_production_only (unittest.loader._FailedTest.test_v18_5_production_only)",
+    "test_v18_automated_review (unittest.loader._FailedTest.test_v18_automated_review)",
+    "test_v19_0_2_review_state (unittest.loader._FailedTest.test_v19_0_2_review_state)",
+    "test_v19_knowledge_graph (unittest.loader._FailedTest.test_v19_knowledge_graph)"
+  ],
+  "test_failures_other_than_missing_dependencies": 0,
+  "python_files_parsed": 88,
+  "notebook_code_cells_parsed": 23,
+  "notebook_extension_idempotent": true,
+  "notebook_outputs_empty": true,
+  "installer_isolated_project": {
+    "status": "PASS",
+    "existing_data_files_preserved": 8,
+    "new_release_files_checked": 10
+  },
+  "source_inventory_entries_verified": 152,
+  "prior_reference_files_preserved": 19,
+  "live_gcp_calls": 0,
+  "live_source_fetches": 0,
+  "production_cards_changed": 0,
+  "cloud_resources_created": 0,
+  "claude_access_in_user_project": "NOT_TESTED",
+  "recommendation_accuracy": "NOT_EVALUATED",
+  "actual_colab_widgets": "NOT_RUN",
+  "deployment": "NOT_DEPLOYED"
+}
