@@ -1,0 +1,11 @@
+{
+  "schema": "nih-tracker-source-snapshot/v1",
+  "artifact": "dbgap_eds_definition.json",
+  "source_urls": [
+    "https://www.ncbi.nlm.nih.gov/gap/docs/submissionguide/",
+    "https://www.ncbi.nlm.nih.gov/gap/docs/specialstudies/"
+  ],
+  "verified_at": "2026-09-16",
+  "sha256": "66e5b647df5f07c6c67769ad0fa22e902b5f8d4f77f56b99c0ec718a14843ac7",
+  "interpretation_limit": "The JSON is a structured project interpretation of current official guidance; consult the cited pages for authoritative wording."
+}

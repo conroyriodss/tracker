@@ -1,0 +1,32 @@
+name: Tracker source tests
+on:
+  pull_request:
+    paths: ["tracker/**", ".github/workflows/tracker-tests.yml"]
+  push:
+    branches: [main]
+    paths: ["tracker/**", ".github/workflows/tracker-tests.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: tracker
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7, verified 2026-11-10
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7, verified 2026-11-10
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python scripts/verify_distribution.py
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pip freeze
+      - run: python -m unittest discover -s tests -v

@@ -1,0 +1,30 @@
+{
+  "schema": "nih-tracker-source-snapshot/v1",
+  "artifact": "dbGaP_Studies.csv",
+  "source_url": "https://dbgap.ncbi.nlm.nih.gov/beta/search/",
+  "received_from": "user-supplied export",
+  "received_at": "2026-09-16",
+  "sha256": "13442e5444f201d3a7cd3f139b72c42c97a3f1ac908ff53f8b375828fd636499",
+  "rows": 3647,
+  "columns": [
+    "accession",
+    "name",
+    "description",
+    "Parent study",
+    "Study Disease/Focus",
+    "Study Design",
+    "Study Markerset",
+    "Study Molecular Data Type",
+    "Study Content",
+    "Ancestry (computed)",
+    "NIH Institute",
+    "Study Consent",
+    "Release Date",
+    "Embargo Release Date",
+    "Related Terms",
+    "Collections"
+  ],
+  "latest_release_date": "2026-09-10",
+  "explicit_external_data_source_field": false,
+  "interpretation_limit": "Textual study associations do not establish dbGaP External Data Source registration."
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "nih-tracker-reference-metadata/v1",
+  "file": "publisher_repository_mentions.csv",
+  "sha256": "f6889b0d09ae38669d0ae3714c88f2fe2909d59d8a092ee76f8193cec8f5773b",
+  "created_at": "2026-09-16",
+  "basis": "Structured transcription from official publisher author-policy pages; semantic relationships require periodic human review."
+}

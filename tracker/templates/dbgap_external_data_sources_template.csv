@@ -1,0 +1,2 @@
+repo_uid,status,listed_name,source_url,source_as_of,uses_dbgap_access_system,note
+# R000,registered_eds,Example external data source,https://authoritative.example/source,2026-09-16,true,Use only an authoritative dbGaP registration/system or repository source.

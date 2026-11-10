@@ -1,0 +1,26 @@
+{
+  "schema": "nih-tracker-source-snapshot/v1",
+  "artifact": "re3data_confirmed_mappings.csv",
+  "source": "project-owner supplied exact re3data record URLs",
+  "reviewed_at": "2026-09-16",
+  "sha256": "055a91c8e95cd46cc0fcb0a0a829dc48ce60ab882fe4abb92db036c2ff733fa8",
+  "rows": 3,
+  "live_verification_required_before_apply": true,
+  "mappings": [
+    {
+      "repo_uid": "R103",
+      "r3d_id": "r3d100012653",
+      "record_url": "https://www.re3data.org/repository/r3d100012653"
+    },
+    {
+      "repo_uid": "R1",
+      "r3d_id": "r3d100012837",
+      "record_url": "https://www.re3data.org/repository/r3d100012837"
+    },
+    {
+      "repo_uid": "R127",
+      "r3d_id": "r3d100011561",
+      "record_url": "https://www.re3data.org/repository/r3d100011561"
+    }
+  ]
+}

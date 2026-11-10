@@ -4,7 +4,7 @@ A published resource catalog with structured records, relationships, supporting 
 
 This repository helps researchers, data-resource users, and program staff inspect the catalog and trace its contents to the available evidence. Developers can use the published machine-readable files and schemas to examine the representation.
 
-**Repository role: publication and inspection.** The reviewed YAML cards and pinned project snapshots named as the source of truth are not included in this repository, and neither is the catalog-generation notebook or build workflow. The published files support inspection; they do not by themselves provide a complete source-to-publication rebuild.
+**Repository role: source versioning, publication and inspection.** The source distribution, Colab notebooks and tests now live under [`tracker/`](tracker/), alongside the published catalog under `docs/`. Live reviewed YAML cards, operational inputs, run history and credentials remain outside this repository. A complete source-to-publication rebuild still requires those operational inputs.
 
 ## Start here
 
@@ -43,7 +43,7 @@ Resource coverage, metadata completeness, and evidence strength answer different
 4. Compare the SHA-256 of each downloaded artifact with the corresponding manifest entry. Data files are under `docs/data/`; schema entries correspond to files under `docs/schemas/`.
 5. Report which files were actually checked. A matching digest establishes byte agreement with the recorded digest; it does not establish completeness or correctness of the underlying claims.
 
-A fresh rebuild additionally requires the source cards, pinned input snapshots, vocabulary source, generation code, and execution environment. Their public location and rebuild procedure are not documented in the current repository.
+A fresh rebuild additionally requires the source cards, pinned input snapshots, vocabulary source and execution environment. Generation code and notebook instructions are in [`tracker/README.md`](tracker/README.md); inventory, cleanup, source pinning and GitHub practices are in [`tracker/OPERATIONS_AND_VERSIONING.md`](tracker/OPERATIONS_AND_VERSIONING.md). The [exploratory coverage example](tracker/examples/coverage_20260929/) uses a hash-checked historical catalog export and does not measure resource FAIRness.
 
 ## Corrections and reuse
 

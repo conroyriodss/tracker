@@ -1,0 +1,294 @@
+{
+  "artifact": "v19-knowledge-graph-review-state-hotfix",
+  "authority_model": {
+    "authoritative_mutable_records": [
+      "cards/*.yaml",
+      "inputs/*",
+      "reference/*",
+      "blocks/*"
+    ],
+    "card_mutation_by_catalog_build": false,
+    "catalog_directly_editable": false,
+    "derived_catalog": "build/catalog",
+    "external_network_used_by_catalog_build": false
+  },
+  "base_release": "NIH Tracker v19.0.1",
+  "catalog": {
+    "artifact_count_in_synthetic_validation": 19,
+    "bulk_data_asset_population": false,
+    "compiler": "scripts/step_build_catalog.py",
+    "composite_score": false,
+    "data_asset_schema_included": true,
+    "fit_classes": [
+      "meets_selected_criteria",
+      "meets_with_caveats",
+      "near_match",
+      "insufficient_evidence",
+      "excluded_by_selected_criteria"
+    ],
+    "machine_readable_formats": [
+      "JSON",
+      "JSONL",
+      "CSV",
+      "JSON-LD",
+      "JSON Schema"
+    ],
+    "node_types": [
+      "Resource",
+      "Organization",
+      "NIHOrganizationalUnit",
+      "AccessSystem",
+      "APIService",
+      "Standard",
+      "IdentifierScheme",
+      "GUIDSystem",
+      "PolicyDesignation",
+      "PublisherPolicy",
+      "EvidenceSource",
+      "ExternalIdentifier",
+      "DataAsset"
+    ],
+    "public_evidence_states": [
+      "verified",
+      "officially_reported",
+      "registry_reported",
+      "not_established"
+    ],
+    "relationship_examples": [
+      "OPERATED_BY",
+      "MAINTAINED_BY",
+      "HOSTED_BY",
+      "ASSOCIATED_WITH_ICO",
+      "HAS_ACCESS_SYSTEM",
+      "EXPOSES_API",
+      "IMPLEMENTS_STANDARD",
+      "SUPPORTS_IDENTIFIER_SCHEME",
+      "SUPPORTS_GUID_SYSTEM",
+      "HAS_POLICY_DESIGNATION",
+      "MENTIONED_BY_PUBLISHER_POLICY",
+      "RECOMMENDED_BY_PUBLISHER_POLICY",
+      "REQUIRES_DEPOSITION_BY_PUBLISHER_POLICY",
+      "COMPONENT_OF",
+      "CATALOGS",
+      "MIGRATED_TO",
+      "SUPERSEDES",
+      "SAME_AS"
+    ],
+    "schema_version": "nih-tracker-catalog/v1"
+  },
+  "compatibility": {
+    "automated_review_response_schema_changed": false,
+    "existing_card_schema_rewritten": false,
+    "existing_cards_inputs_runs_snapshots_preserved": true,
+    "legacy_v18_notebooks_retained_in_full_bundle_as_regression_fixtures_only": true,
+    "production_only_installation": true,
+    "step_build_spine_retained": true
+  },
+  "controlled_vocabularies": {
+    "families": [
+      "resource_type",
+      "nih_relationship",
+      "submission_model",
+      "access_pathway",
+      "operational_status",
+      "evidence_state",
+      "programmatic_access",
+      "pid_level",
+      "fit_class",
+      "data_modality",
+      "organism_scope",
+      "human_data_sensitivity"
+    ],
+    "path": "reference/catalog_vocabularies_v1.json",
+    "version": "1.1.0"
+  },
+  "hotfix": {
+    "card_content_changed": false,
+    "card_schema_changed": false,
+    "catalog_semantics_changed": false,
+    "maintenance": {
+      "absent_legacy_roots_are_valid_noop": true,
+      "legacy_deletion_removed_from_notebook": true,
+      "my_drive_root_recursive_hashing_removed": true
+    },
+    "publication": {
+      "required_payloads_still_fail_if_empty": true,
+      "sealed_plan_records_empty_payloads": true,
+      "valid_empty_payloads": [
+        "data/change_history.jsonl"
+      ]
+    },
+    "review_workflow": {
+      "card_or_adjudication_content_changed_by_install": false,
+      "durable_operational_decision_precedence": true,
+      "empty_queue_controls_hidden": true,
+      "explicit_human_reopen_still_supported": true,
+      "later_model_recommendation_does_not_reopen_decided_item": true,
+      "later_model_recommendation_preserved_for_audit": true,
+      "state_aware_next_action_panel": true
+    }
+  },
+  "limitations": [
+    "v19 defines but does not bulk-populate DataAsset records.",
+    "The public release is static and does not deploy a graph database or live service API.",
+    "Organism/model-system scope and human-data context are source-bound discovery aids, not asset-level consent, privacy, or legal classifications.",
+    "API reported, documented, reachable, and conformance-tested remain distinct evidence states.",
+    "CADR listing does not by itself establish current user-facing availability or universal DMS suitability.",
+    "No composite completeness, maturity, FAIRness, confidence, or fit score is produced."
+  ],
+  "notebooks": {
+    "nih_tracker_colab_v19_maintenance.ipynb": {
+      "cells": 19,
+      "code_cells": 9,
+      "hidden_code_cells": 9,
+      "sha256": "aa66ff1d18b59865c8d8b5b4d512532223ee08daa08cad7d00e60ffd9f1e5854"
+    },
+    "nih_tracker_colab_v19_pipeline.ipynb": {
+      "cells": 11,
+      "code_cells": 5,
+      "hidden_code_cells": 5,
+      "sha256": "f6278ff7069430d6ec644c6a3816f851344f35471fdfca14ffec27b719068611"
+    },
+    "nih_tracker_colab_v19_review_workbench.ipynb": {
+      "cells": 17,
+      "code_cells": 8,
+      "hidden_code_cells": 8,
+      "sha256": "7c0c02b0c345c84e56210d1d01f87bb65ed10abeaa682325e642b6dc3360d993"
+    }
+  },
+  "pipeline_network_control": {
+    "default_mode": "offline_cached_only",
+    "external_refresh_requires_explicit_selection": true,
+    "github_publication_is_separate_explicit_action": true
+  },
+  "public_artifacts": {
+    "data_directory": "build/data",
+    "github_publish_directory": "docs",
+    "managed_manifest_cleanup": true,
+    "recursive_publication": true,
+    "schema_directory": "build/schemas",
+    "site": "build/index.html"
+  },
+  "public_interface": {
+    "accessibility_controls": true,
+    "comparison_limit": 5,
+    "explainable_matching": true,
+    "hidden_numeric_ranking": false,
+    "name": "NIH Data Resource Navigator + Evidence Graph",
+    "no_match_guidance": true,
+    "progressive_layers": [
+      "decision_card",
+      "researcher_profile",
+      "evidence_dossier"
+    ],
+    "public_policy_disclaimer": true,
+    "task_paths": [
+      "share_data",
+      "reuse_data",
+      "explore_portfolio",
+      "compare_resources"
+    ]
+  },
+  "reference_artifacts": {
+    "dbGaP_Studies.csv": {
+      "expected_sha256": "13442e5444f201d3a7cd3f139b72c42c97a3f1ac908ff53f8b375828fd636499",
+      "metadata_sha256": "9ff43b6b425abaf8be20e8b98c3b56c2b8c1292e3ba8ab6ef23cedc7d0ef91a6",
+      "sha256": "13442e5444f201d3a7cd3f139b72c42c97a3f1ac908ff53f8b375828fd636499",
+      "verified": true
+    },
+    "dbgap_eds_definition.json": {
+      "expected_sha256": "66e5b647df5f07c6c67769ad0fa22e902b5f8d4f77f56b99c0ec718a14843ac7",
+      "metadata_sha256": "82ace7abe0e3f4bc5ca2ccf90e9e9e2eb701e54eb00a2dea1a2203a1d42a038a",
+      "sha256": "66e5b647df5f07c6c67769ad0fa22e902b5f8d4f77f56b99c0ec718a14843ac7",
+      "verified": true
+    },
+    "nih_cadr_registry.csv": {
+      "expected_sha256": "938cf538c36dcfc8a11deb27550e01ee65127ce068cafbe7d640474afc04939f",
+      "metadata_sha256": "81f81aeff4f5ffb2445cbefc65124be653ece2f4cc49fac6760b56fdcecb0697",
+      "sha256": "938cf538c36dcfc8a11deb27550e01ee65127ce068cafbe7d640474afc04939f",
+      "verified": true
+    },
+    "publisher_policy_sources.csv": {
+      "expected_sha256": "2c865910eae53e241a2e585b33fda86235e155bad26903335ef570a2a61b7ab9",
+      "metadata_sha256": "c3f4480c899f6bab93c0acba42a8328dec875939b6174c724990381e8f9383d7",
+      "sha256": "2c865910eae53e241a2e585b33fda86235e155bad26903335ef570a2a61b7ab9",
+      "verified": true
+    },
+    "publisher_repository_mentions.csv": {
+      "expected_sha256": "f6889b0d09ae38669d0ae3714c88f2fe2909d59d8a092ee76f8193cec8f5773b",
+      "metadata_sha256": "92bf08d4e855912111b433ae5843fd363a1f51d57f23258b744aaf23e29f61c9",
+      "sha256": "f6889b0d09ae38669d0ae3714c88f2fe2909d59d8a092ee76f8193cec8f5773b",
+      "verified": true
+    },
+    "re3data_confirmed_mappings.csv": {
+      "expected_sha256": "055a91c8e95cd46cc0fcb0a0a829dc48ce60ab882fe4abb92db036c2ff733fa8",
+      "metadata_sha256": "d17b42ffeb8648d4586e6eb83af9a4ec1e6049eb4be63c864be3b1f1ebe11c99",
+      "sha256": "055a91c8e95cd46cc0fcb0a0a829dc48ce60ab882fe4abb92db036c2ff733fa8",
+      "verified": true
+    },
+    "repository_status_overrides.csv": {
+      "expected_sha256": "5bda58428ab04104f9bd2feba27db97ad2c5492db047ccb1bd585212e4ced393",
+      "metadata_sha256": "681e32cfdc112a62acb881785f5f2406659453a7e6457428147eb5e478d8c80b",
+      "sha256": "5bda58428ab04104f9bd2feba27db97ad2c5492db047ccb1bd585212e4ced393",
+      "verified": true
+    }
+  },
+  "release": "NIH Tracker v19.0.2",
+  "release_date": "2026-09-29",
+  "review_workflow": {
+    "named_human_approval_required": true,
+    "operational_adjudication_prevents_automatic_reopen": true,
+    "source_item_card_and_manifest_hash_binding_preserved": true,
+    "state_aware_controls": true,
+    "state_precedence": [
+      "APPROVAL_REQUIRED",
+      "READY_TO_FINALIZE",
+      "REVIEW_REQUIRED",
+      "COMPLETE"
+    ],
+    "transactional_card_writes_preserved": true,
+    "unapproved_recommendations_block_finalization": true
+  },
+  "schema": "nih-tracker-release-manifest/v2",
+  "validation": {
+    "bounded_absent_legacy_root_noop_regression": true,
+    "cli_help_checks": 36,
+    "deterministic_catalog_build": true,
+    "deterministic_frontend_build": true,
+    "deterministic_notebook_generation": true,
+    "deterministic_zip_regeneration": true,
+    "empty_change_history_publication_regression": true,
+    "exact_focused_archive_inventory_verified": true,
+    "exact_focused_archive_targeted_tests_passed": 163,
+    "exact_full_archive_inventory_verified": true,
+    "exact_full_archive_tests_passed": 163,
+    "focused_archive_inventory_entries": 132,
+    "frontend_javascript_checked": true,
+    "full_bundle_inventory_entries": 140,
+    "json_schemas_validated": 6,
+    "notebook_code_cells_hidden": 22,
+    "notebook_code_cells_parsed": 22,
+    "notebook_outputs_empty": true,
+    "notebooks_validated": 3,
+    "operational_decision_precedence_regression": true,
+    "production_installer_data_files_collected": 0,
+    "production_installer_dry_apply_regression": true,
+    "production_release_files_collected": 134,
+    "python_files_compiled": 74,
+    "reference_hashes_verified": 7,
+    "reported_two_decision_state_regression": true,
+    "required_empty_payload_rejection_regression": true,
+    "state_aware_review_controls_regression": true,
+    "synthetic_catalog_id": "e0d028650eee43b573a8a3a8f6e5014c03ac87a7a457a9bd06720dff5818b1d8",
+    "synthetic_counts": {
+      "change_events": 0,
+      "claims": 38,
+      "edges": 11,
+      "nodes": 24,
+      "resources": 1
+    },
+    "synthetic_frontend_sha256": "9fd7ace73798c0750cbf8880d653ec51994995e375015a95eda609f975729bb8",
+    "test_modules": 19,
+    "tests_passed": 163
+  }
+}

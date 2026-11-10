@@ -1,0 +1,115 @@
+NIH Tracker v19.2.3 validation report
+
+Local regression: 277 tests; 273 passed, 3 existing Beautiful Soup dependency
+errors, 1 skipped ipywidgets test, no assertion failures. All 12 new progress,
+pin-inspection, logging and interruption tests pass. Final dependency-complete
+Python 3.12/3.13 CI is tied to the source commit recorded in BUNDLE_SOURCE.json.
+
+New tests exercise a live heartbeat during a blocked foreground wait; phase and
+file/byte counter reporting; failed-read completion status; direct pin inspection
+without historical globbing; family validation; Drive-copy and ledger failures;
+stopping a real child process and descendant; bounded termination with an
+explicit unconfirmed outcome; and interrupted pipeline status without success.
+
+100 Python files and 24 notebook code cells parse. Outputs are empty and the
+extension is idempotent. The attached pipeline source matched v19.1.1 exactly;
+its step-builder AST and final publication cell remain unchanged. Actual Colab
+rendering, Drive elapsed time, full live inventory and end-to-end production
+pipeline execution have not been validated here. No new data or human decisions
+were created, and no production cleanup or site publication was performed.
+
+Historical v19.2.2 validation follows (not a new v19.2.3 execution):
+
+Local regression: 265 tests; 261 passed, 3 existing Beautiful Soup dependency
+errors, 1 skipped ipywidgets test, no assertion failures. All 9 new installation
+tests pass. They cover one hash per target, zero payload writes for unchanged
+files, staging only changed code, live-reference preservation, payload and target
+drift rejection, compatibility with older sealed plans, bounded ledger inputs,
+streamed progress, installed-version/hash mismatch checks, and read-only pin
+inspection that rejects changed source bytes without rewriting pins.
+
+98 Python files and 24 notebook code cells parse. Notebook outputs are empty and
+the extension is idempotent. Actual Colab/Drive duration has not been benchmarked;
+the improvement is verified as reduced I/O, not a measured elapsed-time claim.
+Final dependency-complete CI results are tied to the exact source commit in
+BUNDLE_SOURCE.json. No production Drive changes or cleanup were performed here.
+
+Historical v19.2.1 validation follows (not a new v19.2.2 execution):
+
+Local regression: 256 tests; 252 passed, 3 existing Beautiful Soup dependency
+errors, 1 skipped ipywidgets test, no assertion failures. The patch adds 11 tests:
+10 pass locally and 1 widget interaction test requires CI dependencies.
+The original no-lock failure was reproduced through NotebookRuntime and now
+returns returncode=0, gate=True, ok=True, with removed=false in the audit.
+Existing-lock removal, invalid confirmation, unlink failure, remaining-lock
+failure, empty selection, both acknowledgments, changed/resealed plans, and
+applied/invalid plan exclusion are covered. Source and 24 notebook code cells
+parse; notebook outputs are empty; the extension is idempotent.
+
+Use the exact source commit in BUNDLE_SOURCE.json to inspect final CI results.
+The workflow tests Python 3.12 and 3.13 with pinned dependencies. No live Colab
+rendering, production Drive modification, cleanup or site publication was done.
+
+Historical v19.2 validation follows (not a new v19.2.1 execution):
+
+Local regression: 245 tests; 242 passed, 3 dependency-related errors, no assertion
+failures. The unchanged baseline has the same 3 errors with these dependencies.
+This is not a local full-suite pass. Twenty-two new provenance/retention/report tests
+pass on isolated synthetic projects. No production Drive data was supplied.
+
+The installer policy regression was intentionally updated: distributed reference
+snapshots remain available for first installation but no longer overwrite live
+evidence during code refresh. Code-owned vocabularies and rubric still refresh.
+
+The coverage CSV matches the published manifest hash at the recorded commit.
+Interactive filtering was tested with a JavaScript DOM stub; a real browser
+could not launch because the sandbox disallows its IPC sockets. Layout and Colab
+widgets require visual verification in the intended runtime.
+
+{
+  "schema": "nih-tracker-validation/v1",
+  "release": "19.2",
+  "local_full_suite_tests": 245,
+  "local_passed": 242,
+  "local_errors": 3,
+  "local_assertion_failures": 0,
+  "new_tests_passed": 22,
+  "dependency_limit": "beautifulsoup4 unavailable; three pre-existing resource-profile extraction tests cannot execute",
+  "baseline_with_same_local_dependencies": {
+    "tests": 223,
+    "errors": 3,
+    "assertion_failures": 0
+  },
+  "source_hashes_verified_before_edit": 158,
+  "python_files_parsed": 95,
+  "production_notebook_code_cells_parsed": 24,
+  "operations_extension_idempotent": true,
+  "notebook_outputs_empty": true,
+  "coverage_example": {
+    "source_commit": "f553d6df220db4f84aac2533520234dedf57f386",
+    "resources": 222,
+    "field_coverage_sha256": "30c3a36ca92f462ef3feb0d4ec764f696f28c67f7e9f6d65c4c6eebcf81a2aab",
+    "csv_hash_matches_catalog_manifest": true,
+    "dom_stub_interaction_counts": [
+      222,
+      24,
+      1
+    ],
+    "browser_layout": "NOT_VALIDATED: sandbox disallows Chromium IPC"
+  },
+  "production_cleanup_applied": false,
+  "production_cards_changed": false,
+  "live_cloud_calls": 0,
+  "public_catalog_republished": false,
+  "github_ci": "Consult PR head checks for the final revision; the previous source revision passed the full dependency-complete workflow.",
+  "github_ci_prior_revision": {
+    "commit": "86f1ab11a6c1bd5a111d223c647103510c5c2e0f",
+    "result": "success",
+    "url": "https://github.com/conroyriodss/tracker/actions/runs/42891443557"
+  },
+  "installer_smoke": {
+    "status": "PASS",
+    "preserved_operational_reference_files": 4,
+    "new_release_files_checked": 4
+  }
+}

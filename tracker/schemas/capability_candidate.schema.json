@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "properties": {
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "A3",
+              "A4",
+              "A5",
+              "A6",
+              "B1",
+              "B2",
+              "B3",
+              "B4",
+              "B5",
+              "B6",
+              "B7",
+              "C1",
+              "C2",
+              "C3",
+              "C4",
+              "C5",
+              "D1",
+              "D2",
+              "D3",
+              "D4"
+            ]
+          },
+          "value": {
+            "type": "string"
+          },
+          "snapshot_id": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "caveat": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "criterion_id",
+          "value",
+          "snapshot_id",
+          "quote",
+          "scope",
+          "caveat"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "claims"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "nih-tracker-dbgap-eds-definition/v1",
+  "verified_at": "2026-09-16",
+  "source_urls": [
+    "https://www.ncbi.nlm.nih.gov/gap/docs/submissionguide/",
+    "https://www.ncbi.nlm.nih.gov/gap/docs/specialstudies/"
+  ],
+  "interpretation": {
+    "external_entity_required": true,
+    "qualifying_eds_is_nih_cadr": true,
+    "specific_study_designation_occurs_in_dbgap_registration_system": true,
+    "designation_role": "Genomic Program Administrator"
+  },
+  "summary": "dbGaP describes an External Data Source as a non-dbGaP data-storing entity; an EDS meeting applicable NIH standards is known as an NIH CADR. A specific study EDS designation is made in the dbGaP registration system.",
+  "interpretation_limit": "This structured interpretation supports card classification but is not a substitute for the cited current dbGaP guidance."
+}

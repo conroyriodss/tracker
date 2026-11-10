@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conroyriodss.github.io/tracker/schemas/catalog_manifest.schema.json",
+  "title": "NIH Tracker catalog manifest",
+  "type": "object",
+  "required": [
+    "schema", "catalog_id", "catalog_as_of", "input_fingerprint", "vocabulary",
+    "counts", "artifacts", "source_of_truth", "derived_catalog", "network_access",
+    "composite_score"
+  ],
+  "properties": {
+    "schema": {"const": "nih-tracker-catalog-manifest/v1"},
+    "catalog_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "catalog_as_of": {"type": "string", "minLength": 4},
+    "input_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "vocabulary": {
+      "type": "object",
+      "required": ["path", "version", "sha256"],
+      "properties": {
+        "path": {"type": "string"},
+        "version": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "counts": {"type": "object"},
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["sha256", "bytes"],
+        "properties": {
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "source_of_truth": {"type": "string"},
+    "derived_catalog": {"const": true},
+    "network_access": {"const": false},
+    "composite_score": {"const": false}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,2 @@
+publisher_family,journal_title,policy_title,policy_url,policy_level,repository_name,repository_url,mention_type,data_domain,access_model,source_location,evidence_note,date_checked,repo_uid,match_terms
+# Example Publisher,,Repository policy,https://publisher.example/policy,recommended,Example Repository,https://repository.example,recommended,general,mixed,Recommended repositories,Exact supporting note,2026-09,R000,Example Repo

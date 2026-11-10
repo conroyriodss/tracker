@@ -1,0 +1,101 @@
+{
+  "artifacts": {
+    "catalog.jsonld": {
+      "bytes": 1943605,
+      "sha256": "28cf3711ca3436f719bc852893d814a709723310d01977a24c8ad941b42ade98"
+    },
+    "change_history.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "claims.jsonl": {
+      "bytes": 5965502,
+      "sha256": "a482fd7d54286738b6c5bc60cd075c613339c58a779fc564241ef143e4d330ed"
+    },
+    "edges.jsonl": {
+      "bytes": 502933,
+      "sha256": "3b91081d10e7a7c302b0031ebd7714485c38a2b79804fdf223f9ebe91e97e00c"
+    },
+    "field_coverage.csv": {
+      "bytes": 27496,
+      "sha256": "30c3a36ca92f462ef3feb0d4ec764f696f28c67f7e9f6d65c4c6eebcf81a2aab"
+    },
+    "migration_audit.csv": {
+      "bytes": 20045,
+      "sha256": "67397d9acba9eeed188835b30991bffc07c5b1a1149489b014dbb4f47160b719"
+    },
+    "nodes.jsonl": {
+      "bytes": 1219144,
+      "sha256": "94b036d512fb74d50bccc21ae88930ee62d745b7e733f1ff6838a894b8b527f0"
+    },
+    "relationship_coverage.csv": {
+      "bytes": 343785,
+      "sha256": "924539daaa1d2b202179e1ea982ea3d0bc66f2c18aa4346c968a915e4705cc72"
+    },
+    "resources.csv": {
+      "bytes": 192630,
+      "sha256": "3ba51b23bd7497b4bb207e775d6d2a49ffd304110ac62761d50fd704233c92f5"
+    },
+    "resources.json": {
+      "bytes": 3275294,
+      "sha256": "67bbbac8c9ac29153c1f8f94df41ccd51d4747150e9d3697e41bafac5d0f117a"
+    },
+    "resources.jsonl": {
+      "bytes": 2357627,
+      "sha256": "a0f720e5edd324ef0985e7c130d5c972628b86803d5852fd05fb1271b7470989"
+    },
+    "schemas/catalog_claim.schema.json": {
+      "bytes": 1271,
+      "sha256": "b6ab9900cdb84d372b013346078ee82edb7c29b5c7505ce5ba91bf672d2315c5"
+    },
+    "schemas/catalog_edge.schema.json": {
+      "bytes": 642,
+      "sha256": "55eb7ca2b0c421755af6d1e2ccaf9f241c274949053e0f70acb66900ce011864"
+    },
+    "schemas/catalog_manifest.schema.json": {
+      "bytes": 1592,
+      "sha256": "16582d076c12026de545e84f65d640fae16d4f482f28f68dae39dcf73af4be51"
+    },
+    "schemas/catalog_node.schema.json": {
+      "bytes": 589,
+      "sha256": "d9824d9d90ec99fb3577e329788c212cb02c56100996f69fac681d8e6f9c891f"
+    },
+    "schemas/data_asset.schema.json": {
+      "bytes": 2468,
+      "sha256": "7ad216715fec39f6f382a79de37513a9e66d96090964271823abd3d5bb278fb6"
+    },
+    "schemas/public_resource.schema.json": {
+      "bytes": 3541,
+      "sha256": "3b9e2500a66a20f7cbd00ae176d2f67db1f9b094aa50f3b7e692f797acd47837"
+    },
+    "source_freshness.csv": {
+      "bytes": 2160174,
+      "sha256": "72ca25bfbac9ef2055a3e22e9a853c121280b232bd08822d4d2ba2aafb357f56"
+    },
+    "vocabularies.json": {
+      "bytes": 16486,
+      "sha256": "7831e50d8230a91e4a3c33f11d7d8375664e684b3f98765e14a61955d3ad4c8d"
+    }
+  },
+  "catalog_as_of": "2026-09-29",
+  "catalog_id": "a1a3a5394c21d2e293658a2bfc2191efc57a8df87c8c85cd5dc5416bb3f7022c",
+  "composite_score": false,
+  "counts": {
+    "change_events": 0,
+    "claims": 9326,
+    "claims_using_compilation_date_fallback": 1301,
+    "edges": 2181,
+    "nodes": 2589,
+    "resources": 222
+  },
+  "derived_catalog": true,
+  "input_fingerprint": "3d340e40f9c830995ea28ddd575ef4e710121c7ed322a1450cc4a7987354b58c",
+  "network_access": false,
+  "schema": "nih-tracker-catalog-manifest/v1",
+  "source_of_truth": "reviewed YAML cards and pinned project snapshots",
+  "vocabulary": {
+    "path": "reference/catalog_vocabularies_v1.json",
+    "sha256": "8e2b38d9b718331facc288a369bf5c1a7ed0b728427ffb09c49cfbd371397021",
+    "version": "1.1.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "nih-tracker-coverage-example/v1",
+  "source_repository": "conroyriodss/tracker",
+  "source_commit": "f553d6df220db4f84aac2533520234dedf57f386",
+  "source_paths": [
+    "docs/data/manifest.json",
+    "docs/data/field_coverage.csv"
+  ],
+  "catalog_as_of": "2026-09-29",
+  "resources": 222,
+  "independently_revalidated_repository_claims": false,
+  "files": {
+    "manifest.json": "b645475efd5159e43333f8aeb4d3d759e26c9d6d0223bc0773f8b2a3066bab39",
+    "field_coverage.csv": "30c3a36ca92f462ef3feb0d4ec764f696f28c67f7e9f6d65c4c6eebcf81a2aab",
+    "index.html": "06e6174033a893108d07880667ef369f80bda31164d4974b2b091cc66c99b440"
+  }
+}

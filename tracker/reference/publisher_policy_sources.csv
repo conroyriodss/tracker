@@ -1,0 +1,12 @@
+publisher_family,policy_title,policy_url,expected_terms,date_checked,content_sha256,snapshot_path,http_status,final_url,refresh_status
+Nature Portfolio / Springer Nature,"Reporting standards and availability of data, materials, code and protocols",https://www.nature.com/nature-portfolio/editorial-policies/reporting-standards,MIAME;GenBank;Protein Data Bank,2026-09-16,,,,,release_seed_not_fetched
+Scientific Data,Data Repository Guidance,https://www.nature.com/sdata/policies/repositories,Data Repository Guidance;Dryad;figshare;Zenodo,2026-09-16,,,,,release_seed_not_fetched
+PLOS,PLOS ONE Data Availability,https://journals.plos.org/plosone/s/data-availability,Data Availability;repository;accession,2026-09-16,,,,,release_seed_not_fetched
+PLOS,Recommended Repositories,https://journals.plos.org/globalpublichealth/s/recommended-repositories,Recommended Repositories;Dryad;Zenodo,2026-09-16,,,,,release_seed_not_fetched
+BMJ,BMJ Data Sharing Policy,https://authors.bmj.com/policies/data-sharing/,Vivli;YODA;controlled access,2026-09-16,,,,,release_seed_not_fetched
+Wiley,Wiley Data Sharing Policies,https://authors.wiley.com/author-resources/Journal-Authors/open-access/data-sharing-citation/data-sharing-policy.html,data sharing;repository;availability statement,2026-09-16,,,,,release_seed_not_fetched
+Wiley,Wiley Data Sharing FAQs,https://authors.wiley.com/author-resources/Journal-Authors/open-access/data-sharing-citation/faqs.html,Dryad;figshare;Zenodo,2026-09-16,,,,,release_seed_not_fetched
+Taylor & Francis / Routledge,Understanding and using data repositories,https://authorservices.taylorandfrancis.com/data-sharing/share-your-data/repositories/,repository;FAIRsharing;re3data,2026-09-16,,,,,release_seed_not_fetched
+Taylor & Francis / Routledge,Open and FAIR Data Policy,https://authorservices.taylorandfrancis.com/data-sharing-policies/fair-data-copdess/,FAIR;repository;data availability,2026-09-16,,,,,release_seed_not_fetched
+NEJM / NEJM Group,NEJM Editorial Policies,https://www.nejm.org/about-nejm/editorial-policies,Gene Expression Omnibus;ArrayExpress;microarray,2026-09-16,,,,,release_seed_not_fetched
+Cell Press / Elsevier,AJHG Author Guide to Repositories,https://www.cell.com/pb-assets/journals/society/ajhg/forms/AJHG_author_guide_repositories-1654007751940.pdf,repository;FAIR;data,2026-09-16,,,,,release_seed_not_fetched

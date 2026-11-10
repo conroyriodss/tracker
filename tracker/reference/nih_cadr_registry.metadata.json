@@ -1,0 +1,19 @@
+{
+  "schema": "nih-tracker-source-snapshot/v1",
+  "artifact": "nih_cadr_registry.csv",
+  "source_url": "https://grants.nih.gov/policy-and-compliance/policy-topics/sharing-policies/accessing-data/requirements",
+  "source_page_last_updated": "2026-07-27",
+  "snapshot_created_at": "2026-09-16",
+  "sha256": "938cf538c36dcfc8a11deb27550e01ee65127ce068cafbe7d640474afc04939f",
+  "rows": 39,
+  "mapped_repo_uids": 34,
+  "unmapped_official_rows": [
+    "Cancer Research Data Commons (CRDC)-Trusted Partner",
+    "PEGS: Personalized Environment and Genes Study",
+    "NIMH Repository and Genomics Resources (NRGR)",
+    "Archived Clinical Research Datasets",
+    "COVID RADx Data Hub"
+  ],
+  "interpretation_limit": "The snapshot records official NIH CADR list membership as of the cited page date; absence is not a categorical ineligibility determination.",
+  "display_names_preserved_from_source": true
+}
