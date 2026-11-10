@@ -224,6 +224,13 @@ class ProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'flags'):
             build_report(catalog, self.root/'coverage.html')
 
+    def test_maintenance_notebook_requires_expected_release(self):
+        notebook = json.loads((ROOT/'nih_tracker_colab_v19_maintenance.ipynb').read_text())
+        code = '\n'.join(''.join(c['source']) for c in notebook['cells'] if c['cell_type']=='code')
+        self.assertIn('parent.glob("nih_tracker_v19_2_bundle.zip")', code)
+        self.assertIn('installed_manifest.get("release") != EXPECTED_RELEASE_VERSION', code)
+        self.assertNotIn('parent.glob("*v19*bundle*.zip")', code)
+
 
 if __name__ == '__main__':
     unittest.main()

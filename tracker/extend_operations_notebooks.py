@@ -95,6 +95,15 @@ deletion set is expected when the ledger references historical runs.
                 source = source.replace('installing v19.0.2', 'installing v19.2')
             if 'Production release installer was not found.' in source:
                 source = source.replace('v19.0.2 bundle', 'v19.2 bundle')
+            if 'bundle_candidates = []' in source:
+                source = source.replace('parent.glob("*v19*bundle*.zip")', 'parent.glob("nih_tracker_v19_2_bundle.zip")')
+                if 'EXPECTED_RELEASE_VERSION' not in source:
+                    source = source.replace('_validate_release_inventory(RELEASE_ROOT)', '''_validate_release_inventory(RELEASE_ROOT)
+import json
+EXPECTED_RELEASE_VERSION = "19.2"
+installed_manifest = json.loads((RELEASE_ROOT / "RELEASE_MANIFEST.json").read_text())
+if installed_manifest.get("release") != EXPECTED_RELEASE_VERSION:
+    raise RuntimeError("Upload nih_tracker_v19_2_bundle.zip to /content; an older release cannot be installed by this notebook.")''')
             c['source'] = source.splitlines(keepends=True)
             out.append(c)
             if 'status_result = RUNTIME.run_script(' in source and '"step_maintenance.py"' in source:

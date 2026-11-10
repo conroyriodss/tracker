@@ -1,6 +1,6 @@
 {
   "base_release": "19.1.1",
-  "created_at": "2026-11-10T20:01:36.707714+00:00",
+  "created_at": "2026-11-10T20:08:22.774364+00:00",
   "files": {
     ".gitattributes": {
       "bytes": 57,
@@ -87,8 +87,8 @@
       "sha256": "e256f060617c622cfcf1de913f9487b87f0b19998ddf44390b8ce34d8ed2625e"
     },
     "VALIDATION_REPORT.txt": {
-      "bytes": 2194,
-      "sha256": "7cfbdcac8925ef38c261ab85139a5b822dedc06b6520d4eb7149190ede726dd9"
+      "bytes": 2377,
+      "sha256": "8b1400791aee6475f7657db64d18d00b3ea29db90729c1d142fc034d7afb43f9"
     },
     "build_notebooks.py": {
       "bytes": 88526,
@@ -97,6 +97,10 @@
     "code_provenance.json": {
       "bytes": 11033,
       "sha256": "6fc98e74d3d40ed606e4c2464e6a8e511cd0fed7ad633fe7f157b5449a09e8e4"
+    },
+    "code_provenance_48abd20d8f0818be.json": {
+      "bytes": 11252,
+      "sha256": "9b4835cbc8ab520186cd4e8aef0a0f57ba46968cbb3ab9c00f14ea85958c422a"
     },
     "code_provenance_669f966fda40ee60.json": {
       "bytes": 11252,
@@ -127,8 +131,8 @@
       "sha256": "5ee9bd177755601aab857e23d5387a8ce9c4f06118373bb10761a223adf58a09"
     },
     "extend_operations_notebooks.py": {
-      "bytes": 5805,
-      "sha256": "d1f0e4679f9b3e002ef13824dc394603c27b11ad62aa2f946ca78ac92ee8c9bf"
+      "bytes": 6505,
+      "sha256": "171d379ae2583a685eb9f99958493497a014f915b7ca1e0f76012c3d7b7eb9a1"
     },
     "frontend.html": {
       "bytes": 39490,
@@ -147,8 +151,8 @@
       "sha256": "00ec1448d7bdb42d43345663d2ed80e4ecb7ee97fe0f37a3c000b4ab3a6e7911"
     },
     "nih_tracker_colab_v19_maintenance.ipynb": {
-      "bytes": 38447,
-      "sha256": "d1ec5540c5385d3f28a345a8283515b8ecd2dddaaa822e3c78f4faebe7f796aa"
+      "bytes": 38860,
+      "sha256": "4e5ff02c09a49900f01e32287e06818769c43f5f92206e7a86bf918a1fc38ea3"
     },
     "nih_tracker_colab_v19_pipeline.ipynb": {
       "bytes": 49169,
@@ -703,8 +707,8 @@
       "sha256": "5770a6c5d9442fd0c201f097ada9e15093ea359ce720f285488f150aedaa5b75"
     },
     "tests/test_v19_2_provenance.py": {
-      "bytes": 12317,
-      "sha256": "cee4162fed45128fddbb2f3d5d7bd8dfa78d0022bf6dcce0d182fdee6ef18a19"
+      "bytes": 12811,
+      "sha256": "09cb8ce19a75650c24e73aac2cd60590592cb1f2495f6cd2b0fce2c0f379482f"
     },
     "tests/test_v19_knowledge_graph.py": {
       "bytes": 23193,
@@ -741,13 +745,18 @@
       "source_commit": "f553d6df220db4f84aac2533520234dedf57f386"
     },
     "dependency_limit": "beautifulsoup4 unavailable; three pre-existing resource-profile extraction tests cannot execute",
-    "github_ci": "Defined with pinned actions and pinned base dependencies; see pull-request checks for execution results",
+    "github_ci": "Final installer-version safeguard requires a new CI run; consult the PR head checks.",
+    "github_ci_prior_revision": {
+      "commit": "86f1ab11a6c1bd5a111d223c647103510c5c2e0f",
+      "result": "success",
+      "url": "https://github.com/conroyriodss/tracker/actions/runs/42891443557"
+    },
     "live_cloud_calls": 0,
     "local_assertion_failures": 0,
     "local_errors": 3,
-    "local_full_suite_tests": 243,
-    "local_passed": 240,
-    "new_tests_passed": 20,
+    "local_full_suite_tests": 244,
+    "local_passed": 241,
+    "new_tests_passed": 21,
     "notebook_outputs_empty": true,
     "operations_extension_idempotent": true,
     "production_cards_changed": false,
